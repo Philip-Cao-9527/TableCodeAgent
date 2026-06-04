@@ -1,297 +1,272 @@
-<div align="center">
+# TableCodeAgent
 
-# Claude Code From Scratch
+TableCodeAgent 是一个面向复杂表格任务的轻量级 Coding Agent 项目。它关注的不是一次性表格问答，而是当任务升级到**可复现、可验证、可审计、可迁移的表格数据处理与算法建模前置工作**时，如何把自然语言需求转化为一条结构化的程序化工作流。
 
-**一步一步，从零造一个 Claude Code**
+在真实业务和算法场景中，表格往往不是最终答案本身，而是风险评分、增长建模、智能定价、财务推理、运营决策、因果分析和实验评估的样本载体。直接让通用 Coding Agent 依赖默认工具和默认提示处理这类任务，容易在数据口径、过滤条件、缺失值、异常值、重复样本、时间泄漏、重采样、混淆偏误、结果校验和过程复盘上失控。TableCodeAgent 的目标，是把这些隐含步骤显式组织成可执行、可检查、可记录轨迹的代码工作流：
 
-[![GitHub stars](https://img.shields.io/github/stars/Windy3f3f3f3f/claude-code-from-scratch?style=flat-square&logo=github)](https://github.com/Windy3f3f3f3f/claude-code-from-scratch)
-[![GitHub forks](https://img.shields.io/github/forks/Windy3f3f3f3f/claude-code-from-scratch?style=flat-square&logo=github)](https://github.com/Windy3f3f3f3f/claude-code-from-scratch/fork)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](./LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](#)
-[![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)](#)
-[![Lines of Code](https://img.shields.io/badge/~4300_lines-minimal-green?style=flat-square)](#)
+```text
+理解任务 -> 查看表格 -> 分析结构与口径 -> 编写或调用代码
+-> 执行计算 -> 校验答案 -> 记录轨迹 -> 分析失败原因
+```
 
-<br/>
 
-[**📘 在线阅读教程 →**](https://windy3f3f3f3f.github.io/claude-code-from-scratch/)
-&nbsp;&nbsp;|&nbsp;&nbsp;
-[📘 Read Tutorial (English) →](https://windy3f3f3f3f.github.io/claude-code-from-scratch/#/en/)
-&nbsp;&nbsp;|&nbsp;&nbsp;
-[English](./README_EN.md)
 
-<br/>
+## 为什么需要 TableCodeAgent
 
-> 📖 **想深入了解原理？** 姊妹项目 **[How Claude Code Works](https://github.com/Windy3f3f3f3f/how-claude-code-works)** — 12 篇专题，33 万字，从源码级别深度解析 Claude Code 架构
+通用 Coding Agent 可以读文件、写代码、执行命令，也可以临时写 pandas 脚本处理 CSV。但复杂表格任务的核心难点不只是“能不能写出代码”，而是“代码是否按正确口径读取了数据，是否完成必要的数据质量检查，是否能复现计算过程，是否能验证答案，失败后是否能定位原因”。
 
-</div>
+典型场景包括：
 
----
+- 信贷风险评分：训练 XGBoost、LightGBM 或深度学习模型前，需要检查缺失值、异常值、重复值、样本不平衡、时间切分、标签窗口和目标泄漏。
+- 营销增长与智能定价：使用 X-learner、T-learner、DR learner、VCNet 等方法前，需要处理 treatment/control 分布差异、PSM、IPW、混淆变量、重叠性假设和权重极端值。
+- 财务与运营表格推理：多表、多口径、多指标计算需要稳定的过滤、聚合、排序、对账和数值校验。
+- 表格问答与 benchmark：WikiTQ、TabMWP、FinQA、TAT-QA 等任务需要把自然语言问题、表格结构、代码执行和答案验证串成闭环。
 
-**Claude Code 开源了 50 万行 TypeScript。读不动？**
+因此，TableCodeAgent 不只是让模型“看表回答”，而是让模型围绕表格任务执行一套可复盘的程序化流程：先理解字段和样本，再选择工具或生成代码，之后执行、校验、记录和归因。
 
-本项目用 **~4300 行代码**（TypeScript 和 Python 两个版本分别实现）复现了 Claude Code 的核心架构——Agent Loop、13 个工具（含并行执行 + 流式早期启动）、4 层上下文压缩、语义记忆召回、技能系统、多 Agent、MCP 集成……每一步都对照真实源码讲解"它怎么做的 → 我们怎么简化的"。
+## 架构概览
 
-这不是 demo，是一份**分步教程**——13 章内容，跟着动手写几千行代码，快速理解 Claude Code 这样最好用的 coding agent 的精髓。读完你就理解了 coding agent 的工作原理，无需啃那几十万行代码。
+当前代码分为两层：
 
-<div align="center">
-  <video src="https://github.com/user-attachments/assets/4f6597e2-6ea3-45ae-8a6b-77662c4e9540" width="100%" autoplay loop muted playsinline></video>
-</div>
+```text
+TableCodeAgent
+├── mini_claude              # 通用 Coding Agent Runtime
+│   ├── __main__.py          # CLI 入口：参数解析、REPL、API 配置
+│   ├── agent.py             # Agent Loop：调用模型、接收工具调用、执行工具、保存会话
+│   ├── tools.py             # baseline 工具定义与执行：文件、搜索、shell、权限
+│   ├── prompt.py            # System Prompt：工作目录、Git 状态、CLAUDE.md、skills、agents
+│   ├── session.py           # 会话保存
+│   ├── memory.py            # baseline 记忆系统
+│   ├── skills.py            # skills 发现与解析
+│   └── subagent.py          # 内置和自定义子 Agent
+│
+├── tablecodeagent           # 表格任务能力层
+│   ├── agent_tools.py       # 表格工具 schema 与 Agent 适配
+│   ├── table_tools/core.py  # CSV 读取、profile、结构化聚合查询
+│   ├── validation/answer.py # 数值/字符串答案校验
+│   └── tracing/             # 轨迹记录模块
+│
+└── benchmarks/tasks         # 表格任务样例与后续 benchmark 数据
+    └── demo_table_001
+        ├── data.csv
+        ├── task.json
+        └── expected.json
+```
 
-## 📖 分步教程
+核心调用链：
 
-13 章内容，分两个阶段——先构建一个可用的 Coding Agent，再逐步添加进阶能力。每章都贴真实代码 + Claude Code 源码对照：
+```text
+用户命令
+  -> mini_claude.__main__.main()
+  -> Agent.chat()
+  -> _chat_openai() 或 _chat_anthropic()
+  -> 模型返回文本或 tool call
+  -> tools.execute_tool()
+  -> 工具结果回填消息历史
+  -> 继续下一轮，直到模型给出最终回答
+```
 
-| 章节 | 内容 | 对应源码 |
-|------|------|---------|
-| **Phase 1: 构建一个可用的 Coding Agent** | | |
-| [1. Agent Loop](https://windy3f3f3f3f.github.io/claude-code-from-scratch/#/docs/01-agent-loop) | 核心循环：调用 LLM → 执行工具 → 重复 | `agent.ts` ↔ `query.ts` |
-| [2. 工具系统](https://windy3f3f3f3f.github.io/claude-code-from-scratch/#/docs/02-tools) | 13 个工具 + mtime 防护 + 延迟加载 | `tools.ts` ↔ `Tool.ts` + 66 工具 |
-| [3. System Prompt](https://windy3f3f3f3f.github.io/claude-code-from-scratch/#/docs/03-system-prompt) | 提示词工程 + @include 语法 | `prompt.ts` ↔ `prompts.ts` |
-| [4. CLI 与会话](https://windy3f3f3f3f.github.io/claude-code-from-scratch/#/docs/04-cli-session) | REPL、Ctrl+C、会话持久化 | `cli.ts` ↔ `cli.tsx` |
-| [5. 流式输出](https://windy3f3f3f3f.github.io/claude-code-from-scratch/#/docs/05-streaming) | 双后端 + 流式工具执行 + 并行执行 | `agent.ts` ↔ `api/claude.ts` |
-| [6. 权限与安全](https://windy3f3f3f3f.github.io/claude-code-from-scratch/#/docs/06-permissions) | 5 模式 + 声明式规则 + 危险检测 | `tools.ts` ↔ `permissions/` (52KB) |
-| [7. 上下文管理](https://windy3f3f3f3f.github.io/claude-code-from-scratch/#/docs/07-context) | 4 层压缩 + 大结果持久化 | `agent.ts` ↔ `compact/` |
-| **Phase 2: 进阶能力** | | |
-| [8. 记忆系统](https://windy3f3f3f3f.github.io/claude-code-from-scratch/#/docs/08-memory) | 4 类型记忆 + 语义召回 + 异步预取 | `memory.ts` ↔ `memory.ts` |
-| [9. 技能系统](https://windy3f3f3f3f.github.io/claude-code-from-scratch/#/docs/09-skills) | 技能发现 + inline/fork 双模式 | `skills.ts` ↔ `SkillTool/` |
-| [10. Plan Mode](https://windy3f3f3f3f.github.io/claude-code-from-scratch/#/docs/10-plan-mode) | 只读规划 + 4 选项审批工作流 | `agent.ts` ↔ `EnterPlanMode` |
-| [11. 多 Agent](https://windy3f3f3f3f.github.io/claude-code-from-scratch/#/docs/11-multi-agent) | Sub-Agent fork-return 多 Agent 架构 | `subagent.ts` ↔ `AgentTool/` |
-| [12. MCP 集成](https://windy3f3f3f3f.github.io/claude-code-from-scratch/#/docs/12-mcp) | JSON-RPC over stdio 连接外部工具 | `mcp.ts` ↔ `mcpClient.ts` |
-| [13. 架构对比](https://windy3f3f3f3f.github.io/claude-code-from-scratch/#/docs/13-whats-next) | 完整对比 + 扩展方向 | 全局 |
-| [14. 功能测试](https://windy3f3f3f3f.github.io/claude-code-from-scratch/#/docs/14-testing) | 19 项手动测试覆盖全部功能 | `test/` |
 
-## 🚀 快速开始
 
-**TypeScript 版**
+## 目录说明
+
+```text
+.
+├── README.md                         # 项目总览
+├── configs/api/                      # API 配置模板；local/ 下为本地密钥，禁止提交
+├── benchmarks/tasks/demo_table_001/  # 最小表格任务样例
+├── docs/baseline/                    # baseline 教程型文档
+├── docs/reproduce/                   # 环境、架构、实验和修复记录
+├── python/
+│   ├── pyproject.toml                # Python 包配置
+│   ├── mini_claude/                  # 通用 Coding Agent Runtime
+│   └── tablecodeagent/               # TableCodeAgent 表格任务能力层
+├── scripts/                          # 本地运行与验证脚本
+├── src/                              # baseline TypeScript 版代码
+└── test/                             # baseline 手动测试资源
+```
+
+## 快速开始
+
+进入项目：
 
 ```bash
-git clone https://github.com/Windy3f3f3f3f/claude-code-from-scratch.git
-cd claude-code-from-scratch
-npm install && npm run build
+cd ~/workspace/TableCodeAgent
 ```
 
-**Python 版**（需要 Python 3.11+，[详细说明](./python/README.md)）
+激活环境：
 
 ```bash
-cd python
-pip install -e .
-mini-claude-py          # 命令行入口（避免与 TS 版 mini-claude 冲突）
-python -m mini_claude   # 或用 python -m 方式运行
+source /root/miniconda3/etc/profile.d/conda.sh
+conda activate tca
 ```
 
-### 配置 API
-
-支持两种后端，通过环境变量自动识别：（支持自定义base url）
-
-**方式一：Anthropic 格式（推荐）**
+安装 Python 包：
 
 ```bash
-export ANTHROPIC_API_KEY="sk-ant-xxx"
-# 可选：使用代理
-export ANTHROPIC_BASE_URL="https://aihubmix.com"
+cd ~/workspace/TableCodeAgent/python
+python -m pip install -e .
 ```
 
-**方式二：OpenAI 兼容格式**
+查看 CLI：
 
 ```bash
-export OPENAI_API_KEY="sk-xxx"
-export OPENAI_BASE_URL="https://api.openai.com/v1"
+mini-claude-py --help
 ```
 
-默认模型为 `claude-opus-4-6`，可通过环境变量或命令行参数自定义：
+运行只读计划模式示例：
 
 ```bash
-export MINI_CLAUDE_MODEL="claude-sonnet-4-6"    # 环境变量方式
-npm start -- --model gpt-4o                      # 命令行方式（优先级更高）
+cd ~/workspace/TableCodeAgent
+source configs/api/local/provider_chatanywhere.env
+
+mini-claude-py \
+  --api-base "$MINI_CLAUDE_API_BASE" \
+  --model "$MINI_CLAUDE_MODEL" \
+  --max-turns 3 \
+  --plan "请用中文介绍当前项目目录，不要修改任何文件。"
 ```
 
-### 运行
+## 本地验证
 
-**TypeScript 版**
+表格工具的独立 smoke test：
 
 ```bash
-npm start                    # 交互式 REPL 模式（推荐）
-npm start -- --resume        # 恢复上次会话继续对话
-npm start -- --yolo          # 跳过安全确认（危险命令自动执行）
-npm start -- --plan          # Plan 模式：只分析不修改
-npm start -- --accept-edits  # 自动批准文件编辑
-npm start -- --dont-ask      # CI 模式：需确认的操作自动拒绝
-npm start -- --max-cost 0.50 # 费用限制（美元）
-npm start -- --max-turns 20  # 轮次限制
+scripts/run_table_tools_smoke.sh
 ```
 
-**Python 版**
+执行方式：
 
 ```bash
-mini-claude-py               # 交互式 REPL 模式（推荐）
-mini-claude-py --resume      # 恢复上次会话继续对话
-mini-claude-py --yolo        # 跳过安全确认
-mini-claude-py --plan        # Plan 模式：只分析不修改
-mini-claude-py --accept-edits # 自动批准文件编辑
-mini-claude-py --dont-ask    # CI 模式：需确认的操作自动拒绝
-mini-claude-py --max-cost 0.50 # 费用限制（美元）
-mini-claude-py --max-turns 20  # 轮次限制
+cd ~/workspace/TableCodeAgent
+bash scripts/run_table_tools_smoke.sh
 ```
 
-全局安装后可在任意目录使用：
+该脚本不调用 LLM，只验证 demo 表格任务可以完成读取、profile、结构化聚合查询和答案校验。脚本会设置 `PYTHONPATH=python`，不强依赖先执行 editable install。
 
-**TypeScript 版**
+Agent 工具注册 smoke test：
 
 ```bash
-npm link                     # 全局安装
-cd ~/your-project
-mini-claude                  # 直接启动
+cd ~/workspace/TableCodeAgent
+bash scripts/run_agent_table_tools_smoke.sh
 ```
 
-**Python 版**
+该脚本不调用 LLM，直接验证 `load_table`、`profile_table`、`query_table`、`validate_answer` 已出现在工具 schema 中，并且能通过 `mini_claude.tools.execute_tool()` 执行。
+
+benchmark runner smoke test：
 
 ```bash
-cd python
-pip install -e .             # 全局安装（editable 模式）
-cd ~/your-project
-mini-claude-py               # 直接启动
+cd ~/workspace/TableCodeAgent
+bash scripts/run_benchmark_smoke.sh
 ```
 
-### REPL 命令
+该脚本不调用 LLM，运行两个模式：
 
-| 命令 | 功能 |
-|------|------|
-| `/clear` | 清空对话历史 |
-| `/cost` | 显示累计 token 用量和费用估算 |
-| `/compact` | 手动触发对话压缩 |
-| `/memory` | 列出所有已保存的记忆 |
-| `/skills` | 列出可用的技能 |
-| `/<skill>` | 调用已注册的技能（如 `/commit`） |
+- `direct`：直接调用表格工具函数和答案校验，验证任务计算逻辑。
+- `agent_tool_dispatch`：通过 `mini_claude.tools.execute_tool()` 调用表格工具，验证工具 schema 与分发路径。
 
-> 详见 [CLI 与会话](https://windy3f3f3f3f.github.io/claude-code-from-scratch/#/docs/04-cli-session) 和 [功能测试](https://windy3f3f3f3f.github.io/claude-code-from-scratch/#/docs/14-testing)
+这两个模式都会写入：
 
-## ⚖️ 与 Claude Code 的对比
-
-| 维度 | Claude Code | Mini Claude Code |
-|------|------------|-----------------|
-| 定位 | 生产级编程智能体 | 教学 / 最小可用实现 |
-| 工具数量 | 66+ 内置工具 | 13 个工具（6 核心 + web_fetch + tool_search + skill + agent + plan mode） |
-| 工具执行 | 并发 + streaming 早期启动 | 并行执行 + streaming 早期启动 |
-| 上下文管理 | 4 级压缩流水线 | 4 层压缩 + 大结果持久化（>30KB） |
-| 权限系统 | 7 层 + AST 分析 | 5 种模式 + 声明式规则 + 正则检测 |
-| 编辑验证 | 14 步流水线 | 引号容错 + 唯一性 + mtime 防护 + diff 输出 |
-| 记忆系统 | 4 类型 + 语义召回 | 4 类型 + 语义召回 + 异步预取 |
-| 技能系统 | 6 源 + inline/fork | 2 源 + inline/fork |
-| 多 Agent | Sub-Agent + Coordinator + Swarm | Sub-Agent（3 内置 + 自定义 Agent） |
-| MCP 集成 | mcpClient.ts + 动态工具发现 | McpManager + JSON-RPC over stdio |
-| 预算控制 | USD/轮次/abort 三维 | USD + 轮次限制 |
-| 代码量 | 50 万+ 行 | ~4300 行（TS）/ ~3800 行（Python） |
-
-## ⚡ 核心能力
-
-- **Agent 循环**：自动调用工具、处理结果、持续迭代，直到任务完成
-- **13 个工具**：读写编辑文件（mtime 防护）、搜索、Shell、WebFetch、ToolSearch（延迟加载）、技能、子 Agent、Plan Mode
-- **流式输出**：逐字实时显示，Anthropic + OpenAI 双后端，streaming 工具早期执行
-- **并行工具执行**：只读工具（read_file、grep_search 等）自动并发，2-3x 加速
-- **4 层上下文压缩**：budget 截断 → stale snip → microcompact → auto-compact + 大结果持久化（>30KB 写磁盘）
-- **权限系统**：5 种模式 + `.claude/settings.json` 声明式 allow/deny 规则 + 16 个危险命令正则
-- **记忆系统**：4 类型记忆 + 语义召回（sideQuery 调模型选择相关记忆）+ 异步预取
-- **技能系统**：`.claude/skills/` 目录加载，支持 inline 注入和 fork 子 Agent 两种执行模式
-- **多 Agent**：Sub-Agent fork-return 模式（3 内置类型 + `.claude/agents/` 自定义类型）
-- **MCP 集成**：JSON-RPC over stdio 连接外部工具服务器，动态工具发现与调用转发
-- **System Prompt**：@include 语法递归引入、.claude/rules/ 自动加载、模板变量替换
-- **Extended Thinking**：支持 Anthropic 扩展思考（`--thinking`），adaptive/enabled/disabled 三模式
-- **预算控制**：`--max-cost` 费用限制 + `--max-turns` 轮次限制，超限自动停止
-- **会话持久化**：自动保存对话，`--resume` 恢复上次会话
-- **跨平台**：Windows / macOS / Linux，自动检测 shell（PowerShell / bash / zsh）
-- **错误恢复**：API 限流/过载时指数退避 + 随机抖动重试（最多 3 次），Ctrl+C 优雅中断
-
-## 📁 项目结构
-
-```
-src/                # TypeScript 版
-├── agent.ts        # Agent 循环：流式、并行执行、4 层压缩、预算   (1501 行)
-├── tools.ts        # 工具：13 工具 + mtime 防护 + 延迟加载       (858 行)
-├── cli.ts          # CLI 入口：参数解析、REPL、预算 flags         (371 行)
-├── memory.ts       # 记忆系统：4 类型 + 语义召回 + 异步预取       (376 行)
-├── mcp.ts          # MCP 客户端：JSON-RPC over stdio             (266 行)
-├── prompt.ts       # System Prompt：@include + 模板 + 注入       (230 行)
-├── ui.ts           # 终端输出：彩色显示、格式化、子 Agent 显示    (211 行)
-├── subagent.ts     # 子 Agent：3 内置 + 自定义 Agent 发现         (199 行)
-├── skills.ts       # 技能系统：目录发现 + inline/fork 双模式      (175 行)
-├── session.ts      # 会话持久化：保存/恢复/列表                   (63 行)
-├── frontmatter.ts  # 共享 YAML frontmatter 解析器                (41 行)
-                                                    总计: ~4291 行
-
-python/             # Python 版（功能一致）
-├── mini_claude/
-│   ├── agent.py, tools.py, __main__.py, ui.py, prompt.py,
-│   ├── session.py, memory.py, skills.py, subagent.py,
-│   ├── mcp_client.py, frontmatter.py
-│   └── system_prompt.md
-└── pyproject.toml                                  总计: ~3811 行
+```text
+benchmarks/runs/<run_id>/results.jsonl
+benchmarks/runs/<run_id>/traces/
 ```
 
-## 🏗️ 架构图
+注意：这两个模式不验证真实模型是否会主动调用表格工具，不能写成“真实 LLM Agent 行为已验证”。
 
-```
-用户输入
-  │
-  ▼
-┌─────────────────────────────────────┐
-│          Agent Loop                 │
-│                                     │
-│  消息历史 → API (流式) → 实时输出   │
-│       ▲                   │         │
-│       │              ┌────┴───┐     │
-│       │              │文本输出│     │
-│       │              │工具调用│     │
-│       │              └────┬───┘     │
-│       │                   │         │
-│       │   ┌───────┐ ┌────▼───┐     │
-│       │   │截断保护│←│工具执行│     │
-│       │   └───────┘ └────┬───┘     │
-│       │                   │         │
-│       │   ┌───────────────▼───┐     │
-│       └───│Token 追踪 + 压缩 │     │
-│           └───────────────────┘     │
-└─────────────────────────────────────┘
-  │
-  ▼
-任务完成 → 自动保存会话
+当前 `v0.0.1` 已有 5 个可验证任务：
+
+- `demo_table_001`：CSV 单表基础聚合。
+- `excel_table_001`：读取 `.xlsx` 的指定 sheet。
+- `multi_table_001`：两表 inner join 后聚合。
+- `multi_header_001`：两行 header 规范化后聚合。
+- `merged_cell_001`：展开 Excel 合并单元格后聚合。
+
+最近一次非 API benchmark 验证：
+
+```text
+benchmarks/runs/20260603-170510/results.jsonl
 ```
 
-## 🔗 相关项目
+其中 5 个任务的 `direct` 和 `agent_tool_dispatch` 均为 `passed=true`，答案均为 `32.5`。
 
-- **[how-claude-code-works](https://github.com/Windy3f3f3f3f/how-claude-code-works)** — Claude Code 源码架构深度解析（12 篇专题，33 万字）
+可选 LLM 端到端 demo：
 
-## 🤝 贡献者
+```bash
+cd ~/workspace/TableCodeAgent
+bash scripts/run_demo_table_agent_smoke.sh configs/api/local/provider_chatanywhere.env
+```
 
-| <img src="https://github.com/Windy3f3f3f3f.png" width="60" /> | <img src="https://github.com/davidweidawang.png" width="60" /> | <img src="./assets/kaibo.jpg" width="60" /> |
-|:---:|:---:|:---:|
-| [@Windy3f3f3f3f](https://github.com/Windy3f3f3f3f) | [@davidweidawang](https://github.com/davidweidawang) | [Kaibo Huang](https://scholar.google.com/citations?user=C7B5X5IAAAAJ&hl=zh-CN) |
+也可以显式指定任务目录，例如验证 Excel 任务：
 
-## 🙏 致谢
+```bash
+cd ~/workspace/TableCodeAgent
+bash scripts/run_demo_table_agent_smoke.sh \
+  configs/api/local/provider_chatanywhere.env \
+  benchmarks/tasks/excel_table_001
+```
 
-感谢 [LINUX DO](https://linux.do/) 社区的支持与讨论。
+该脚本会调用本地 OpenAI-compatible API 配置，运行 `optional_llm_agent` 模式。只有真实模型发起表格工具调用，并最终通过 `validate_answer`，结果才会记录为 `passed=true`。
 
-## 💬 更多交流
+该模式会在 trace / result 中记录：
 
-<div align="center">
+```text
+mode
+provider
+model_name
+api_called
+skipped
+llm_tool_call_observed
+tool_call_count
+final_answer
+expected_answer
+validation.passed
+failure_type
+elapsed_ms
+```
 
-**加入 AI Agent 工坊 交流群**
+如果 env 文件缺失会明确输出 `SKIP`，不伪装成功。需要调用模型的基础 API smoke 示例见：
 
-<img src="./assets/qq.jpg" width="280" alt="QQ 群二维码" />
+最近一次真实 LLM Excel 任务验证结果：
 
-QQ 群号：**1090526244**
+```text
+benchmarks/runs/20260603-170636/results.jsonl
+benchmarks/runs/20260603-170636/traces/excel_table_001.optional_llm_agent.json
+```
 
-</div>
+该结果中 `api_called=true`、`llm_tool_call_observed=true`、`tool_call_count=3`、`validation.passed=true`。
 
-## 📈 Star History
+说明：`.xlsx` 支持依赖 `openpyxl`。当前没有引入 `pandas`、`duckdb` 或 `pyarrow`。
 
-<div align="center">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Windy3f3f3f3f/claude-code-from-scratch&type=Date&theme=dark" />
-  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Windy3f3f3f3f/claude-code-from-scratch&type=Date" />
-  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Windy3f3f3f3f/claude-code-from-scratch&type=Date" width="600" />
-</picture>
-</div>
+```bash
+scripts/run_deepseek_smoke.sh
+```
 
-## 📄 License
+通用 OpenAI-compatible API smoke 示例见：
 
-MIT
+```bash
+bash scripts/run_openai_compatible_smoke.sh provider_x.env
+```
+
+## API 配置
+
+项目使用 OpenAI-compatible API 接口。真实密钥放在：
+
+```text
+configs/api/local/
+```
+
+该目录应被 `.gitignore` 忽略，不应提交到 GitHub。可提交的是：
+
+```text
+configs/api/*.env.example
+configs/api/README.md
+```
+
+## 致谢
+
+本项目基于 `claude-code-from-scratch` 的 MiniClaudeCode 思路搭建通用 Coding Agent baseline，并在此基础上探索表格任务工具、任务转换、执行验证、轨迹记录、benchmark 和失败分析。
+
+感谢原项目提供了清晰的 Coding Agent 学习参考：
+
+- <https://github.com/Windy3f3f3f3f/claude-code-from-scratch>

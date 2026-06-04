@@ -1,0 +1,6 @@
+order_id,date,region,product,quantity,unit_price,revenue
+1001,2026-01-01,North,Notebook,3,5.5,16.5
+1002,2026-01-02,South,Pen,10,1.2,12.0
+1003,2026-01-02,North,Pen,5,1.2,6.0
+1004,2026-01-03,East,Notebook,2,5.5,11.0
+1005,2026-01-03,North,Marker,4,2.5,10.0

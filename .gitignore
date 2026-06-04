@@ -10,3 +10,6 @@ __pycache__/
 configs/api/local/
 *.local.env
 secrets/
+
+# Benchmark run outputs
+benchmarks/runs/

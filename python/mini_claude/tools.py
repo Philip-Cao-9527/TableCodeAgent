@@ -14,16 +14,21 @@ from pathlib import Path
 
 from .memory import get_memory_dir
 from .frontmatter import parse_frontmatter
+from tablecodeagent.agent_tools import (
+    TABLE_TOOL_DEFINITIONS,
+    TABLE_TOOL_NAMES,
+    execute_table_tool,
+)
 
 # ─── Permission modes ──────────────────────────────────────
 
 PermissionMode = str  # "default" | "plan" | "acceptEdits" | "bypassPermissions" | "dontAsk"
 
-READ_TOOLS = {"read_file", "list_files", "grep_search", "web_fetch"}
+READ_TOOLS = {"read_file", "list_files", "grep_search", "web_fetch"} | TABLE_TOOL_NAMES
 EDIT_TOOLS = {"write_file", "edit_file"}
 
 # Concurrency-safe tools can run in parallel (read-only, no side effects)
-CONCURRENCY_SAFE_TOOLS = {"read_file", "list_files", "grep_search", "web_fetch"}
+CONCURRENCY_SAFE_TOOLS = {"read_file", "list_files", "grep_search", "web_fetch"} | TABLE_TOOL_NAMES
 
 IS_WIN = sys.platform == "win32"
 
@@ -168,6 +173,7 @@ tool_definitions: list[ToolDef] = [
             "required": ["query"],
         },
     },
+    *TABLE_TOOL_DEFINITIONS,
 ]
 
 # ─── Deferred tool activation ───────────────────────────────
@@ -677,6 +683,9 @@ async def execute_tool(
             [{"name": t["name"], "description": t.get("description", ""), "input_schema": t["input_schema"]} for t in matches],
             indent=2,
         )
+
+    if name in TABLE_TOOL_NAMES:
+        return _truncate_result(execute_table_tool(name, inp))
 
     handlers: dict = {
         "write_file": _write_file,

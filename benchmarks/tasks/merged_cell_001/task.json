@@ -1,0 +1,14 @@
+{
+  "id": "merged_cell_001",
+  "question": "读取包含合并单元格的 Excel，展开合并区域后计算 North 区域的总 revenue。",
+  "data_file": "data.xlsx",
+  "query": {
+    "metric": "sum",
+    "column": "revenue",
+    "filters": {
+      "region": "North"
+    },
+    "sheet_name": "MergedSales",
+    "fill_merged_cells": true
+  }
+}

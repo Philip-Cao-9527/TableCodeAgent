@@ -1,0 +1,26 @@
+{
+  "id": "multi_table_001",
+  "question": "关联 orders 和 regions 两张表，计算 North 区域的总 revenue。",
+  "query": {
+    "tool": "query_multi_table",
+    "tables": [
+      {
+        "name": "orders",
+        "path": "orders.csv"
+      },
+      {
+        "name": "regions",
+        "path": "regions.csv"
+      }
+    ],
+    "join": {
+      "left_key": "region_id",
+      "right_key": "region_id"
+    },
+    "metric": "sum",
+    "column": "orders.revenue",
+    "filters": {
+      "regions.region": "North"
+    }
+  }
+}

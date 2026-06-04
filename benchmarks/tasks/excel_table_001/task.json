@@ -1,0 +1,13 @@
+{
+  "id": "excel_table_001",
+  "question": "读取 Excel 的 Sales sheet，计算 North 区域的总 revenue。",
+  "data_file": "data.xlsx",
+  "query": {
+    "metric": "sum",
+    "column": "revenue",
+    "filters": {
+      "region": "North"
+    },
+    "sheet_name": "Sales"
+  }
+}

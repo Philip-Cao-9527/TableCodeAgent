@@ -76,13 +76,13 @@ mini-claude-py \
 如果后续尝试其他便宜 API，可以复制通用模板：
 
 ```bash
-cp configs/api/openai_compatible.env.example configs/api/local/provider_x.env
+cp configs/api/openai_compatible.env.example configs/api/local/provider_chatanywhere.env
 ```
 
 然后编辑：
 
 ```bash
-vim configs/api/local/provider_x.env
+vim configs/api/local/provider_chatanywhere.env
 ```
 
 配置内容示例：

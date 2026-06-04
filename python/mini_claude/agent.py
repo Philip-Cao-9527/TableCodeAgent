@@ -166,6 +166,7 @@ class Agent:
         custom_system_prompt: str | None = None,
         custom_tools: list[ToolDef] | None = None,
         is_sub_agent: bool = False,
+        trace_callback: Callable[[dict[str, Any]], None] | None = None,
     ):
         self.permission_mode = permission_mode
         self.thinking = thinking
@@ -176,6 +177,7 @@ class Agent:
         self.max_cost_usd = max_cost_usd
         self.max_turns = max_turns
         self.confirm_fn = confirm_fn
+        self.trace_callback = trace_callback
         self.effective_window = _get_context_window(model) - 20000
         self.session_id = uuid.uuid4().hex[:8]
         self.session_start_time = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
@@ -650,16 +652,39 @@ class Agent:
     # ─── Execute tool (handles agent/skill/plan mode internally) ─────
 
     async def _execute_tool_call(self, name: str, inp: dict) -> str:
-        if name in ("enter_plan_mode", "exit_plan_mode"):
-            return await self._execute_plan_mode_tool(name)
-        if name == "agent":
-            return await self._execute_agent_tool(inp)
-        if name == "skill":
-            return await self._execute_skill_tool(inp)
-        # Route MCP tool calls to the MCP manager
-        if self._mcp_manager.is_mcp_tool(name):
-            return await self._mcp_manager.call_tool(name, inp)
-        return await execute_tool(name, inp, self._read_file_state)
+        started = time.monotonic()
+        try:
+            if name in ("enter_plan_mode", "exit_plan_mode"):
+                result = await self._execute_plan_mode_tool(name)
+            elif name == "agent":
+                result = await self._execute_agent_tool(inp)
+            elif name == "skill":
+                result = await self._execute_skill_tool(inp)
+            elif self._mcp_manager.is_mcp_tool(name):
+                result = await self._mcp_manager.call_tool(name, inp)
+            else:
+                result = await execute_tool(name, inp, self._read_file_state)
+        except Exception as error:
+            if self.trace_callback:
+                self.trace_callback({
+                    "event": "tool_error",
+                    "name": name,
+                    "arguments": inp,
+                    "error_type": type(error).__name__,
+                    "error": str(error),
+                    "elapsed_ms": int((time.monotonic() - started) * 1000),
+                })
+            raise
+
+        if self.trace_callback:
+            self.trace_callback({
+                "event": "tool_result",
+                "name": name,
+                "arguments": inp,
+                "result": result,
+                "elapsed_ms": int((time.monotonic() - started) * 1000),
+            })
+        return result
 
     # ─── Skill fork mode ─────────────────────────────────────
 

@@ -1,0 +1,13 @@
+{
+  "id": "multi_header_001",
+  "question": "读取两行表头的 CSV，计算 North 区域的 sales revenue 总和。",
+  "data_file": "data.csv",
+  "query": {
+    "metric": "sum",
+    "column": "sales__revenue",
+    "filters": {
+      "region": "North"
+    },
+    "header_rows": 2
+  }
+}

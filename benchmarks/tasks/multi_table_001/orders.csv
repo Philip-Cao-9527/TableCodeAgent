@@ -1,0 +1,6 @@
+order_id,region_id,product,revenue
+1001,R1,Notebook,16.5
+1002,R2,Pen,12.0
+1003,R1,Pen,6.0
+1004,R3,Notebook,11.0
+1005,R1,Marker,10.0
