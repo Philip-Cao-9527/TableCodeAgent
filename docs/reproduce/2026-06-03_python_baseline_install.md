@@ -19,7 +19,7 @@
 - 平台：AutoDL Ubuntu
 - Conda 环境：tca
 - Python：3.11.15
-- 安装目录：~/workspace/TableCodeAgent/python
+- 安装目录：~/workspace/TableCodeAgent/src
 - 验证命令：mini-claude-py --help
 
 ## 下一步

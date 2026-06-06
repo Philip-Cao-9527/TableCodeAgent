@@ -1,0 +1,4 @@
+interface:
+  display_name: "Growth Campaign Audit"
+  short_description: "Audit marketing growth campaign table data before modeling."
+  default_prompt: "Use this skill to audit a marketing growth campaign dataset before modeling."

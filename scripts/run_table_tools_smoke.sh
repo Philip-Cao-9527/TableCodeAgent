@@ -3,11 +3,16 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
-export PYTHONPATH="$ROOT_DIR/python${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONPATH="$ROOT_DIR/src${PYTHONPATH:+:$PYTHONPATH}"
 
 python - <<'PY'
 import json
 from pathlib import Path
+
+from tablecodeagent.runtime.dependency import ensure_runtime_dependencies
+
+deps = ensure_runtime_dependencies(auto_install=True)
+assert deps["ok"], deps
 
 from tablecodeagent.table_tools.core import load_table, profile_table, query_table
 from tablecodeagent.validation.answer import validate_answer

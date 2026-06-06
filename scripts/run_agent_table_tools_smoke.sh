@@ -3,17 +3,22 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
-export PYTHONPATH="$ROOT_DIR/python${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONPATH="$ROOT_DIR/src${PYTHONPATH:+:$PYTHONPATH}"
 
 python - <<'PY'
 import asyncio
 import json
 from pathlib import Path
 
+from tablecodeagent.runtime.dependency import ensure_runtime_dependencies
+
 from mini_claude.tools import execute_tool, get_active_tool_definitions
 
 
 async def main() -> None:
+    deps = ensure_runtime_dependencies(auto_install=True)
+    assert deps["ok"], deps
+
     task_dir = Path("benchmarks/tasks/demo_table_001")
     data_path = str(task_dir / "data.csv")
     expected = json.loads((task_dir / "expected.json").read_text())
