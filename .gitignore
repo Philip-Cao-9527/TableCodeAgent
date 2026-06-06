@@ -2,6 +2,12 @@ node_modules/
 dist/
 .env
 __pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
 # API secrets / local configs
 .env
@@ -13,3 +19,4 @@ secrets/
 
 # Benchmark run outputs
 benchmarks/runs/
+benchmarks/results/

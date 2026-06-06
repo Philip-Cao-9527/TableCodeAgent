@@ -71,7 +71,7 @@
 
 - 当前主线是 Coding Agent / TableCodeAgent MVP。
 - 不套用 Chrome Web Store、manifest、content script、DOM 注入等浏览器扩展规则。
-- 修改前优先读取 `README.md` 与 `docs/reproduce/2026-06-03_tablecodeagent_architecture.md`。
+- 修改前优先读取 `README.md` 与 `docs/reproduce/tablecodeagent_architecture.md`。
 - 修复报告统一放在 `docs/reproduce/`。
 - 版本从 `v0.0.1` 开始，按 `PATCH / MINOR / MAJOR` 规则演进。
 

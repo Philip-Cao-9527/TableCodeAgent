@@ -1,22 +1,47 @@
 from __future__ import annotations
 
 import json
+import re
 import time
 from pathlib import Path
 from typing import Any
 
 
 TRACE_VERSION = "v0.0.2"
+DEFAULT_RESULT_ROOT = Path("benchmarks/results")
 
 
 def utc_timestamp() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
 
-def make_run_dir(root: str | Path = "benchmarks/runs", run_id: str | None = None) -> Path:
-    run_name = run_id or time.strftime("%Y%m%d-%H%M%S", time.gmtime())
-    run_dir = Path(root) / run_name
+def safe_path_token(value: str | None, *, max_length: int = 80) -> str:
+    text = (value or "unknown").strip() or "unknown"
+    safe = re.sub(r"[^A-Za-z0-9._-]+", "-", text).strip("-._")
+    safe = safe or "unknown"
+    if len(safe) <= max_length:
+        return safe
+    import hashlib
+    digest = hashlib.sha1(safe.encode("utf-8")).hexdigest()[:8]
+    return f"{safe[:max_length - 9]}-{digest}"
+
+
+def make_result_dir(
+    *,
+    mode: str,
+    model_name: str | None,
+    task_label: str,
+    root: str | Path = DEFAULT_RESULT_ROOT,
+    timestamp: str | None = None,
+) -> Path:
+    run_time = timestamp or time.strftime("%Y%m%d-%H%M%S", time.gmtime())
+    run_id = (
+        f"{run_time}__model-{safe_path_token(model_name)}"
+        f"__tasks-{safe_path_token(task_label, max_length=120)}"
+    )
+    run_dir = Path(root) / safe_path_token(mode) / run_id
     (run_dir / "traces").mkdir(parents=True, exist_ok=True)
+    (run_dir / "workspaces").mkdir(parents=True, exist_ok=True)
     return run_dir
 
 
@@ -78,6 +103,11 @@ def result_from_trace(trace: dict[str, Any]) -> dict[str, Any]:
         "failure_type": trace.get("failure_type"),
         "elapsed_ms": trace.get("elapsed_ms", 0),
         "trace_path": trace.get("trace_path"),
+        "result_dir": trace.get("result_dir"),
+        "workspace_path": trace.get("workspace_path"),
+        "generated_code_path": trace.get("generated_code_path"),
+        "answer_path": trace.get("answer_path"),
+        "code_generation_source": trace.get("code_generation_source"),
     }
     metrics = trace.get("metrics") or {}
     result["metrics"] = metrics

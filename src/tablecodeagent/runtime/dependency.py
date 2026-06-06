@@ -27,9 +27,9 @@ TEST_DEPENDENCIES: tuple[DependencySpec, ...] = (
 )
 
 LLM_DEPENDENCIES: tuple[DependencySpec, ...] = (
-    DependencySpec("openai", "openai", "optional_llm_agent"),
-    DependencySpec("anthropic", "anthropic", "optional_llm_agent"),
-    DependencySpec("rich", "rich", "optional_llm_agent_ui"),
+    DependencySpec("openai", "openai", "real_api_code_agent"),
+    DependencySpec("anthropic", "anthropic", "real_api_code_agent"),
+    DependencySpec("rich", "rich", "real_api_code_agent_ui"),
 )
 
 FORMAT_DEPENDENCIES: dict[str, DependencySpec] = {

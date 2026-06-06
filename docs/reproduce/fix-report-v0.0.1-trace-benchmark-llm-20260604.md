@@ -47,6 +47,8 @@ benchmarks/runs/<run_id>/results.jsonl
 benchmarks/runs/<run_id>/traces/<task_id>.<mode>.json
 ```
 
+补充：以上是 `v0.0.1` 历史路径。后续 benchmark 口径重构后，新结果路径统一使用 `benchmarks/results/<mode>/<run_id>/`。
+
 trace / result 记录：
 
 - `task_id`
@@ -63,11 +65,13 @@ trace / result 记录：
 - `failure_type`
 - `elapsed_ms`
 
-`tablecodeagent.benchmark.runner` 支持：
+历史入口 `tablecodeagent.benchmark.runner` 当时支持：
 
 - `direct`：不调用 API，直接执行表格工具函数和答案校验。
 - `agent_tool_dispatch`：不调用 API，通过 `mini_claude.tools.execute_tool()` 分发工具调用。
 - `optional_llm_agent`：调用 OpenAI-compatible API，验证真实模型是否发起表格工具调用并通过 `validate_answer`。
+
+补充：该入口已在后续 benchmark 口径重构中删除。当前推荐入口是 `python -m tablecodeagent.benchmark.benchmark_runner`，当前真实 API benchmark mode 是 `real_api_code_agent`。
 
 ### 3.2 真实 LLM tool call 观测
 
@@ -282,7 +286,7 @@ benchmarks/runs/20260603-170636/traces/excel_table_001.optional_llm_agent.json
 - 不创建 `v0.0.2`。
 - 不修改 package version。
 - 不 git commit。
-- benchmark 输出位于 `benchmarks/runs/`，已通过 `.gitignore` 忽略。
+- 当时 benchmark 输出位于 `benchmarks/runs/`，已通过 `.gitignore` 忽略；当前新结果路径已改为 `benchmarks/results/`。
 
 ## 7. 风险与备注
 
