@@ -1,0 +1,630 @@
+{
+  "trace_version": "v0.0.2",
+  "task_id": "growth_campaign_audit_001",
+  "mode": "real_api_code_agent",
+  "provider": "provider_chatanywhere",
+  "model_name": "deepseek-v4-flash",
+  "api_called": true,
+  "skipped": false,
+  "llm_tool_call_observed": true,
+  "tool_call_count": 19,
+  "tool_calls": [
+    {
+      "name": "read_file",
+      "arguments": {
+        "file_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/task.json"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "   1 | {\n   2 |   \"id\": \"growth_campaign_audit_001\",\n   3 |   \"task_type\": \"growth_campaign_audit\",\n   4 |   \"question\": \"对营销活动样本构造进行数据审计，检查多表 join、treatment/control 分布、组间平衡、补贴极端值和订单时间窗口错配。\",\n   5 |   \"benchmark_modes\": [\n   6 |     \"growth_l0_tools\",\n   7 |     \"growth_workflow\",\n   8 |     \"sandbox_code_agent\"\n   9 |   ],\n  10 |   \"tables\": {\n  11 |     \"users\": \"users.csv\",\n  12 |     \"campaign_exposure\": \"campaign_exposure.csv\",\n  13 |     \"rewards\": \"rewards.csv\",\n  14 |     \"orders\": \"orde"
+      },
+      "elapsed_ms": 0
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/campaign_exposure.csv",
+        "preview_rows": 5
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 10
+      },
+      "elapsed_ms": 13
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/orders.csv",
+        "preview_rows": 5
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 9
+      },
+      "elapsed_ms": 9
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/rewards.csv",
+        "preview_rows": 5
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 9
+      },
+      "elapsed_ms": 9
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/users.csv",
+        "preview_rows": 5
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 10
+      },
+      "elapsed_ms": 10
+    },
+    {
+      "name": "profile_table",
+      "arguments": {
+        "csv_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/campaign_exposure.csv"
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 10,
+        "column_count": 5
+      },
+      "elapsed_ms": 100
+    },
+    {
+      "name": "profile_table",
+      "arguments": {
+        "csv_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/orders.csv"
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 9,
+        "column_count": 5
+      },
+      "elapsed_ms": 86
+    },
+    {
+      "name": "profile_table",
+      "arguments": {
+        "csv_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/rewards.csv"
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 9,
+        "column_count": 5
+      },
+      "elapsed_ms": 21
+    },
+    {
+      "name": "profile_table",
+      "arguments": {
+        "csv_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/users.csv"
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 10,
+        "column_count": 6
+      },
+      "elapsed_ms": 81
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/campaign_exposure.csv",
+        "preview_rows": 10
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 10
+      },
+      "elapsed_ms": 4
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/orders.csv",
+        "preview_rows": 9
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 9
+      },
+      "elapsed_ms": 3
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/rewards.csv",
+        "preview_rows": 9
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 9
+      },
+      "elapsed_ms": 3
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/users.csv",
+        "preview_rows": 10
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 10
+      },
+      "elapsed_ms": 4
+    },
+    {
+      "name": "write_file",
+      "arguments": {
+        "content": "#!/usr/bin/env python3\n\"\"\"\nsolve.py — growth_campaign_audit_001\n营销活动样本构造数据审计: 多表join、treatment/control分布、组间平衡、补贴极端值、订单时间窗口错配\n\"\"\"\n\nimport json\nimport math\nimport os\nimport warnings\nfrom pathlib import Path\n\nimport numpy as np\nimport pandas as pd\n\nwarnings.filterwarnings(\"ignore\")\n\nHERE = Path(__file__).resolve().parent\n\n\ndef load_task() -> dict:\n    with open(HERE / \"task.json\") as f:\n        return json.load(f)\n\n\ndef load_table(name: str) -> pd.DataFrame:\n    path = HERE / f\"{name}.csv\"\n    df = pd.read_csv(path, keep_default_na=False)\n    # treat empty string as NaN for analysis (but keep track)\n    df = df.replace(r\"^\\s*$\", pd.NA, regex=True)\n    return df\n\n\ndef audit_duplicate_keys(df: pd.DataFrame, key_cols: list[str], label: str) -> dict:\n    \"\"\"Check for duplicate rows based on key columns.\"\"\"\n    dup_mask = df.duplicated(subset=key_cols, keep=False)\n    dup_count = dup_mask.sum()\n    dup_examples = []\n    if dup_count > 0:\n        dups = df[dup_mask].sort_values(by=key_cols)\n        dup_examples = dups.head(10).to_dict(orient=\"records\")\n    return {\n        \"table\": label,\n        \"key_columns\": key_cols,\n        \"duplicate_count\": int(dup_count),\n        \"duplicate_examples\": dup_examples,\n    }\n\n\ndef audit_join_quality(\n    left: pd.DataFrame, right: pd.DataFrame, keys: list[str], left_label: str, right_label: str\n) -> dict:\n    \"\"\"Compare key sets between two tables to find orphaned/non-matching rows.\"\"\"\n    # Only consider rows where all keys are non-null\n    left_valid = left.dropna(subset=keys)\n    right_valid = right.dropna(subset=keys)\n\n    left_keys = left_valid[keys].astype(str).apply(lambda r: \"|\".join(r), axis=1)\n    right_keys = right_valid[keys].astype(str).apply(lambda r: \"|\".join(r), axis=1)\n\n    left_set = set(left_keys)\n    right_set = set(right_keys)\n\n    left_not_in_right = sorted(left_set - right_set)\n    right_not_in_left = sorted(right_set - left_set)\n\n    # Get example rows for non-matching keys\n    left_miss_examples = []\n    if left_not_in_right:\n        mask = left_keys.isin(left_not_in_right)\n        left_miss_examples = left_valid[mask].head(5).to_dict(orient=\"records\")\n\n    right_miss_examples = []\n    if right_not_in_left:\n        mask = right_keys.isin(right_not_in_left)\n        right_miss_examples = right_valid[mask].head(5).to_dict(orient=\"records\")\n\n    return {\n        \"left_table\": left_label,\n        \"right_table\": right_label,\n        \"join_keys\": keys,\n        \"left_row_count_valid\": int(len(left_valid)),\n        \"right_row_count_valid\": int(len(right_valid)),\n        \"left_keys_not_in_right_count\": len(left_not_in_right),\n        \"right_keys_not_in_left_count\": len(right_not_in_left),\n        \"left_keys_not_in_right\": left_not_in_right,\n        \"right_keys_not_in_left\": right_not_in_left,\n        \"left_miss_examples\": left_miss_examples,\n        \"right_miss_examples\": right_miss_examples,\n    }\n\n\ndef audit_treatment_control_distribution(df: pd.DataFrame, group_col: str, treatment: str, control: str, min_ratio: float) -> dict:\n    \"\"\"Check treatment/control sample counts and ratio.\"\"\"\n    counts = df[group_col].value_counts()\n    t_count = int(counts.get(treatment, 0))\n    c_count = int(counts.get(control, 0))\n\n    ratio = t_count / c_count if c_count > 0 else float(\"inf\")\n    ratio_pass = ratio >= min_ratio if c_count > 0 else False\n\n    return {\n        \"group_column\": group_col,\n        \"treatment_value\": treatment,\n        \"control_value\": control,\n        \"treatment_count\": t_count,\n        \"control_count\": c_count,\n        \"treatment_control_ratio\": round(ratio, 4),\n        \"min_ratio_threshold\": min_ratio,\n        \"ratio_pass\": ratio_pass,\n        \"min_group_size\": min(t_count, c_count),\n    }\n\n\ndef _smd_for_numeric(t: pd.Series, c: pd.Series) -> float:\n    \"\"\"Compute standardized mean difference for a numeric covariate.\"\"\"\n    t_mean = t.mean()\n    c_mean = c.mean()\n    t_var = t.var(ddof=1)\n    c_var = c.var(ddof=1)\n    pooled_std = math.sqrt((t_var + c_var) / 2.0)\n    if pooled_std == 0:\n        return 0.0\n    return abs(t_mean - c_mean) / pooled_std\n\n\ndef _smd_for_categorical(t: pd.Series, c: pd.Series, levels: list) -> float:\n    \"\"\"Compute categorical balance gap as max absolute proportion difference.\"\"\"\n    t_counts = t.value_counts()\n    c_counts = c.value_counts()\n    t_n = len(t)\n    c_n = len(c)\n\n    max_gap = 0.0\n    for lvl in levels:\n        p_t = t_counts.get(lvl, 0) / t_n if t_n > 0 else 0\n        p_c = c_counts.get(lvl, 0) / c_n if c_n > 0 else 0\n        gap = abs(p_t - p_c)\n        max_gap = max(max_gap, gap)\n    return max_gap\n\n\ndef audit_group_balance(\n    df: pd.DataFrame, group_col: str, treatment: str, control: str,\n    covariates: list[str], smd_threshold: float\n) -> dict:\n    \"\"\"Check covariate balance between treatment and control groups.\"\"\"\n    t_df = df[df[group_col] == treatment].copy()\n    c_df = df[df[group_col] == control].copy()\n\n    balance_results = []\n    all_pass = True\n    for cov in covariates:\n        if cov not in df.columns:\n            continue\n\n        t_series = t_df[cov]\n        c_series = c_df[cov]\n\n        # Infer type\n        if pd.api.types.is_numeric_dtype(t_series) or pd.api.types.is_numeric_dtype(c_series):\n            t_num = pd.to_numeric(t_series, errors=\"coerce\")\n            c_num = pd.to_numeric(c_series, errors=\"coerce\")\n            smd = _smd_for_numeric(t_num.dropna(), c_num.dropna())\n            cov_type = \"numeric\"\n        else:\n            # Categorical\n            all_levels = sorted(set(t_series.dropna().unique()).union(set(c_series.dropna().unique())))\n            smd = _smd_for_categorical(t_series.dropna(), c_series.dropna(), all_levels)\n            cov_type = \"categorical\"\n\n        passed = smd < smd_threshold\n        if not passed:\n            all_pass = False\n\n        balance_results.append({\n            \"covariate\": cov,\n            \"type\": cov_type,\n            \"smd\": round(smd, 6),\n            \"threshold\": smd_threshold,\n            \"passed\": passed,\n            \"treatment_mean\": round(t_num.dropna().mean(), 4) if cov_type == \"numeric\" else None,\n            \"control_mean\": round(c_num.dropna().mean(), 4) if cov_type == \"numeric\" else None,\n        })\n\n    return {\n        \"group_column\": group_col,\n        \"treatment_value\": treatment,\n        \"control_value\": control,\n        \"covariates_checked\": covariates,\n        \"smd_threshold\": smd_threshold,\n        \"all_pass\": all_pass,\n        \"details\": balance_results,\n    }\n\n\ndef audit_subsidy_outliers(df: pd.DataFrame, subsidy_col: str) -> dict:\n    \"\"\"Detect extreme subsidy values using IQR rule.\"\"\"\n    amounts = pd.to_numeric(df[subsidy_col], errors=\"coerce\").dropna()\n    if len(amounts) == 0:\n        return {\"subsidy_column\": subsidy_col, \"error\": \"no valid subsidy data\"}\n\n    q1 = amounts.quantile(0.25)\n    q3 = amounts.quantile(0.75)\n    iqr = q3 - q1\n    lower = q1 - 1.5 * iqr\n    upper = q3 + 1.5 * iqr\n\n    outliers = amounts[(amounts < lower) | (amounts > upper)]\n    outlier_rows = df.loc[outliers.index].copy()\n    outlier_rows[subsidy_col] = pd.to_numeric(outlier_rows[subsidy_col], errors=\"coerce\")\n\n    return {\n        \"subsidy_column\": subsidy_col,\n        \"total_valid\": int(len(amounts)),\n        \"q1\": round(q1, 4),\n        \"q3\": round(q3, 4),\n        \"iqr\": round(iqr, 4),\n        \"lower_fence\": round(lower, 4),\n        \"upper_fence\": round(upper, 4),\n        \"outlier_count\": int(len(outliers)),\n        \"outlier_examples\": outlier_rows.head(10).to_dict(orient=\"records\"),\n    }\n\n\ndef audit_time_window_misalignment(\n    exposure: pd.DataFrame, orders: pd.DataFrame,\n    order_time_col: str, campaign_window_col: str,\n    user_key: str = \"user_id\",\n) -> dict:\n    \"\"\"Check if orders fall within campaign exposure windows.\"\"\"\n    results = []\n    misaligned_count = 0\n\n    for _, exp_row in exposure.iterrows():\n        uid = exp_row[user_key]\n        window_str = exp_row[campaign_window_col]\n        if pd.isna(window_str):\n            continue\n        parts = str(window_str).split(\":\")\n        if len(parts) != 2:\n            continue\n        try:\n            window_start = pd.Timestamp(parts[0])\n            window_end = pd.Timestamp(parts[1])\n        except Exception:\n            continue\n\n        user_orders = orders[orders[user_key] == uid]\n        for _, o_row in user_orders.iterrows():\n            ot = o_row[order_time_col]\n            if pd.isna(ot):\n                continue\n            try:\n                ot_ts = pd.Timestamp(ot)\n            except Exception:\n                continue\n            in_window = window_start <= ot_ts <= window_end\n            if not in_window:\n                misaligned_count += 1\n                results.append({\n                    \"user_id\": uid,\n                    \"order_id\": str(o_row.get(\"order_id\", \"\")),\n                    \"order_time\": str(ot),\n                    \"campaign_window\": window_str,\n                    \"window_start\": str(window_start.date()),\n                    \"window_end\": str(window_end.date()),\n                    \"in_window\": False,\n                })\n\n    return {\n        \"order_time_column\": order_time_col,\n        \"campaign_window_column\": campaign_window_col,\n        \"total_checked_orders\": int(len(orders)),\n        \"misaligned_count\": misaligned_count,\n        \"misaligned_examples\": results,\n    }\n\n\ndef main():\n    task = load_task()\n    config = task[\"audit_config\"]\n\n    # Load tables\n    exposure = load_table(\"campaign_exposure\")\n    orders = load_table(\"orders\")\n    rewards = load_table(\"rewards\")\n    users = load_table(\"users\")\n\n    duplicates = []\n    # 1. Duplicate key check on campaign_exposure\n    dup_keys = config[\"duplicate_key_columns\"]\n    duplicates.append(audit_duplicate_keys(exposure, dup_keys, \"campaign_exposure\"))\n\n    # 2. Multi-table join quality\n    join_keys = config[\"join_keys\"]  # [\"user_id\", \"campaign_id\", \"campaign_window\"]\n    # exposure -> rewards\n    join_er = audit_join_quality(exposure, rewards, join_keys, \"campaign_exposure\", \"rewards\")\n    # exposure -> users (only user_id)\n    join_eu = audit_join_quality(exposure, users, [\"user_id\"], \"campaign_exposure\", \"users\")\n    # exposure -> orders (only user_id)\n    join_eo = audit_join_quality(exposure, orders, [\"user_id\"], \"campaign_exposure\", \"orders\")\n\n    # 3. Treatment/control distribution\n    group_col = config[\"group_column\"]\n    treatment = config[\"treatment_value\"]\n    control = config[\"control_value\"]\n    min_ratio = config[\"min_group_ratio\"]\n    tc_dist = audit_treatment_control_distribution(exposure, group_col, treatment, control, min_ratio)\n\n    # 4. Group balance (SMD)\n    covariates = config[\"covariates\"]\n    smd_threshold = config[\"smd_threshold\"]\n    # Merge exposure with users to get covariates for each user\n    exp_users = exposure.merge(users, on=\"user_id\", how=\"left\")\n    balance = audit_group_balance(exp_users, group_col, treatment, control, covariates, smd_threshold)\n\n    # 5. Subsidy outliers\n    subsidy_col = config[\"subsidy_column\"]\n    outliers = audit_subsidy_outliers(rewards, subsidy_col)\n\n    # 6. Time window misalignment\n    order_time_col = config[\"order_time_column\"]\n    campaign_window_col = config[\"campaign_window_column\"]\n    time_window = audit_time_window_misalignment(exposure, orders, order_time_col, campaign_window_col)\n\n    # 7. Missing value summary across tables\n    missing_summary = {}\n    for tbl_name, tbl_df in [(\"campaign_exposure\", exposure), (\"orders\", orders), (\"rewards\", rewards), (\"users\", users)]:\n        missing_counts = tbl_df.isna().sum()\n        missing_summary[tbl_name] = {\n            col: int(missing_counts[col])\n            for col in tbl_df.columns\n            if missing_counts[col] > 0\n        }\n\n    # Assemble answer\n    answer = {\n        \"task_id\": task[\"id\"],\n        \"audit_results\": {\n            \"duplicate_key_checks\": duplicates,\n            \"join_quality\": {\n                \"exposure_vs_rewards\": join_er,\n                \"exposure_vs_users\": join_eu,\n                \"exposure_vs_orders\": join_eo,\n            },\n            \"treatment_control_distribution\": tc_dist,\n            \"group_balance\": balance,\n            \"subsidy_outliers\": outliers,\n            \"time_window_misalignment\": time_window,\n            \"missing_value_summary\": missing_summary,\n        },\n    }\n\n    out_path = HERE / \"answer.json\"\n    with open(out_path, \"w\", encoding=\"utf-8\") as f:\n        json.dump(answer, f, ensure_ascii=False, indent=2)\n\n    print(f\"✅ answer.json written to {out_path}\")\n    print(f\"   Duplicate keys: {[d['duplicate_count'] for d in duplicates]}\")\n    print(f\"   Join quality (miss keys): exp->rewards L={join_er['left_keys_not_in_right_count']} R={join_er['right_keys_not_in_left_count']}\")\n    print(f\"   T/C ratio: {tc_dist['treatment_control_ratio']} (pass={tc_dist['ratio_pass']})\")\n    print(f\"   Balance all pass: {balance['all_pass']}\")\n    print(f\"   Subsidy outliers: {outliers.get('outlier_count', 'N/A')}\")\n    print(f\"   Time window misalignments: {time_window['misaligned_count']}\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+        "file_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/solve.py"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Successfully wrote to /root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/solve.py (370 lines)\n\n   1 | #!/usr/bin/env python3\n   2 | \"\"\"\n   3 | solve.py — growth_campaign_audit_001\n   4 | 营销活动样本构造数据审计: 多表join、treatment/control分布、组间平衡、补贴极端值、订单时间窗口错配\n   5 | \"\"\"\n   6 | \n   7 | import json\n   8 | import math\n   9 | import os\n  10 | import warnings\n  11 "
+      },
+      "elapsed_ms": 1
+    },
+    {
+      "name": "run_shell",
+      "arguments": {
+        "command": "cd /root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent && python solve.py",
+        "timeout": 30000
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Command failed (exit code 1)\nStderr: Traceback (most recent call last):\n  File \"/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/solve.py\", line 369, in <module>\n    main()\n  File \"/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campa"
+      },
+      "elapsed_ms": 757
+    },
+    {
+      "name": "edit_file",
+      "arguments": {
+        "file_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/solve.py",
+        "new_string": "import json\nimport math\nimport os\nimport warnings\nfrom pathlib import Path\n\nimport numpy as np\nimport pandas as pd\n\nwarnings.filterwarnings(\"ignore\")\n\n\nclass NumpyEncoder(json.JSONEncoder):\n    def default(self, obj):\n        if isinstance(obj, (np.bool_,)):\n            return bool(obj)\n        if isinstance(obj, (np.integer,)):\n            return int(obj)\n        if isinstance(obj, (np.floating,)):\n            return float(obj)\n        if isinstance(obj, np.ndarray):\n            return obj.tolist()\n        return super().default(obj)",
+        "old_string": "import json\nimport math\nimport os\nimport warnings\nfrom pathlib import Path\n\nimport numpy as np\nimport pandas as pd\n\nwarnings.filterwarnings(\"ignore\")"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Successfully edited /root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/solve.py\n\n@@ -7,10 +7,23 @@\n- import json\n- import math\n- import os\n- import warnings\n- from pathlib import Path\n- \n- import numpy as np\n- import pandas as pd\n- \n- warnings.filterwarnings(\"ignore\")\n+ import json\n+ import math\n+ import os\n+ import warnings\n+ from pathlib import P"
+      },
+      "elapsed_ms": 1
+    },
+    {
+      "name": "edit_file",
+      "arguments": {
+        "file_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/solve.py",
+        "new_string": "    with open(out_path, \"w\", encoding=\"utf-8\") as f:\n        json.dump(answer, f, ensure_ascii=False, indent=2, cls=NumpyEncoder)",
+        "old_string": "    with open(out_path, \"w\", encoding=\"utf-8\") as f:\n        json.dump(answer, f, ensure_ascii=False, indent=2)"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Successfully edited /root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/solve.py\n\n@@ -369,2 +369,2 @@\n-     with open(out_path, \"w\", encoding=\"utf-8\") as f:\n-         json.dump(answer, f, ensure_ascii=False, indent=2)\n+     with open(out_path, \"w\", encoding=\"utf-8\") as f:\n+         json.dump(answer, f, ensure_ascii=False, indent=2, cls=NumpyEncoder)"
+      },
+      "elapsed_ms": 1
+    },
+    {
+      "name": "run_shell",
+      "arguments": {
+        "command": "cd /root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent && python solve.py",
+        "timeout": 30000
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "✅ answer.json written to /root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/answer.json\n   Duplicate keys: [0]\n   Join quality (miss keys): exp->rewards L=2 R=0\n   T/C ratio: 4.0 (pass=True)\n   Balance all pass: False\n   Subsidy outliers: 1\n   Time window misalignments: 4\n"
+      },
+      "elapsed_ms": 748
+    },
+    {
+      "name": "read_file",
+      "arguments": {
+        "file_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/answer.json"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "   1 | {\n   2 |   \"task_id\": \"growth_campaign_audit_001\",\n   3 |   \"audit_results\": {\n   4 |     \"duplicate_key_checks\": [\n   5 |       {\n   6 |         \"table\": \"campaign_exposure\",\n   7 |         \"key_columns\": [\n   8 |           \"user_id\",\n   9 |           \"campaign_window\"\n  10 |         ],\n  11 |         \"duplicate_count\": 0,\n  12 |         \"duplicate_examples\": []\n  13 |       }\n  14 |     ],\n  15 |     \"join_quality\": {\n  16 |       \"exposure_vs_rewards\": {\n  17 |         \"left_table\": \"c"
+      },
+      "elapsed_ms": 1
+    }
+  ],
+  "final_answer": "Let me profile all tables to understand the full data before writing solve.py.\n\n\nNow I have full understanding of the data. Let me write the solve.py.\n\n\n现在运行验证。\n\n\n\n\n\n\n\n\n\n\n\n验证生成结果。\n\n\n`solve.py` 已写入并成功运行，`answer.json` 已生成。审计结果摘要：\n\n| 审计项 | 结果 |\n|---|---|\n| **重复键检查** | `campaign_exposure` 无重复行 ✅ |\n| **多表 Join 质量** | exposure→rewards: control 组 u9/u10 在 rewards 中缺失（2条）；exposure→orders: u6/u7 无订单记录；exposure→users 完全匹配 |\n| **Treatment/Control 分布** | treatment=8, control=2, ratio=4.0 (通过阈值 0.5) ✅ |\n| **组间平衡 (SMD)** | 4 个协变量均未通过 SMD<0.1 检验 ❌，treatment 组用户显著更高价值（orders/gmv/active_days），user_level 分布也严重偏斜 |\n| **补贴极端值** | u8 补贴 500，远超 IQR 上界 44.25，标记为极端值 |\n| **时间窗口错配** | 4 个订单落在活动窗口外（u2/o3, u3/o4, u5/o6, u10/o9） |\n| **缺失值** | activity_type (exposure 1条, rewards 1条), subsidy_amount (rewards 1条), city_id (users 1条) |",
+  "expected_answer": null,
+  "validation": {
+    "passed": true,
+    "actual": {
+      "task_id": "growth_campaign_audit_001",
+      "audit_results": {
+        "duplicate_key_checks": [
+          {
+            "table": "campaign_exposure",
+            "key_columns": [
+              "user_id",
+              "campaign_window"
+            ],
+            "duplicate_count": 0,
+            "duplicate_examples": []
+          }
+        ],
+        "join_quality": {
+          "exposure_vs_rewards": {
+            "left_table": "campaign_exposure",
+            "right_table": "rewards",
+            "join_keys": [
+              "user_id",
+              "campaign_id",
+              "campaign_window"
+            ],
+            "left_row_count_valid": 10,
+            "right_row_count_valid": 9,
+            "left_keys_not_in_right_count": 2,
+            "right_keys_not_in_left_count": 0,
+            "left_keys_not_in_right": [
+              "u10|camp_202605|2026-05-01:2026-05-07",
+              "u9|camp_202605|2026-05-01:2026-05-07"
+            ],
+            "right_keys_not_in_left": [],
+            "left_miss_examples": [
+              {
+                "user_id": "u9",
+                "campaign_id": "camp_202605",
+                "campaign_window": "2026-05-01:2026-05-07",
+                "treatment_group": "control",
+                "activity_type": "none"
+              },
+              {
+                "user_id": "u10",
+                "campaign_id": "camp_202605",
+                "campaign_window": "2026-05-01:2026-05-07",
+                "treatment_group": "control",
+                "activity_type": "none"
+              }
+            ],
+            "right_miss_examples": []
+          },
+          "exposure_vs_users": {
+            "left_table": "campaign_exposure",
+            "right_table": "users",
+            "join_keys": [
+              "user_id"
+            ],
+            "left_row_count_valid": 10,
+            "right_row_count_valid": 10,
+            "left_keys_not_in_right_count": 0,
+            "right_keys_not_in_left_count": 0,
+            "left_keys_not_in_right": [],
+            "right_keys_not_in_left": [],
+            "left_miss_examples": [],
+            "right_miss_examples": []
+          },
+          "exposure_vs_orders": {
+            "left_table": "campaign_exposure",
+            "right_table": "orders",
+            "join_keys": [
+              "user_id"
+            ],
+            "left_row_count_valid": 10,
+            "right_row_count_valid": 9,
+            "left_keys_not_in_right_count": 2,
+            "right_keys_not_in_left_count": 0,
+            "left_keys_not_in_right": [
+              "u6",
+              "u7"
+            ],
+            "right_keys_not_in_left": [],
+            "left_miss_examples": [
+              {
+                "user_id": "u6",
+                "campaign_id": "camp_202605",
+                "campaign_window": "2026-05-01:2026-05-07",
+                "treatment_group": "treatment",
+                "activity_type": "coupon"
+              },
+              {
+                "user_id": "u7",
+                "campaign_id": "camp_202605",
+                "campaign_window": "2026-05-01:2026-05-07",
+                "treatment_group": "treatment",
+                "activity_type": null
+              }
+            ],
+            "right_miss_examples": []
+          }
+        },
+        "treatment_control_distribution": {
+          "group_column": "treatment_group",
+          "treatment_value": "treatment",
+          "control_value": "control",
+          "treatment_count": 8,
+          "control_count": 2,
+          "treatment_control_ratio": 4.0,
+          "min_ratio_threshold": 0.5,
+          "ratio_pass": true,
+          "min_group_size": 2
+        },
+        "group_balance": {
+          "group_column": "treatment_group",
+          "treatment_value": "treatment",
+          "control_value": "control",
+          "covariates_checked": [
+            "historical_orders_30d",
+            "historical_gmv_30d",
+            "active_days_30d",
+            "user_level"
+          ],
+          "smd_threshold": 0.1,
+          "all_pass": false,
+          "details": [
+            {
+              "covariate": "historical_orders_30d",
+              "type": "numeric",
+              "smd": 5.507366,
+              "threshold": 0.1,
+              "passed": false,
+              "treatment_mean": 8.875,
+              "control_mean": 0.5
+            },
+            {
+              "covariate": "historical_gmv_30d",
+              "type": "numeric",
+              "smd": 2.452307,
+              "threshold": 0.1,
+              "passed": false,
+              "treatment_mean": 336.25,
+              "control_mean": 10.0
+            },
+            {
+              "covariate": "active_days_30d",
+              "type": "numeric",
+              "smd": 4.329559,
+              "threshold": 0.1,
+              "passed": false,
+              "treatment_mean": 13.875,
+              "control_mean": 1.5
+            },
+            {
+              "covariate": "user_level",
+              "type": "categorical",
+              "smd": 1.0,
+              "threshold": 0.1,
+              "passed": false,
+              "treatment_mean": null,
+              "control_mean": null
+            }
+          ]
+        },
+        "subsidy_outliers": {
+          "subsidy_column": "subsidy_amount",
+          "total_valid": 8,
+          "q1": 14.25,
+          "q3": 26.25,
+          "iqr": 12.0,
+          "lower_fence": -3.75,
+          "upper_fence": 44.25,
+          "outlier_count": 1,
+          "outlier_examples": [
+            {
+              "user_id": "u8",
+              "campaign_id": "camp_202605",
+              "campaign_window": "2026-05-01:2026-05-07",
+              "activity_type": "coupon",
+              "subsidy_amount": 500
+            }
+          ]
+        },
+        "time_window_misalignment": {
+          "order_time_column": "order_time",
+          "campaign_window_column": "campaign_window",
+          "total_checked_orders": 9,
+          "misaligned_count": 4,
+          "misaligned_examples": [
+            {
+              "user_id": "u2",
+              "order_id": "o3",
+              "order_time": "2026-05-10",
+              "campaign_window": "2026-05-01:2026-05-07",
+              "window_start": "2026-05-01",
+              "window_end": "2026-05-07",
+              "in_window": false
+            },
+            {
+              "user_id": "u3",
+              "order_id": "o4",
+              "order_time": "2026-04-30",
+              "campaign_window": "2026-05-01:2026-05-07",
+              "window_start": "2026-05-01",
+              "window_end": "2026-05-07",
+              "in_window": false
+            },
+            {
+              "user_id": "u5",
+              "order_id": "o6",
+              "order_time": "2026-05-08",
+              "campaign_window": "2026-05-01:2026-05-07",
+              "window_start": "2026-05-01",
+              "window_end": "2026-05-07",
+              "in_window": false
+            },
+            {
+              "user_id": "u10",
+              "order_id": "o9",
+              "order_time": "2026-04-29",
+              "campaign_window": "2026-05-01:2026-05-07",
+              "window_start": "2026-05-01",
+              "window_end": "2026-05-07",
+              "in_window": false
+            }
+          ]
+        },
+        "missing_value_summary": {
+          "campaign_exposure": {
+            "activity_type": 1
+          },
+          "orders": {},
+          "rewards": {
+            "activity_type": 1,
+            "subsidy_amount": 1
+          },
+          "users": {
+            "city_id": 1
+          }
+        }
+      }
+    },
+    "expected": "answer.json exists",
+    "diff": null
+  },
+  "failure_type": "pytest_failed",
+  "metrics": {
+    "code_execution_success_rate": 1.0,
+    "test_pass_rate": 0.0,
+    "validation_pass_rate": 1.0,
+    "generated_code_saved": true,
+    "solve_py_runtime_seconds": 1.332,
+    "sandbox_timeout_count": 0,
+    "dependency_failure_count": 0
+  },
+  "elapsed_ms": 126902,
+  "started_at": "2026-06-06T12:29:22Z",
+  "ended_at": "2026-06-06T12:31:29Z",
+  "benchmark_category": "real_api_code_agent",
+  "result_dir": "benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001",
+  "code_generation_source": "llm_generated",
+  "dependency_check": {
+    "ok": true,
+    "checks": [
+      {
+        "package": "pandas",
+        "import_name": "pandas",
+        "required_for": "pandas_backend",
+        "installed": true,
+        "version": "2.3.3"
+      },
+      {
+        "package": "numpy",
+        "import_name": "numpy",
+        "required_for": "array_backend",
+        "installed": true,
+        "version": "1.24.1"
+      },
+      {
+        "package": "openpyxl",
+        "import_name": "openpyxl",
+        "required_for": "xlsx_backend",
+        "installed": true,
+        "version": "3.1.5"
+      },
+      {
+        "package": "pytest",
+        "import_name": "pytest",
+        "required_for": "sandbox_test_runner",
+        "installed": true,
+        "version": "9.0.3"
+      },
+      {
+        "package": "openai",
+        "import_name": "openai",
+        "required_for": "real_api_code_agent",
+        "installed": true,
+        "version": "2.40.0"
+      },
+      {
+        "package": "anthropic",
+        "import_name": "anthropic",
+        "required_for": "real_api_code_agent",
+        "installed": true,
+        "version": "0.105.2"
+      },
+      {
+        "package": "rich",
+        "import_name": "rich",
+        "required_for": "real_api_code_agent_ui",
+        "installed": true,
+        "version": "15.0.0"
+      }
+    ],
+    "missing": [],
+    "failure_type": null,
+    "auto_install": true,
+    "install_logs": []
+  },
+  "workspace_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent",
+  "generated_code_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/solve.py",
+  "answer_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/answer.json",
+  "token_usage": {
+    "input": 164835,
+    "output": 7264
+  },
+  "sandbox_results": {
+    "run_python": {
+      "command": [
+        "/root/miniconda3/bin/python",
+        "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/solve.py"
+      ],
+      "cwd": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent",
+      "exit_code": 0,
+      "stdout": "✅ answer.json written to /root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/answer.json\n   Duplicate keys: [0]\n   Join quality (miss keys): exp->rewards L=2 R=0\n   T/C ratio: 4.0 (pass=True)\n   Balance all pass: False\n   Subsidy outliers: 1\n   Time window misalignments: 4\n",
+      "stderr": "",
+      "timeout": false,
+      "duration_seconds": 1.332,
+      "output_truncated": false,
+      "sandbox_policy": {
+        "isolation": "process-level light sandbox",
+        "containerized": false,
+        "shell": false,
+        "env_policy": "allowlist",
+        "sensitive_paths_blocked": [
+          ".env",
+          "configs/api/local",
+          ".ssh",
+          ".aws",
+          ".config"
+        ],
+        "note": "This is not Docker, Firecracker, or gVisor strong isolation."
+      },
+      "failure_type": null
+    },
+    "run_tests": {
+      "command": [
+        "/root/miniconda3/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_solution.py",
+        "-q"
+      ],
+      "cwd": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent",
+      "exit_code": 1,
+      "stdout": "F                                                                        [100%]\n=================================== FAILURES ===================================\n_________________ test_answer_schema_and_growth_audit_findings _________________\n\n    def test_answer_schema_and_growth_audit_findings() -> None:\n        answer = _load_answer()\n        expected = _load_expected()\n    \n        required_keys = {\n            \"row_counts\",\n            \"join_cardinality\",\n            \"group_distribution\",\n            \"smd_summary\",\n            \"outlier_summary\",\n            \"time_window_alignment\",\n            \"warnings\",\n            \"how_to_do_differently\",\n        }\n>       assert required_keys.issubset(answer), sorted(required_keys - set(answer))\nE       AssertionError: ['group_distribution', 'how_to_do_differently', 'join_cardinality', 'outlier_summary', 'row_counts', 'smd_summary', ...]\nE       assert False\nE        +  where False = <built-in method issubset of set object at 0x7f07a2e7fd80>({'audit_results': {'duplicate_key_checks': [{'duplicate_count': 0, 'duplicate_examples': [], 'key_columns': ['user_id'...ds': {'activity_type': 1, 'subsidy_amount': 1}, 'users': {'city_id': 1}}, ...}, 'task_id': 'growth_campaign_audit_001'})\nE        +    where <built-in method issubset of set object at 0x7f07a2e7fd80> = {'group_distribution', 'how_to_do_differently', 'join_cardinality', 'outlier_summary', 'row_counts', 'smd_summary', ...}.issubset\n\ntests/test_solution.py:31: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_solution.py::test_answer_schema_and_growth_audit_findings\n1 failed in 0.09s\n",
+      "stderr": "",
+      "timeout": false,
+      "duration_seconds": 0.614,
+      "output_truncated": false,
+      "sandbox_policy": {
+        "isolation": "process-level light sandbox",
+        "containerized": false,
+        "shell": false,
+        "env_policy": "allowlist",
+        "sensitive_paths_blocked": [
+          ".env",
+          "configs/api/local",
+          ".ssh",
+          ".aws",
+          ".config"
+        ],
+        "note": "This is not Docker, Firecracker, or gVisor strong isolation."
+      },
+      "failure_type": "sandbox_tests_failed"
+    }
+  },
+  "trace_path": "benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/traces/growth_campaign_audit_001.real_api_code_agent.json"
+}

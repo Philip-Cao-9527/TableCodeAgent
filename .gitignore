@@ -16,7 +16,3 @@ htmlcov/
 configs/api/local/
 *.local.env
 secrets/
-
-# Benchmark run outputs
-benchmarks/runs/
-benchmarks/results/

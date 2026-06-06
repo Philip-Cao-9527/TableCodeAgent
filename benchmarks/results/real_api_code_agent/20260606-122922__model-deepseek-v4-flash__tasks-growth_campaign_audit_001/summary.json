@@ -1,0 +1,533 @@
+{
+  "benchmark_category": "real_api_code_agent",
+  "mode": "real_api_code_agent",
+  "result_dir": "benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001",
+  "result_count": 1,
+  "passed_count": 0,
+  "skipped_count": 0,
+  "failed_count": 1,
+  "results": [
+    {
+      "task_id": "growth_campaign_audit_001",
+      "mode": "real_api_code_agent",
+      "provider": "provider_chatanywhere",
+      "model_name": "deepseek-v4-flash",
+      "api_called": true,
+      "skipped": false,
+      "llm_tool_call_observed": true,
+      "tool_call_count": 19,
+      "final_answer": "Let me profile all tables to understand the full data before writing solve.py.\n\n\nNow I have full understanding of the data. Let me write the solve.py.\n\n\n现在运行验证。\n\n\n\n\n\n\n\n\n\n\n\n验证生成结果。\n\n\n`solve.py` 已写入并成功运行，`answer.json` 已生成。审计结果摘要：\n\n| 审计项 | 结果 |\n|---|---|\n| **重复键检查** | `campaign_exposure` 无重复行 ✅ |\n| **多表 Join 质量** | exposure→rewards: control 组 u9/u10 在 rewards 中缺失（2条）；exposure→orders: u6/u7 无订单记录；exposure→users 完全匹配 |\n| **Treatment/Control 分布** | treatment=8, control=2, ratio=4.0 (通过阈值 0.5) ✅ |\n| **组间平衡 (SMD)** | 4 个协变量均未通过 SMD<0.1 检验 ❌，treatment 组用户显著更高价值（orders/gmv/active_days），user_level 分布也严重偏斜 |\n| **补贴极端值** | u8 补贴 500，远超 IQR 上界 44.25，标记为极端值 |\n| **时间窗口错配** | 4 个订单落在活动窗口外（u2/o3, u3/o4, u5/o6, u10/o9） |\n| **缺失值** | activity_type (exposure 1条, rewards 1条), subsidy_amount (rewards 1条), city_id (users 1条) |",
+      "expected_answer": null,
+      "validation": {
+        "passed": true,
+        "actual": {
+          "task_id": "growth_campaign_audit_001",
+          "audit_results": {
+            "duplicate_key_checks": [
+              {
+                "table": "campaign_exposure",
+                "key_columns": [
+                  "user_id",
+                  "campaign_window"
+                ],
+                "duplicate_count": 0,
+                "duplicate_examples": []
+              }
+            ],
+            "join_quality": {
+              "exposure_vs_rewards": {
+                "left_table": "campaign_exposure",
+                "right_table": "rewards",
+                "join_keys": [
+                  "user_id",
+                  "campaign_id",
+                  "campaign_window"
+                ],
+                "left_row_count_valid": 10,
+                "right_row_count_valid": 9,
+                "left_keys_not_in_right_count": 2,
+                "right_keys_not_in_left_count": 0,
+                "left_keys_not_in_right": [
+                  "u10|camp_202605|2026-05-01:2026-05-07",
+                  "u9|camp_202605|2026-05-01:2026-05-07"
+                ],
+                "right_keys_not_in_left": [],
+                "left_miss_examples": [
+                  {
+                    "user_id": "u9",
+                    "campaign_id": "camp_202605",
+                    "campaign_window": "2026-05-01:2026-05-07",
+                    "treatment_group": "control",
+                    "activity_type": "none"
+                  },
+                  {
+                    "user_id": "u10",
+                    "campaign_id": "camp_202605",
+                    "campaign_window": "2026-05-01:2026-05-07",
+                    "treatment_group": "control",
+                    "activity_type": "none"
+                  }
+                ],
+                "right_miss_examples": []
+              },
+              "exposure_vs_users": {
+                "left_table": "campaign_exposure",
+                "right_table": "users",
+                "join_keys": [
+                  "user_id"
+                ],
+                "left_row_count_valid": 10,
+                "right_row_count_valid": 10,
+                "left_keys_not_in_right_count": 0,
+                "right_keys_not_in_left_count": 0,
+                "left_keys_not_in_right": [],
+                "right_keys_not_in_left": [],
+                "left_miss_examples": [],
+                "right_miss_examples": []
+              },
+              "exposure_vs_orders": {
+                "left_table": "campaign_exposure",
+                "right_table": "orders",
+                "join_keys": [
+                  "user_id"
+                ],
+                "left_row_count_valid": 10,
+                "right_row_count_valid": 9,
+                "left_keys_not_in_right_count": 2,
+                "right_keys_not_in_left_count": 0,
+                "left_keys_not_in_right": [
+                  "u6",
+                  "u7"
+                ],
+                "right_keys_not_in_left": [],
+                "left_miss_examples": [
+                  {
+                    "user_id": "u6",
+                    "campaign_id": "camp_202605",
+                    "campaign_window": "2026-05-01:2026-05-07",
+                    "treatment_group": "treatment",
+                    "activity_type": "coupon"
+                  },
+                  {
+                    "user_id": "u7",
+                    "campaign_id": "camp_202605",
+                    "campaign_window": "2026-05-01:2026-05-07",
+                    "treatment_group": "treatment",
+                    "activity_type": null
+                  }
+                ],
+                "right_miss_examples": []
+              }
+            },
+            "treatment_control_distribution": {
+              "group_column": "treatment_group",
+              "treatment_value": "treatment",
+              "control_value": "control",
+              "treatment_count": 8,
+              "control_count": 2,
+              "treatment_control_ratio": 4.0,
+              "min_ratio_threshold": 0.5,
+              "ratio_pass": true,
+              "min_group_size": 2
+            },
+            "group_balance": {
+              "group_column": "treatment_group",
+              "treatment_value": "treatment",
+              "control_value": "control",
+              "covariates_checked": [
+                "historical_orders_30d",
+                "historical_gmv_30d",
+                "active_days_30d",
+                "user_level"
+              ],
+              "smd_threshold": 0.1,
+              "all_pass": false,
+              "details": [
+                {
+                  "covariate": "historical_orders_30d",
+                  "type": "numeric",
+                  "smd": 5.507366,
+                  "threshold": 0.1,
+                  "passed": false,
+                  "treatment_mean": 8.875,
+                  "control_mean": 0.5
+                },
+                {
+                  "covariate": "historical_gmv_30d",
+                  "type": "numeric",
+                  "smd": 2.452307,
+                  "threshold": 0.1,
+                  "passed": false,
+                  "treatment_mean": 336.25,
+                  "control_mean": 10.0
+                },
+                {
+                  "covariate": "active_days_30d",
+                  "type": "numeric",
+                  "smd": 4.329559,
+                  "threshold": 0.1,
+                  "passed": false,
+                  "treatment_mean": 13.875,
+                  "control_mean": 1.5
+                },
+                {
+                  "covariate": "user_level",
+                  "type": "categorical",
+                  "smd": 1.0,
+                  "threshold": 0.1,
+                  "passed": false,
+                  "treatment_mean": null,
+                  "control_mean": null
+                }
+              ]
+            },
+            "subsidy_outliers": {
+              "subsidy_column": "subsidy_amount",
+              "total_valid": 8,
+              "q1": 14.25,
+              "q3": 26.25,
+              "iqr": 12.0,
+              "lower_fence": -3.75,
+              "upper_fence": 44.25,
+              "outlier_count": 1,
+              "outlier_examples": [
+                {
+                  "user_id": "u8",
+                  "campaign_id": "camp_202605",
+                  "campaign_window": "2026-05-01:2026-05-07",
+                  "activity_type": "coupon",
+                  "subsidy_amount": 500
+                }
+              ]
+            },
+            "time_window_misalignment": {
+              "order_time_column": "order_time",
+              "campaign_window_column": "campaign_window",
+              "total_checked_orders": 9,
+              "misaligned_count": 4,
+              "misaligned_examples": [
+                {
+                  "user_id": "u2",
+                  "order_id": "o3",
+                  "order_time": "2026-05-10",
+                  "campaign_window": "2026-05-01:2026-05-07",
+                  "window_start": "2026-05-01",
+                  "window_end": "2026-05-07",
+                  "in_window": false
+                },
+                {
+                  "user_id": "u3",
+                  "order_id": "o4",
+                  "order_time": "2026-04-30",
+                  "campaign_window": "2026-05-01:2026-05-07",
+                  "window_start": "2026-05-01",
+                  "window_end": "2026-05-07",
+                  "in_window": false
+                },
+                {
+                  "user_id": "u5",
+                  "order_id": "o6",
+                  "order_time": "2026-05-08",
+                  "campaign_window": "2026-05-01:2026-05-07",
+                  "window_start": "2026-05-01",
+                  "window_end": "2026-05-07",
+                  "in_window": false
+                },
+                {
+                  "user_id": "u10",
+                  "order_id": "o9",
+                  "order_time": "2026-04-29",
+                  "campaign_window": "2026-05-01:2026-05-07",
+                  "window_start": "2026-05-01",
+                  "window_end": "2026-05-07",
+                  "in_window": false
+                }
+              ]
+            },
+            "missing_value_summary": {
+              "campaign_exposure": {
+                "activity_type": 1
+              },
+              "orders": {},
+              "rewards": {
+                "activity_type": 1,
+                "subsidy_amount": 1
+              },
+              "users": {
+                "city_id": 1
+              }
+            }
+          }
+        },
+        "expected": "answer.json exists",
+        "diff": null
+      },
+      "passed": false,
+      "actual": {
+        "task_id": "growth_campaign_audit_001",
+        "audit_results": {
+          "duplicate_key_checks": [
+            {
+              "table": "campaign_exposure",
+              "key_columns": [
+                "user_id",
+                "campaign_window"
+              ],
+              "duplicate_count": 0,
+              "duplicate_examples": []
+            }
+          ],
+          "join_quality": {
+            "exposure_vs_rewards": {
+              "left_table": "campaign_exposure",
+              "right_table": "rewards",
+              "join_keys": [
+                "user_id",
+                "campaign_id",
+                "campaign_window"
+              ],
+              "left_row_count_valid": 10,
+              "right_row_count_valid": 9,
+              "left_keys_not_in_right_count": 2,
+              "right_keys_not_in_left_count": 0,
+              "left_keys_not_in_right": [
+                "u10|camp_202605|2026-05-01:2026-05-07",
+                "u9|camp_202605|2026-05-01:2026-05-07"
+              ],
+              "right_keys_not_in_left": [],
+              "left_miss_examples": [
+                {
+                  "user_id": "u9",
+                  "campaign_id": "camp_202605",
+                  "campaign_window": "2026-05-01:2026-05-07",
+                  "treatment_group": "control",
+                  "activity_type": "none"
+                },
+                {
+                  "user_id": "u10",
+                  "campaign_id": "camp_202605",
+                  "campaign_window": "2026-05-01:2026-05-07",
+                  "treatment_group": "control",
+                  "activity_type": "none"
+                }
+              ],
+              "right_miss_examples": []
+            },
+            "exposure_vs_users": {
+              "left_table": "campaign_exposure",
+              "right_table": "users",
+              "join_keys": [
+                "user_id"
+              ],
+              "left_row_count_valid": 10,
+              "right_row_count_valid": 10,
+              "left_keys_not_in_right_count": 0,
+              "right_keys_not_in_left_count": 0,
+              "left_keys_not_in_right": [],
+              "right_keys_not_in_left": [],
+              "left_miss_examples": [],
+              "right_miss_examples": []
+            },
+            "exposure_vs_orders": {
+              "left_table": "campaign_exposure",
+              "right_table": "orders",
+              "join_keys": [
+                "user_id"
+              ],
+              "left_row_count_valid": 10,
+              "right_row_count_valid": 9,
+              "left_keys_not_in_right_count": 2,
+              "right_keys_not_in_left_count": 0,
+              "left_keys_not_in_right": [
+                "u6",
+                "u7"
+              ],
+              "right_keys_not_in_left": [],
+              "left_miss_examples": [
+                {
+                  "user_id": "u6",
+                  "campaign_id": "camp_202605",
+                  "campaign_window": "2026-05-01:2026-05-07",
+                  "treatment_group": "treatment",
+                  "activity_type": "coupon"
+                },
+                {
+                  "user_id": "u7",
+                  "campaign_id": "camp_202605",
+                  "campaign_window": "2026-05-01:2026-05-07",
+                  "treatment_group": "treatment",
+                  "activity_type": null
+                }
+              ],
+              "right_miss_examples": []
+            }
+          },
+          "treatment_control_distribution": {
+            "group_column": "treatment_group",
+            "treatment_value": "treatment",
+            "control_value": "control",
+            "treatment_count": 8,
+            "control_count": 2,
+            "treatment_control_ratio": 4.0,
+            "min_ratio_threshold": 0.5,
+            "ratio_pass": true,
+            "min_group_size": 2
+          },
+          "group_balance": {
+            "group_column": "treatment_group",
+            "treatment_value": "treatment",
+            "control_value": "control",
+            "covariates_checked": [
+              "historical_orders_30d",
+              "historical_gmv_30d",
+              "active_days_30d",
+              "user_level"
+            ],
+            "smd_threshold": 0.1,
+            "all_pass": false,
+            "details": [
+              {
+                "covariate": "historical_orders_30d",
+                "type": "numeric",
+                "smd": 5.507366,
+                "threshold": 0.1,
+                "passed": false,
+                "treatment_mean": 8.875,
+                "control_mean": 0.5
+              },
+              {
+                "covariate": "historical_gmv_30d",
+                "type": "numeric",
+                "smd": 2.452307,
+                "threshold": 0.1,
+                "passed": false,
+                "treatment_mean": 336.25,
+                "control_mean": 10.0
+              },
+              {
+                "covariate": "active_days_30d",
+                "type": "numeric",
+                "smd": 4.329559,
+                "threshold": 0.1,
+                "passed": false,
+                "treatment_mean": 13.875,
+                "control_mean": 1.5
+              },
+              {
+                "covariate": "user_level",
+                "type": "categorical",
+                "smd": 1.0,
+                "threshold": 0.1,
+                "passed": false,
+                "treatment_mean": null,
+                "control_mean": null
+              }
+            ]
+          },
+          "subsidy_outliers": {
+            "subsidy_column": "subsidy_amount",
+            "total_valid": 8,
+            "q1": 14.25,
+            "q3": 26.25,
+            "iqr": 12.0,
+            "lower_fence": -3.75,
+            "upper_fence": 44.25,
+            "outlier_count": 1,
+            "outlier_examples": [
+              {
+                "user_id": "u8",
+                "campaign_id": "camp_202605",
+                "campaign_window": "2026-05-01:2026-05-07",
+                "activity_type": "coupon",
+                "subsidy_amount": 500
+              }
+            ]
+          },
+          "time_window_misalignment": {
+            "order_time_column": "order_time",
+            "campaign_window_column": "campaign_window",
+            "total_checked_orders": 9,
+            "misaligned_count": 4,
+            "misaligned_examples": [
+              {
+                "user_id": "u2",
+                "order_id": "o3",
+                "order_time": "2026-05-10",
+                "campaign_window": "2026-05-01:2026-05-07",
+                "window_start": "2026-05-01",
+                "window_end": "2026-05-07",
+                "in_window": false
+              },
+              {
+                "user_id": "u3",
+                "order_id": "o4",
+                "order_time": "2026-04-30",
+                "campaign_window": "2026-05-01:2026-05-07",
+                "window_start": "2026-05-01",
+                "window_end": "2026-05-07",
+                "in_window": false
+              },
+              {
+                "user_id": "u5",
+                "order_id": "o6",
+                "order_time": "2026-05-08",
+                "campaign_window": "2026-05-01:2026-05-07",
+                "window_start": "2026-05-01",
+                "window_end": "2026-05-07",
+                "in_window": false
+              },
+              {
+                "user_id": "u10",
+                "order_id": "o9",
+                "order_time": "2026-04-29",
+                "campaign_window": "2026-05-01:2026-05-07",
+                "window_start": "2026-05-01",
+                "window_end": "2026-05-07",
+                "in_window": false
+              }
+            ]
+          },
+          "missing_value_summary": {
+            "campaign_exposure": {
+              "activity_type": 1
+            },
+            "orders": {},
+            "rewards": {
+              "activity_type": 1,
+              "subsidy_amount": 1
+            },
+            "users": {
+              "city_id": 1
+            }
+          }
+        }
+      },
+      "expected": "answer.json exists",
+      "diff": null,
+      "failure_type": "pytest_failed",
+      "elapsed_ms": 126902,
+      "trace_path": "benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/traces/growth_campaign_audit_001.real_api_code_agent.json",
+      "result_dir": "benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001",
+      "workspace_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent",
+      "generated_code_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/solve.py",
+      "answer_path": "/root/workspace/TableCodeAgent/benchmarks/results/real_api_code_agent/20260606-122922__model-deepseek-v4-flash__tasks-growth_campaign_audit_001/workspaces/growth_campaign_audit_001.real_api_code_agent/answer.json",
+      "code_generation_source": "llm_generated",
+      "metrics": {
+        "code_execution_success_rate": 1.0,
+        "test_pass_rate": 0.0,
+        "validation_pass_rate": 1.0,
+        "generated_code_saved": true,
+        "solve_py_runtime_seconds": 1.332,
+        "sandbox_timeout_count": 0,
+        "dependency_failure_count": 0
+      },
+      "code_execution_success_rate": 1.0,
+      "test_pass_rate": 0.0,
+      "validation_pass_rate": 1.0,
+      "generated_code_saved": true,
+      "solve_py_runtime_seconds": 1.332,
+      "sandbox_timeout_count": 0,
+      "dependency_failure_count": 0
+    }
+  ]
+}

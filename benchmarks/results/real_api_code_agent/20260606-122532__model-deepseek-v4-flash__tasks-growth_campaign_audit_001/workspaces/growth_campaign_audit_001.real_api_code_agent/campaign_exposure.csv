@@ -1,0 +1,11 @@
+user_id,campaign_id,campaign_window,treatment_group,activity_type
+u1,camp_202605,2026-05-01:2026-05-07,treatment,coupon
+u2,camp_202605,2026-05-01:2026-05-07,treatment,coupon
+u3,camp_202605,2026-05-01:2026-05-07,treatment,coupon
+u4,camp_202605,2026-05-01:2026-05-07,treatment,coupon
+u5,camp_202605,2026-05-01:2026-05-07,treatment,coupon
+u6,camp_202605,2026-05-01:2026-05-07,treatment,coupon
+u7,camp_202605,2026-05-01:2026-05-07,treatment,
+u8,camp_202605,2026-05-01:2026-05-07,treatment,coupon
+u9,camp_202605,2026-05-01:2026-05-07,control,none
+u10,camp_202605,2026-05-01:2026-05-07,control,none
