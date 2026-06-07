@@ -1,0 +1,419 @@
+{
+  "trace_version": "v0.0.3",
+  "task_id": "growth_campaign_audit_001",
+  "mode": "real_api_code_agent",
+  "provider": "provider_chatanywhere",
+  "model_name": "deepseek-v4-flash",
+  "api_called": true,
+  "skipped": false,
+  "llm_tool_call_observed": true,
+  "tool_call_count": 18,
+  "tool_calls": [
+    {
+      "name": "read_file",
+      "arguments": {
+        "file_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\task.json"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "   1 | {\n   2 |   \"id\": \"growth_campaign_audit_001\",\n   3 |   \"task_type\": \"growth_campaign_audit\",\n   4 |   \"question\": \"对营销活动样本构造进行数据审计，检查多表 join、treatment/control 分布、组间平衡、补贴极端值和订单时间窗口错配。\",\n   5 |   \"benchmark_modes\": [\n   6 |     \"growth_l0_tools\",\n   7 |     \"growth_workflow\",\n   8 |     \"sandbox_code_agent\"\n   9 |   ],\n  10 |   \"tables\": {\n  11 |     \"users\": \"users.csv\",\n  12 |     \"campaign_exposure\": \"campaign_exposure.csv\",\n  13 |     \"rewards\": \"rewards.csv\",\n  14 |     \"orders\": \"orde"
+      },
+      "elapsed_ms": 1
+    },
+    {
+      "name": "list_files",
+      "arguments": {
+        "pattern": "**/*.csv",
+        "path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "campaign_exposure.csv\norders.csv\nrewards.csv\nusers.csv"
+      },
+      "elapsed_ms": 1
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\users.csv"
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 10
+      },
+      "elapsed_ms": 10
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\campaign_exposure.csv"
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 10
+      },
+      "elapsed_ms": 6
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\rewards.csv"
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 9
+      },
+      "elapsed_ms": 6
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\orders.csv"
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 9
+      },
+      "elapsed_ms": 6
+    },
+    {
+      "name": "profile_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\users.csv"
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 10,
+        "column_count": 6
+      },
+      "elapsed_ms": 30
+    },
+    {
+      "name": "profile_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\campaign_exposure.csv"
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 10,
+        "column_count": 5
+      },
+      "elapsed_ms": 24
+    },
+    {
+      "name": "profile_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\rewards.csv"
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 9,
+        "column_count": 5
+      },
+      "elapsed_ms": 23
+    },
+    {
+      "name": "profile_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\orders.csv"
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 9,
+        "column_count": 5
+      },
+      "elapsed_ms": 25
+    },
+    {
+      "name": "check_unique_key",
+      "arguments": {
+        "key_columns": [
+          "user_id",
+          "campaign_window"
+        ],
+        "table_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\campaign_exposure.csv"
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 10
+      },
+      "elapsed_ms": 14
+    },
+    {
+      "name": "check_treatment_control_distribution",
+      "arguments": {
+        "control_value": "control",
+        "group_column": "treatment_group",
+        "min_group_ratio": 0.5,
+        "table_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\campaign_exposure.csv",
+        "treatment_value": "treatment"
+      },
+      "result_summary": {
+        "ok": true
+      },
+      "elapsed_ms": 8
+    },
+    {
+      "name": "check_subsidy_outliers",
+      "arguments": {
+        "column": "subsidy_amount",
+        "table_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\rewards.csv"
+      },
+      "result_summary": {
+        "ok": true
+      },
+      "elapsed_ms": 9
+    },
+    {
+      "name": "write_file",
+      "arguments": {
+        "content": "#!/usr/bin/env python3\n\"\"\"growth_campaign_audit_001 — 营销活动样本构造数据审计\"\"\"\n\nimport json\nimport math\nimport os\nimport warnings\nfrom pathlib import Path\n\nimport pandas as pd\n\nwarnings.filterwarnings(\"ignore\")\n\nHERE = Path(__file__).resolve().parent\n\n# ── 1. Load tables ──────────────────────────────────────────────────────────\nusers = pd.read_csv(HERE / \"users.csv\")\nexposure = pd.read_csv(HERE / \"campaign_exposure.csv\")\nrewards = pd.read_csv(HERE / \"rewards.csv\")\norders = pd.read_csv(HERE / \"orders.csv\")\n\n# ── 2. Row counts ───────────────────────────────────────────────────────────\nrow_counts = {\n    \"users\": len(users),\n    \"campaign_exposure\": len(exposure),\n    \"rewards\": len(rewards),\n    \"orders\": len(orders),\n}\n\n# ── 3. Join cardinality ─────────────────────────────────────────────────────\n# Left: campaign_exposure, Right: rewards (via user_id, campaign_id, campaign_window)\nexp_rew = exposure.merge(\n    rewards, on=[\"user_id\", \"campaign_id\", \"campaign_window\"], how=\"left\", suffixes=(\"_exp\", \"_rew\")\n)\nn_exp = len(exposure)\nn_exp_rew = len(exp_rew)\nn_rew_matched = exp_rew[\"subsidy_amount\"].notna().sum()\nrew_matched_ratio = round(n_rew_matched / len(rewards) * 100, 2) if len(rewards) else 0\n\n# Check for unmatched right-side rows\nrew_unmatched = rewards.merge(\n    exposure, on=[\"user_id\", \"campaign_id\", \"campaign_window\"], how=\"left\", indicator=True\n)\nrew_unmatched_count = int((rew_unmatched[\"_merge\"] == \"left_only\").sum())\n\njoin_cardinality = {\n    \"exposure_left_rows\": n_exp,\n    \"exposure_after_left_join_rewards\": n_exp_rew,\n    \"rewards_matched_count\": int(n_rew_matched),\n    \"rewards_total\": len(rewards),\n    \"rewards_unmatched_count\": rew_unmatched_count,\n    \"rewards_matched_pct\": rew_matched_ratio,\n    \"note\": \"左连接后行数不变（1:1 或 1:N 均摊平），rewards 中有 unmatched 记录需关注\",\n}\n\n# ── 4. Treatment / control group distribution ───────────────────────────────\ngroup_counts = exposure[\"treatment_group\"].value_counts().to_dict()\ntreatment_count = group_counts.get(\"treatment\", 0)\ncontrol_count = group_counts.get(\"control\", 0)\nratio = round(control_count / treatment_count, 4) if treatment_count else 0\nimbalanced = ratio < 0.5\n\ngroup_distribution = {\n    \"treatment_count\": treatment_count,\n    \"control_count\": control_count,\n    \"minority_to_majority_ratio\": ratio,\n    \"imbalanced\": imbalanced,\n    \"threshold\": 0.5,\n}\n\n# ── 5. SMD (Standardized Mean Difference) on covariates ─────────────────────\n# Merge users covariates onto exposure by user_id\nexposure_with_cov = exposure.merge(\n    users[[\"user_id\", \"historical_orders_30d\", \"historical_gmv_30d\", \"active_days_30d\", \"user_level\"]],\n    on=\"user_id\",\n    how=\"left\",\n)\n\ncovariates = [\"historical_orders_30d\", \"historical_gmv_30d\", \"active_days_30d\"]\ntreat_df = exposure_with_cov[exposure_with_cov[\"treatment_group\"] == \"treatment\"]\nctrl_df = exposure_with_cov[exposure_with_cov[\"treatment_group\"] == \"control\"]\n\nsmd_details = {}\nany_smd_above_threshold = False\n\nfor col in covariates:\n    t_vals = treat_df[col].dropna()\n    c_vals = ctrl_df[col].dropna()\n    if len(t_vals) < 2 or len(c_vals) < 2:\n        smd_details[col] = {\"smd\": None, \"note\": \"样本量不足 2，无法计算\"}\n        continue\n    t_mean = t_vals.mean()\n    c_mean = c_vals.mean()\n    t_var = t_vals.var(ddof=1)\n    c_var = c_vals.var(ddof=1)\n    pooled_std = math.sqrt((t_var + c_var) / 2)\n    smd = abs(t_mean - c_mean) / pooled_std if pooled_std > 0 else 0.0\n    smd = round(smd, 4)\n    flagged = smd > 0.1\n    if flagged:\n        any_smd_above_threshold = True\n    smd_details[col] = {\"smd\": smd, \"treatment_mean\": round(t_mean, 2), \"control_mean\": round(c_mean, 2), \"flagged\": flagged}\n\n# Categorical covariate: user_level — balance gap (proportion difference)\nlevel_treat = treat_df[\"user_level\"].value_counts(normalize=True)\nlevel_ctrl = ctrl_df[\"user_level\"].value_counts(normalize=True)\nall_levels = sorted(set(list(level_treat.index) + list(level_ctrl.index)))\nlevel_gaps = {}\nfor lv in all_levels:\n    gap = abs(level_treat.get(lv, 0) - level_ctrl.get(lv, 0))\n    level_gaps[lv] = round(gap, 4)\nmax_level_gap = max(level_gaps.values())\nif max_level_gap > 0.1:\n    any_smd_above_threshold = True\n\nsmd_summary = {\n    \"numeric_smd\": smd_details,\n    \"categorical_user_level_gap\": level_gaps,\n    \"any_flagged\": any_smd_above_threshold,\n    \"smd_threshold\": 0.1,\n}\n\n# ── 6. Subsidy outliers (IQR 1.5x) ─────────────────────────────────────────\nsubsidy = rewards[\"subsidy_amount\"].dropna()\nQ1 = subsidy.quantile(0.25)\nQ3 = subsidy.quantile(0.75)\nIQR = Q3 - Q1\nlower = Q1 - 1.5 * IQR\nupper = Q3 + 1.5 * IQR\noutlier_mask = (subsidy < lower) | (subsidy > upper)\noutlier_count = int(outlier_mask.sum())\noutlier_rows = rewards.loc[outlier_mask[outlier_mask].index].to_dict(\"records\") if outlier_count > 0 else []\n\noutlier_summary = {\n    \"method\": \"iqr_1.5x\",\n    \"q1\": float(round(Q1, 2)),\n    \"q3\": float(round(Q3, 2)),\n    \"lower_bound\": float(round(lower, 2)),\n    \"upper_bound\": float(round(upper, 2)),\n    \"outlier_count\": outlier_count,\n    \"outlier_rows\": outlier_rows,\n}\n\n# ── 7. Time window alignment ───────────────────────────────────────────────\n# orders.order_time should fall within exposure.campaign_window (format: \"YYYY-MM-DD:YYYY-MM-DD\")\norders_parsed = orders.copy()\norders_parsed[\"order_time\"] = pd.to_datetime(orders_parsed[\"order_time\"])\n\nexp_win = exposure[[\"user_id\", \"campaign_window\"]].drop_duplicates()\nexp_win[[\"window_start\", \"window_end\"]] = exp_win[\"campaign_window\"].str.split(\":\", expand=True)\nexp_win[\"window_start\"] = pd.to_datetime(exp_win[\"window_start\"])\nexp_win[\"window_end\"] = pd.to_datetime(exp_win[\"window_end\"])\n\nord_win = orders_parsed.merge(exp_win, on=\"user_id\", how=\"left\")\nord_win[\"in_window\"] = (ord_win[\"order_time\"] >= ord_win[\"window_start\"]) & (\n    ord_win[\"order_time\"] <= ord_win[\"window_end\"]\n)\n\ntotal_orders = len(ord_win)\nin_window_count = int(ord_win[\"in_window\"].sum())\nout_of_window_count = total_orders - in_window_count\nout_of_window_orders = (\n    ord_win[~ord_win[\"in_window\"]][[\"order_id\", \"user_id\", \"order_time\", \"campaign_window\"]]\n    .to_dict(\"records\")\n)\n\ntime_window_alignment = {\n    \"total_orders_checked\": total_orders,\n    \"in_window_count\": in_window_count,\n    \"out_of_window_count\": out_of_window_count,\n    \"out_of_window_orders\": out_of_window_orders,\n    \"note\": \"out_of_window 订单可能出现在活动窗口开始之前或结束之后\",\n}\n\n# ── 8. Warnings ─────────────────────────────────────────────────────────────\nwarnings_list = []\nrisk_tags = []\n\n# 8a. Treatment/control imbalance\nif imbalanced:\n    warnings_list.append(\n        f\"Treatment/control 比例严重失衡：treatment={treatment_count}, control={control_count}, \"\n        f\"比值={ratio}，低于阈值 0.5。建议重新采样或使用分层抽样。\"\n    )\n    risk_tags.append(\"IMBALANCE_TREATMENT_CONTROL\")\n\n# 8b. SMD flagged covariates\nif any_smd_above_threshold:\n    flagged_covs = [k for k, v in smd_details.items() if isinstance(v, dict) and v.get(\"flagged\")]\n    flagged_cat = [f\"user_level({lv})\" for lv, g in level_gaps.items() if g > 0.1]\n    all_flagged = flagged_covs + flagged_cat\n    warnings_list.append(\n        f\"SMD 超过阈值 0.1 的协变量：{', '.join(all_flagged)}。\"\n        \"组间协变量不平衡可能影响因果推断的可信度。\"\n    )\n    risk_tags.append(\"COVARIATE_IMBALANCE\")\n\n# 8c. Subsidy outliers\nif outlier_count > 0:\n    outlier_desc = \"; \".join(\n        f\"user={r['user_id']}, amount={r['subsidy_amount']}\" for r in outlier_rows\n    )\n    warnings_list.append(\n        f\"补贴金额存在 {outlier_count} 个极端值（IQR 1.5 倍距）：{outlier_desc}。\"\n        \"建议核实数据来源，考虑截尾或缩尾处理。\"\n    )\n    risk_tags.append(\"SUBSIDY_OUTLIER\")\n\n# 8d. Time window misalignment\nif out_of_window_count > 0:\n    oow_orders_desc = \"; \".join(f\"order={r['order_id']}, user={r['user_id']}, time={r['order_time']}\" for r in out_of_window_orders)\n    warnings_list.append(\n        f\"发现 {out_of_window_count} 笔订单不在活动窗口内：{oow_orders_desc}。\"\n        \"这类订单可能属于自然转化而非活动驱动，建议排除或标记。\"\n    )\n    risk_tags.append(\"TIME_WINDOW_MISMATCH\")\n\n# 8e. Missing data\nmissing_flags = []\nif users[\"city_id\"].isna().any():\n    missing_flags.append(f\"users.city_id 缺失 {int(users['city_id'].isna().sum())} 条\")\nif exposure[\"activity_type\"].isna().any():\n    missing_flags.append(f\"campaign_exposure.activity_type 缺失 {int(exposure['activity_type'].isna().sum())} 条\")\nif rewards[\"activity_type\"].isna().any():\n    missing_flags.append(f\"rewards.activity_type 缺失 {int(rewards['activity_type'].isna().sum())} 条\")\nif rewards[\"subsidy_amount\"].isna().any():\n    missing_flags.append(f\"rewards.subsidy_amount 缺失 {int(rewards['subsidy_amount'].isna().sum())} 条\")\nif missing_flags:\n    warnings_list.append(\"存在缺失数据：\" + \"；\".join(missing_flags) + \"。建议评估缺失机制并考虑插补或剔除。\")\n    risk_tags.append(\"MISSING_DATA\")\n\nif not warnings_list:\n    warnings_list.append(\"未发现明显的数据质量问题。\")\n    risk_tags.append(\"CLEAN\")\n\nwarnings_output = [{\"risk_tag\": tag, \"message\": msg} for tag, msg in zip(risk_tags, warnings_list)]\n\n# ── 9. How to do differently ────────────────────────────────────────────────\nhow_to_do_differently = [\n    \"使用分层随机抽样替代简单随机抽样以保障 treatment/control 组间协变量平衡\",\n    \"对连续协变量进行 PS（倾向性得分）匹配或 IPTW 加权校正\",\n    \"对补贴金额采用缩尾（winsorize）或分箱（bucketing）处理以减少极端值影响\",\n    \"排除活动窗口外的订单或将窗口定义扩展至包含曝光后合理转化周期\",\n    \"补全缺失数据（如 city_id 可用众数填充，activity_type 可按 campaign 维度推断）\",\n    \"增加样本量以满足最小可检测效应量（MDE）要求\",\n    \"添加 more 随机化检验（permutation test）验证组间差异显著性\",\n]\n\n# ── 10. Assemble answer ─────────────────────────────────────────────────────\nanswer = {\n    \"row_counts\": row_counts,\n    \"join_cardinality\": join_cardinality,\n    \"group_distribution\": group_distribution,\n    \"smd_summary\": smd_summary,\n    \"outlier_summary\": outlier_summary,\n    \"time_window_alignment\": time_window_alignment,\n    \"warnings\": warnings_output,\n    \"how_to_do_differently\": how_to_do_differently,\n}\n\nwith open(HERE / \"answer.json\", \"w\", encoding=\"utf-8\") as f:\n    json.dump(answer, f, ensure_ascii=False, indent=2)\n\nprint(\"✅ answer.json written successfully.\")\nprint(f\"   row_counts: {row_counts}\")\nprint(f\"   group_imbalanced: {imbalanced} (treatment={treatment_count}, control={control_count})\")\nprint(f\"   subsidy_outliers: {outlier_count}\")\nprint(f\"   time_window_mismatch: {out_of_window_count}\")\n",
+        "file_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\solve.py"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Successfully wrote to D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\solve.py (269 lines)\n\n   1 | #!/usr/bin/env python3\n   2 | \"\"\"growth_campaign_audit_001 — 营销活动样本构造数据审计\"\"\"\n   3 | \n   4 | import json\n   5 | import math\n   6 | import os\n   7 | import warnings\n   8 | from pathlib import Path\n   9 | \n  10 | import pandas as pd\n  11 | \n  12 | warnings.filter"
+      },
+      "elapsed_ms": 4
+    },
+    {
+      "name": "run_shell",
+      "arguments": {
+        "command": "cd /d \"D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\" && python solve.py"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Benchmark workspace policy denied shell command; use only `python solve.py` inside the workspace."
+      },
+      "elapsed_ms": 0
+    },
+    {
+      "name": "run_shell",
+      "arguments": {
+        "command": "python solve.py"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Command failed (exit code 1)\nStderr: Traceback (most recent call last):\n  File \"D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\solve.py\", line 10, in <module>\n    import pandas as pd\n  File \"C:\\Users\\Harry\\anaconda3\\lib\\site-packages\\pandas\\__init__.py\", line 57, in <module>\n    from pandas.compat import (\n  File \"C:\\Users\\Harry\\anaconda3\\lib\\site-packages"
+      },
+      "elapsed_ms": 185
+    },
+    {
+      "name": "run_shell",
+      "arguments": {
+        "command": "python -c \"import sys; print(sys.executable); print(sys.version)\""
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Benchmark workspace policy denied shell command; use only `python solve.py` inside the workspace."
+      },
+      "elapsed_ms": 0
+    },
+    {
+      "name": "write_file",
+      "arguments": {
+        "content": "#!/usr/bin/env python3\n\"\"\"growth_campaign_audit_001 — 营销活动样本构造数据审计 (pure Python / csv)\"\"\"\n\nimport csv\nimport json\nimport math\nimport statistics\nfrom collections import Counter\nfrom datetime import datetime\nfrom pathlib import Path\n\nHERE = Path(__file__).resolve().parent\n\n\ndef load_csv(filename):\n    with open(HERE / filename, \"r\", encoding=\"utf-8\") as f:\n        reader = csv.DictReader(f)\n        rows = list(reader)\n    return rows\n\n\n# ── 1. Load tables ──────────────────────────────────────────────────────────\nusers = load_csv(\"users.csv\")\nexposure = load_csv(\"campaign_exposure.csv\")\nrewards = load_csv(\"rewards.csv\")\norders = load_csv(\"orders.csv\")\n\n\n# ── 2. Row counts ───────────────────────────────────────────────────────────\nrow_counts = {\n    \"users\": len(users),\n    \"campaign_exposure\": len(exposure),\n    \"rewards\": len(rewards),\n    \"orders\": len(orders),\n}\n\n\n# ── 3. Join cardinality (exposure LEFT JOIN rewards on user_id/campaign_id/campaign_window) ──\ndef make_key(row, keys):\n    return tuple(row.get(k, \"\") for k in keys)\n\njoin_keys = [\"user_id\", \"campaign_id\", \"campaign_window\"]\nrew_index = {}\nfor r in rewards:\n    k = make_key(r, join_keys)\n    rew_index.setdefault(k, []).append(r)\n\nn_exp = len(exposure)\nexp_rew_rows = []\nrewards_matched_ids = set()\nrewards_unmatched_ids = set()\n\nfor r in exposure:\n    k = make_key(r, join_keys)\n    matched = rew_index.get(k, [])\n    if matched:\n        for m in matched:\n            exp_rew_rows.append({**r, **m})\n            rewards_unmatched_ids.discard(id(m))\n    else:\n        exp_rew_rows.append(r)\n\n# Find unmatched rewards\nall_rew_ids = set(id(r) for r in rewards)\nrewards_matched = all_rew_ids - set()\nfor r in rewards:\n    k = make_key(r, join_keys)\n    if k in rew_index and any(make_key(e, join_keys) == k for e in exposure):\n        pass\n    else:\n        rewards_unmatched_ids.add(id(r))\n\nrew_unmatched_count = len(rewards_unmatched_ids) if rewards_unmatched_ids else 0\n\n# Count matched rewards\nrew_matched_count = len(set(\n    id(er) for er in exp_rew_rows\n    if er.get(\"subsidy_amount\") is not None and er[\"subsidy_amount\"] != \"\"\n))\n\njoin_cardinality = {\n    \"exposure_left_rows\": n_exp,\n    \"exposure_after_left_join_rewards\": len(exp_rew_rows),\n    \"rewards_matched_count\": rew_matched_count,\n    \"rewards_total\": len(rewards),\n    \"rewards_unmatched_count\": rew_unmatched_count,\n    \"rewards_matched_pct\": round(rew_matched_count / len(rewards) * 100, 2) if rewards else 0,\n    \"note\": \"左连接后行数不变（1:1 或 1:N 均摊平），rewards 中有 unmatched 记录需关注\",\n}\n\n\n# ── 4. Treatment / control group distribution ───────────────────────────────\ngroup_counter = Counter(r[\"treatment_group\"] for r in exposure)\ntreatment_count = group_counter.get(\"treatment\", 0)\ncontrol_count = group_counter.get(\"control\", 0)\nratio = round(control_count / treatment_count, 4) if treatment_count else 0\nimbalanced = ratio < 0.5\n\ngroup_distribution = {\n    \"treatment_count\": treatment_count,\n    \"control_count\": control_count,\n    \"minority_to_majority_ratio\": ratio,\n    \"imbalanced\": imbalanced,\n    \"threshold\": 0.5,\n}\n\n\n# ── 5. SMD on numeric covariates ────────────────────────────────────────────\nuser_map = {u[\"user_id\"]: u for u in users}\ncovariates = [\"historical_orders_30d\", \"historical_gmv_30d\", \"active_days_30d\"]\n\ntreat_vals = {c: [] for c in covariates}\nctrl_vals = {c: [] for c in covariates}\n\nfor r in exposure:\n    u = user_map.get(r[\"user_id\"])\n    if u is None:\n        continue\n    group = r[\"treatment_group\"]\n    for c in covariates:\n        v = u.get(c, \"\")\n        if v == \"\" or v is None:\n            continue\n        try:\n            val = float(v)\n        except (ValueError, TypeError):\n            continue\n        if group == \"treatment\":\n            treat_vals[c].append(val)\n        elif group == \"control\":\n            ctrl_vals[c].append(val)\n\nsmd_details = {}\nany_smd_above_threshold = False\n\nfor c in covariates:\n    tv = treat_vals[c]\n    cv = ctrl_vals[c]\n    if len(tv) < 2 or len(cv) < 2:\n        smd_details[c] = {\"smd\": None, \"note\": \"样本量不足 2，无法计算\"}\n        continue\n    t_mean = statistics.mean(tv)\n    c_mean = statistics.mean(cv)\n    t_var = statistics.variance(tv)\n    c_var = statistics.variance(cv)\n    pooled_std = math.sqrt((t_var + c_var) / 2)\n    smd = abs(t_mean - c_mean) / pooled_std if pooled_std > 0 else 0.0\n    smd = round(smd, 4)\n    flagged = smd > 0.1\n    if flagged:\n        any_smd_above_threshold = True\n    smd_details[c] = {\n        \"smd\": smd,\n        \"treatment_mean\": round(t_mean, 2),\n        \"control_mean\": round(c_mean, 2),\n        \"flagged\": flagged,\n    }\n\n# Categorical: user_level\nlevel_treat = Counter()\nlevel_ctrl = Counter()\nfor r in exposure:\n    u = user_map.get(r[\"user_id\"])\n    if u is None:\n        continue\n    lv = u.get(\"user_level\", \"\")\n    if r[\"treatment_group\"] == \"treatment\":\n        level_treat[lv] += 1\n    elif r[\"treatment_group\"] == \"control\":\n        level_ctrl[lv] += 1\n\ntreat_total = sum(level_treat.values())\nctrl_total = sum(level_ctrl.values())\nall_levels = sorted(set(list(level_treat.keys()) + list(level_ctrl.keys())))\nlevel_gaps = {}\nfor lv in all_levels:\n    t_pct = level_treat.get(lv, 0) / treat_total if treat_total else 0\n    c_pct = level_ctrl.get(lv, 0) / ctrl_total if ctrl_total else 0\n    gap = round(abs(t_pct - c_pct), 4)\n    level_gaps[lv] = gap\n    if gap > 0.1:\n        any_smd_above_threshold = True\n\nsmd_summary = {\n    \"numeric_smd\": smd_details,\n    \"categorical_user_level_gap\": level_gaps,\n    \"any_flagged\": any_smd_above_threshold,\n    \"smd_threshold\": 0.1,\n}\n\n\n# ── 6. Subsidy outliers (IQR 1.5x) ─────────────────────────────────────────\nsubsidy_vals = []\nfor r in rewards:\n    v = r.get(\"subsidy_amount\", \"\")\n    if v == \"\" or v is None:\n        continue\n    try:\n        subsidy_vals.append(float(v))\n    except (ValueError, TypeError):\n        continue\n\nsubsidy_vals.sort()\nn_s = len(subsidy_vals)\n\n\ndef percentile(data, p):\n    if not data:\n        return 0\n    idx = p / 100 * (len(data) - 1)\n    lo = int(math.floor(idx))\n    hi = int(math.ceil(idx))\n    if lo == hi:\n        return data[lo]\n    return data[lo] * (hi - idx) + data[hi] * (idx - lo)\n\n\nQ1 = percentile(subsidy_vals, 25)\nQ3 = percentile(subsidy_vals, 75)\nIQR = Q3 - Q1\nlower = Q1 - 1.5 * IQR\nupper = Q3 + 1.5 * IQR\n\noutlier_rows = []\nfor r in rewards:\n    v = r.get(\"subsidy_amount\", \"\")\n    if v == \"\" or v is None:\n        continue\n    try:\n        val = float(v)\n        if val < lower or val > upper:\n            outlier_rows.append(r)\n    except (ValueError, TypeError):\n        continue\n\noutlier_summary = {\n    \"method\": \"iqr_1.5x\",\n    \"q1\": round(Q1, 2),\n    \"q3\": round(Q3, 2),\n    \"lower_bound\": round(lower, 2),\n    \"upper_bound\": round(upper, 2),\n    \"outlier_count\": len(outlier_rows),\n    \"outlier_rows\": outlier_rows,\n}\n\n\n# ── 7. Time window alignment ───────────────────────────────────────────────\ndef parse_date(s):\n    try:\n        return datetime.strptime(s.strip(), \"%Y-%m-%d\")\n    except (ValueError, TypeError):\n        return None\n\n\n# Build user->campaign_window map from exposure\nuser_window_map = {}\nfor r in exposure:\n    uid = r[\"user_id\"]\n    cw = r.get(\"campaign_window\", \"\")\n    if \":\" in cw:\n        parts = cw.split(\":\")\n        ws = parse_date(parts[0])\n        we = parse_date(parts[1])\n        if uid not in user_window_map:\n            user_window_map[uid] = (ws, we)\n\nout_of_window_orders = []\ntotal_orders_checked = 0\nin_window_count = 0\n\nfor r in orders:\n    total_orders_checked += 1\n    uid = r[\"user_id\"]\n    ot = parse_date(r.get(\"order_time\", \"\"))\n    win = user_window_map.get(uid)\n    if ot is None or win is None:\n        out_of_window_orders.append({\n            \"order_id\": r.get(\"order_id\"),\n            \"user_id\": uid,\n            \"order_time\": r.get(\"order_time\"),\n            \"campaign_window\": r.get(\"campaign_window\") or \"N/A\",\n            \"reason\": \"无法解析日期或缺少窗口信息\",\n        })\n        continue\n    ws, we = win\n    if ws is not None and we is not None and ws <= ot <= we:\n        in_window_count += 1\n    else:\n        out_of_window_orders.append({\n            \"order_id\": r.get(\"order_id\"),\n            \"user_id\": uid,\n            \"order_time\": r.get(\"order_time\"),\n            \"campaign_window\": f\"{ws.date()}:{we.date()}\" if ws and we else \"N/A\",\n        })\n\ntime_window_alignment = {\n    \"total_orders_checked\": total_orders_checked,\n    \"in_window_count\": in_window_count,\n    \"out_of_window_count\": total_orders_checked - in_window_count,\n    \"out_of_window_orders\": out_of_window_orders,\n    \"note\": \"out_of_window 订单可能出现在活动窗口开始之前或结束之后\",\n}\n\n\n# ── 8. Warnings ─────────────────────────────────────────────────────────────\nwarnings_list = []\nrisk_tags = []\n\nif imbalanced:\n    warnings_list.append(\n        f\"Treatment/control 比例严重失衡：treatment={treatment_count}, control={control_count}, \"\n        f\"比值={ratio}，低于阈值 0.5。建议重新采样或使用分层抽样。\"\n    )\n    risk_tags.append(\"IMBALANCE_TREATMENT_CONTROL\")\n\nif any_smd_above_threshold:\n    flagged_covs = [k for k, v in smd_details.items() if isinstance(v, dict) and v.get(\"flagged\")]\n    flagged_cat = [f\"user_level({lv})\" for lv, g in level_gaps.items() if g > 0.1]\n    all_flagged = flagged_covs + flagged_cat\n    warnings_list.append(\n        f\"SMD 超过阈值 0.1 的协变量：{', '.join(all_flagged)}。\"\n        \"组间协变量不平衡可能影响因果推断的可信度。\"\n    )\n    risk_tags.append(\"COVARIATE_IMBALANCE\")\n\nif outlier_rows:\n    outlier_desc = \"; \".join(\n        f\"user={r.get('user_id')}, amount={r.get('subsidy_amount')}\" for r in outlier_rows\n    )\n    warnings_list.append(\n        f\"补贴金额存在 {len(outlier_rows)} 个极端值（IQR 1.5 倍距）：{outlier_desc}。\"\n        \"建议核实数据来源，考虑截尾或缩尾处理。\"\n    )\n    risk_tags.append(\"SUBSIDY_OUTLIER\")\n\nout_of_window_count = total_orders_checked - in_window_count\nif out_of_window_count > 0:\n    oow_orders_desc = \"; \".join(\n        f\"order={r['order_id']}, user={r['user_id']}, time={r['order_time']}\" for r in out_of_window_orders\n    )\n    warnings_list.append(\n        f\"发现 {out_of_window_count} 笔订单不在活动窗口内：{oow_orders_desc}。\"\n        \"这类订单可能属于自然转化而非活动驱动，建议排除或标记。\"\n    )\n    risk_tags.append(\"TIME_WINDOW_MISMATCH\")\n\n# Missing data\nmissing_checks = [\n    (\"users\", \"city_id\", sum(1 for u in users if u.get(\"city_id\", \"\").strip() == \"\")),\n    (\"campaign_exposure\", \"activity_type\", sum(1 for r in exposure if r.get(\"activity_type\", \"\").strip() == \"\")),\n    (\"rewards\", \"activity_type\", sum(1 for r in rewards if r.get(\"activity_type\", \"\").strip() == \"\")),\n    (\"rewards\", \"subsidy_amount\", sum(1 for r in rewards if r.get(\"subsidy_amount\", \"\").strip() == \"\")),\n]\nmissing_flags = [f\"{tbl}.{col} 缺失 {cnt} 条\" for tbl, col, cnt in missing_checks if cnt > 0]\nif missing_flags:\n    warnings_list.append(\"存在缺失数据：\" + \"；\".join(missing_flags) + \"。建议评估缺失机制并考虑插补或剔除。\")\n    risk_tags.append(\"MISSING_DATA\")\n\nif not warnings_list:\n    warnings_list.append(\"未发现明显的数据质量问题。\")\n    risk_tags.append(\"CLEAN\")\n\nwarnings_output = [{\"risk_tag\": tag, \"message\": msg} for tag, msg in zip(risk_tags, warnings_list)]\n\n\n# ── 9. How to do differently ────────────────────────────────────────────────\nhow_to_do_differently = [\n    \"使用分层随机抽样替代简单随机抽样以保障 treatment/control 组间协变量平衡\",\n    \"对连续协变量进行 PS（倾向性得分）匹配或 IPTW 加权校正\",\n    \"对补贴金额采用缩尾（winsorize）或分箱（bucketing）处理以减少极端值影响\",\n    \"排除活动窗口外的订单或将窗口定义扩展至包含曝光后合理转化周期\",\n    \"补全缺失数据（如 city_id 可用众数填充，activity_type 可按 campaign 维度推断）\",\n    \"增加样本量以满足最小可检测效应量（MDE）要求\",\n    \"添加 permutation test 验证组间差异显著性\",\n]\n\n\n# ── 10. Assemble & write answer ─────────────────────────────────────────────\nanswer = {\n    \"row_counts\": row_counts,\n    \"join_cardinality\": join_cardinality,\n    \"group_distribution\": group_distribution,\n    \"smd_summary\": smd_summary,\n    \"outlier_summary\": outlier_summary,\n    \"time_window_alignment\": time_window_alignment,\n    \"warnings\": warnings_output,\n    \"how_to_do_differently\": how_to_do_differently,\n}\n\nwith open(HERE / \"answer.json\", \"w\", encoding=\"utf-8\") as f:\n    json.dump(answer, f, ensure_ascii=False, indent=2)\n\nprint(\"✅ answer.json written successfully.\")\nprint(f\"   row_counts: {row_counts}\")\nprint(f\"   group_imbalanced: {imbalanced} (treatment={treatment_count}, control={control_count})\")\nprint(f\"   subsidy_outliers: {len(outlier_rows)}\")\nprint(f\"   time_window_mismatch: {out_of_window_count}\")\n",
+        "file_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\solve.py"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Successfully wrote to D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\solve.py (398 lines)\n\n   1 | #!/usr/bin/env python3\n   2 | \"\"\"growth_campaign_audit_001 — 营销活动样本构造数据审计 (pure Python / csv)\"\"\"\n   3 | \n   4 | import csv\n   5 | import json\n   6 | import math\n   7 | import statistics\n   8 | from collections import Counter\n   9 | from datetime import datetim"
+      },
+      "elapsed_ms": 3
+    }
+  ],
+  "final_answer": "Let me profile the tables for a complete picture.\n\n\nLet me also check some data quality aspects with the tools before writing the script.\n\n\nNow I have full understanding of the data. Let me write the solve.py.\n\n\nNow let me run it to verify it works.\n\n\n\n\n\n\n\n\nThe sandbox Python environment has a broken pandas/numpy installation. Let me try without pandas — use only the `csv` module and pure Python.\n\n\nLet me verify the solve.py runs correctly in the sandbox.",
+  "expected_answer": null,
+  "validation": {
+    "passed": null,
+    "actual": "answer.json saved",
+    "expected": "pytest is authoritative for this task",
+    "diff": null
+  },
+  "failure_type": "code_execution_failed",
+  "metrics": {
+    "code_execution_success_rate": 0.0,
+    "test_pass_rate": 0.0,
+    "validation_pass_rate": null,
+    "generated_code_saved": true,
+    "answer_file_saved": true,
+    "solve_py_runtime_seconds": 0.154,
+    "sandbox_timeout_count": 0,
+    "dependency_failure_count": 0,
+    "tool_error_count": 0
+  },
+  "elapsed_ms": 135021,
+  "started_at": "2026-06-07T02:39:09Z",
+  "ended_at": "2026-06-07T02:41:24Z",
+  "benchmark_category": "real_api_code_agent",
+  "result_dir": "benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4",
+  "code_generation_source": "llm_generated",
+  "output_contract": {
+    "validation_mode": "pytest",
+    "answer_json_required_keys": [
+      "row_counts",
+      "join_cardinality",
+      "group_distribution",
+      "smd_summary",
+      "outlier_summary",
+      "time_window_alignment",
+      "warnings",
+      "how_to_do_differently"
+    ],
+    "schema_description": "answer.json 顶层必须直接输出这些字段；不要把审计结果整体包在 audit_results 下面。warnings 应包含可检索的风险标签和中文业务提示。"
+  },
+  "schema_check": {
+    "passed": true,
+    "validation_mode": "pytest",
+    "required_keys": [
+      "row_counts",
+      "join_cardinality",
+      "group_distribution",
+      "smd_summary",
+      "outlier_summary",
+      "time_window_alignment",
+      "warnings",
+      "how_to_do_differently"
+    ],
+    "missing_keys": [],
+    "actual_keys": [
+      "group_distribution",
+      "how_to_do_differently",
+      "join_cardinality",
+      "outlier_summary",
+      "row_counts",
+      "smd_summary",
+      "time_window_alignment",
+      "warnings"
+    ]
+  },
+  "dependency_check": {
+    "ok": true,
+    "checks": [
+      {
+        "package": "pandas",
+        "import_name": "pandas",
+        "required_for": "pandas_backend",
+        "installed": true,
+        "version": "3.0.3"
+      },
+      {
+        "package": "numpy",
+        "import_name": "numpy",
+        "required_for": "array_backend",
+        "installed": true,
+        "version": "2.4.6"
+      },
+      {
+        "package": "openpyxl",
+        "import_name": "openpyxl",
+        "required_for": "xlsx_backend",
+        "installed": true,
+        "version": "3.1.5"
+      },
+      {
+        "package": "pytest",
+        "import_name": "pytest",
+        "required_for": "sandbox_test_runner",
+        "installed": true,
+        "version": "9.0.3"
+      },
+      {
+        "package": "openai",
+        "import_name": "openai",
+        "required_for": "real_api_code_agent",
+        "installed": true,
+        "version": "2.40.0"
+      },
+      {
+        "package": "anthropic",
+        "import_name": "anthropic",
+        "required_for": "real_api_code_agent",
+        "installed": true,
+        "version": "0.105.2"
+      },
+      {
+        "package": "rich",
+        "import_name": "rich",
+        "required_for": "real_api_code_agent_ui",
+        "installed": true,
+        "version": "15.0.0"
+      }
+    ],
+    "missing": [],
+    "failure_type": null,
+    "auto_install": true,
+    "install_logs": []
+  },
+  "workspace_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent",
+  "generated_code_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\solve.py",
+  "answer_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\answer.json",
+  "token_usage": {
+    "input": 151744,
+    "output": 10004
+  },
+  "sandbox_results": {
+    "run_python": {
+      "command": [
+        "D:\\桌面\\TableCodeAgent\\.venv\\Scripts\\python.exe",
+        "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\solve.py"
+      ],
+      "cwd": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\solve.py\", line 393, in <module>\n    print(\"\\u2705 answer.json written successfully.\")\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'gbk' codec can't encode character '\\u2705' in position 0: illegal multibyte sequence\n",
+      "timeout": false,
+      "duration_seconds": 0.154,
+      "output_truncated": false,
+      "sandbox_policy": {
+        "isolation": "process-level light sandbox",
+        "containerized": false,
+        "shell": false,
+        "env_policy": "allowlist",
+        "sensitive_paths_blocked": [
+          ".env",
+          "configs/api/local",
+          ".ssh",
+          ".aws",
+          ".config"
+        ],
+        "note": "This is not Docker, Firecracker, or gVisor strong isolation."
+      },
+      "failure_type": "sandbox_process_failed"
+    },
+    "run_tests": {
+      "command": [
+        "D:\\桌面\\TableCodeAgent\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "tests/test_solution.py",
+        "-q"
+      ],
+      "cwd": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\workspaces\\growth_campaign_audit_001.real_api_code_agent",
+      "exit_code": 1,
+      "stdout": "F                                                                        [100%]\n================================== FAILURES ===================================\n________________ test_answer_schema_and_growth_audit_findings _________________\n\n    def test_answer_schema_and_growth_audit_findings() -> None:\n        answer = _load_answer()\n        expected = _load_expected()\n    \n        required_keys = {\n            \"row_counts\",\n            \"join_cardinality\",\n            \"group_distribution\",\n            \"smd_summary\",\n            \"outlier_summary\",\n            \"time_window_alignment\",\n            \"warnings\",\n            \"how_to_do_differently\",\n        }\n        assert required_keys.issubset(answer), sorted(required_keys - set(answer))\n    \n        duplicate_key = answer.get(\"unique_keys\", {}).get(\"rewards_duplicate_key\", {})\n>       assert duplicate_key.get(\"duplicate_key_count\") == expected[\"expected_duplicate_key_count\"]\nE       AssertionError: assert None == 1\nE        +  where None = <built-in method get of dict object at 0x000001DD7F7F0440>('duplicate_key_count')\nE        +    where <built-in method get of dict object at 0x000001DD7F7F0440> = {}.get\n\ntests\\test_solution.py:34: AssertionError\n=========================== short test summary info ===========================\nFAILED tests/test_solution.py::test_answer_schema_and_growth_audit_findings\n1 failed in 0.11s\n",
+      "stderr": "",
+      "timeout": false,
+      "duration_seconds": 0.864,
+      "output_truncated": false,
+      "sandbox_policy": {
+        "isolation": "process-level light sandbox",
+        "containerized": false,
+        "shell": false,
+        "env_policy": "allowlist",
+        "sensitive_paths_blocked": [
+          ".env",
+          "configs/api/local",
+          ".ssh",
+          ".aws",
+          ".config"
+        ],
+        "note": "This is not Docker, Firecracker, or gVisor strong isolation."
+      },
+      "failure_type": "sandbox_tests_failed"
+    }
+  },
+  "pytest_exit_code": 1,
+  "pytest_failure_summary": "E       AssertionError: assert None == 1\nE        +  where None = <built-in method get of dict object at 0x000001DD7F7F0440>('duplicate_key_count')\nE        +    where <built-in method get of dict object at 0x000001DD7F7F0440> = {}.get\ntests\\test_solution.py:34: AssertionError\nFAILED tests/test_solution.py::test_answer_schema_and_growth_audit_findings",
+  "trace_path": "benchmarks\\results\\real_api_code_agent\\20260607-023909__model-deepseek-v4-flash__tasks-v0.0.3-real-api-final-4\\traces\\growth_campaign_audit_001.real_api_code_agent.json"
+}

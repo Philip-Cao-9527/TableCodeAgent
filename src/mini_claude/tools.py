@@ -207,7 +207,7 @@ def get_deferred_tool_names(all_tools: list[ToolDef] | None = None) -> list[str]
 
 def _read_file(inp: dict) -> str:
     try:
-        content = Path(inp["file_path"]).read_text()
+        content = Path(inp["file_path"]).read_text(encoding="utf-8")
         lines = content.split("\n")
         numbered = "\n".join(f"{i+1:4d} | {line}" for i, line in enumerate(lines))
         return numbered
@@ -219,7 +219,7 @@ def _write_file(inp: dict) -> str:
     try:
         path = Path(inp["file_path"])
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(inp["content"])
+        path.write_text(inp["content"], encoding="utf-8")
         _auto_update_memory_index(str(path))
         lines = inp["content"].split("\n")
         line_count = len(lines)
@@ -240,7 +240,7 @@ def _auto_update_memory_index(file_path: str) -> None:
                 if f.name == "MEMORY.md":
                     continue
                 try:
-                    raw = f.read_text()
+                    raw = f.read_text(encoding="utf-8")
                     name_match = re.search(r"^name:\s*(.+)$", raw, re.MULTILINE)
                     type_match = re.search(r"^type:\s*(.+)$", raw, re.MULTILINE)
                     desc_match = re.search(r"^description:\s*(.+)$", raw, re.MULTILINE)
@@ -251,7 +251,7 @@ def _auto_update_memory_index(file_path: str) -> None:
                         lines.append(f"- **[{n}]({f.name})** ({t}) — {d}")
                 except Exception:
                     pass
-            (mem_path / "MEMORY.md").write_text("\n".join(lines))
+            (mem_path / "MEMORY.md").write_text("\n".join(lines), encoding="utf-8")
     except Exception:
         pass
 
@@ -293,7 +293,7 @@ def _generate_diff(old_content: str, old_string: str, new_string: str) -> str:
 def _edit_file(inp: dict) -> str:
     try:
         path = Path(inp["file_path"])
-        content = path.read_text()
+        content = path.read_text(encoding="utf-8")
 
         actual = _find_actual_string(content, inp["old_string"])
         if not actual:
@@ -304,7 +304,7 @@ def _edit_file(inp: dict) -> str:
             return f"Error: old_string found {count} times in {inp['file_path']}. Must be unique."
 
         new_content = content.replace(actual, inp["new_string"], 1)
-        path.write_text(new_content)
+        path.write_text(new_content, encoding="utf-8")
 
         diff = _generate_diff(content, actual, inp["new_string"])
         quote_note = " (matched via quote normalization)" if actual != inp["old_string"] else ""
@@ -412,8 +412,11 @@ def _run_shell(inp: dict) -> str:
     try:
         timeout_ms = inp.get("timeout", 30000)
         timeout_s = timeout_ms / 1000
+        command = str(inp["command"])
+        if command == "python" or command.startswith("python "):
+            command = f'"{sys.executable}"{command[len("python"):]}'
         result = subprocess.run(
-            inp["command"],
+            command,
             shell=True,
             capture_output=True,
             text=True,
@@ -505,7 +508,7 @@ def _load_settings(file_path: Path) -> dict | None:
     if not file_path.exists():
         return None
     try:
-        return json.loads(file_path.read_text())
+        return json.loads(file_path.read_text(encoding="utf-8"))
     except Exception:
         return None
 

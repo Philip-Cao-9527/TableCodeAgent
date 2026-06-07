@@ -1,0 +1,169 @@
+{
+  "row_counts": {
+    "users": 10,
+    "campaign_exposure": 10,
+    "rewards": 9,
+    "orders": 9
+  },
+  "join_cardinality": {
+    "exposure_users_join": {
+      "left_rows": 10,
+      "right_rows": 10,
+      "result_rows": 10,
+      "matched_user_ids": [
+        "u1",
+        "u10",
+        "u2",
+        "u3",
+        "u4",
+        "u5",
+        "u6",
+        "u7",
+        "u8",
+        "u9"
+      ],
+      "unmatched_exposure_user_ids": [
+        "u5"
+      ]
+    },
+    "exposure_rewards_join": {
+      "left_rows": 10,
+      "right_rows": 9,
+      "result_rows": 11,
+      "note": "按 [user_id, campaign_id, campaign_window] join；rewards 中 u2 有两条记录，导致行数扩展"
+    },
+    "exposure_orders_join": {
+      "left_rows": 10,
+      "right_rows": 9,
+      "result_rows": 11,
+      "note": "按 user_id join；orders 中 u2 有两条记录，导致行数扩展"
+    }
+  },
+  "group_distribution": {
+    "treatment_count": 8,
+    "control_count": 2,
+    "ratio_min_over_max": 0.25,
+    "min_group_ratio_threshold": 0.5,
+    "balanced": false,
+    "warning": true
+  },
+  "smd_summary": {
+    "covariates": {
+      "historical_orders_30d": {
+        "type": "numeric",
+        "smd": 4.3706,
+        "threshold": 0.1,
+        "imbalanced": true
+      },
+      "historical_gmv_30d": {
+        "type": "numeric",
+        "smd": 1.8583,
+        "threshold": 0.1,
+        "imbalanced": true
+      },
+      "active_days_30d": {
+        "type": "numeric",
+        "smd": 3.3166,
+        "threshold": 0.1,
+        "imbalanced": true
+      },
+      "user_level": {
+        "type": "categorical",
+        "level_gaps": {
+          "bronze": 1.0,
+          "gold": 0.5,
+          "platinum": 0.25,
+          "silver": 0.25
+        },
+        "max_gap": 1.0,
+        "imbalanced": true
+      }
+    },
+    "any_imbalanced": true,
+    "note": "SMD > 0.1 表示组间在该协变量上存在不平衡"
+  },
+  "outlier_summary": {
+    "q1": 14.25,
+    "q3": 26.25,
+    "iqr": 12.0,
+    "lower_fence": -3.75,
+    "upper_fence": 44.25,
+    "num_outliers": 1,
+    "outliers": [
+      {
+        "user_id": "u8",
+        "subsidy_amount": 500.0
+      }
+    ],
+    "note": "使用 1.5×IQR 规则检测 subsidy_amount 极端值"
+  },
+  "time_window_alignment": {
+    "total_orders_joined": 9,
+    "alignment_counts": {
+      "in_window": 5,
+      "out_of_window": 4
+    },
+    "num_misaligned": 4,
+    "misaligned_orders": [
+      {
+        "user_id": "u2",
+        "order_id": "o3",
+        "order_time": "2026-05-10",
+        "campaign_window": "2026-05-01:2026-05-07"
+      },
+      {
+        "user_id": "u3",
+        "order_id": "o4",
+        "order_time": "2026-04-30",
+        "campaign_window": "2026-05-01:2026-05-07"
+      },
+      {
+        "user_id": "u5",
+        "order_id": "o6",
+        "order_time": "2026-05-08",
+        "campaign_window": "2026-05-01:2026-05-07"
+      },
+      {
+        "user_id": "u10",
+        "order_id": "o9",
+        "order_time": "2026-04-29",
+        "campaign_window": "2026-05-01:2026-05-07"
+      }
+    ],
+    "note": "订单时间不在 campaign_window 范围内视为时间窗口错配"
+  },
+  "warnings": [
+    {
+      "risk_tag": "GROUP_IMBALANCE",
+      "description": "Treatment/Control 分组比例失衡",
+      "business_hint": "对照组样本过少，可能导致 A/B 测试统计功效不足，建议增大对照组比例或重新采样。"
+    },
+    {
+      "risk_tag": "COVARIATE_IMBALANCE",
+      "description": "协变量组间不平衡: historical_orders_30d, historical_gmv_30d, active_days_30d, user_level",
+      "business_hint": "Treatment/Control 在关键协变量上存在显著差异，建议使用 PS Matching 或 CUPED 调整偏差。"
+    },
+    {
+      "risk_tag": "SUBSIDY_OUTLIER",
+      "description": "补贴金额存在极端值: 用户 u8",
+      "business_hint": "用户 u8 的补贴金额为异常高值，建议核查是否存在刷单或系统发放异常。"
+    },
+    {
+      "risk_tag": "TIME_WINDOW_MISALIGN",
+      "description": "共 4 笔订单超出 campaign_window",
+      "business_hint": "用户 u10, u2, u3, u5 的订单发生在 campaign_window 之外，可能使用了过期/提前的补贴权益。"
+    },
+    {
+      "risk_tag": "DATA_QUALITY",
+      "description": "部分关键字段存在缺失值",
+      "business_hint": "建议核查缺失字段的填充逻辑（用户 u5 city_id 缺失，u6 subsidy_amount 缺失等），避免下游分析偏差。"
+    }
+  ],
+  "how_to_do_differently": [
+    "对于不平衡的分组，建议使用倾向性评分匹配 (Propensity Score Matching) 重新平衡 Treatment/Control 样本。",
+    "对于协变量不平衡，可引入 CUPED (Controlled-experiment Using Pre-Experiment Data) 方法降低方差。",
+    "补贴异常值建议设置业务硬性上下限（如 subsidy_amount ∈ [0, 200]），在发放前做规则拦截。",
+    "订单时间窗口错配建议在 join 维度上增加 campaign_window 条件，不只在 user_id 级别 join。",
+    "数据缺失值应在上游 ETL 阶段填充或标记，避免审计阶段发现大量空值。"
+  ]
+}

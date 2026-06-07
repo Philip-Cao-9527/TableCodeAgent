@@ -1,0 +1,183 @@
+{
+  "row_counts": {
+    "users": 10,
+    "campaign_exposure": 10,
+    "rewards": 9,
+    "orders": 9
+  },
+  "join_cardinality": {
+    "exposure_rewards_join_keys": [
+      "user_id",
+      "campaign_id",
+      "campaign_window"
+    ],
+    "exposure_orders_join_keys": [
+      "user_id"
+    ],
+    "exposure_rewards_left_join_total_rows": 11,
+    "exposure_orders_left_join_total_rows": 11,
+    "max_rewards_per_exposure_user": 2,
+    "max_orders_per_exposure_user": 2,
+    "duplicate_key_rows_in_exposure": 0
+  },
+  "group_distribution": {
+    "treatment": {
+      "count": 8,
+      "pct": 80.0
+    },
+    "control": {
+      "count": 2,
+      "pct": 20.0
+    }
+  },
+  "smd_summary": {
+    "smd_values": {
+      "historical_orders_30d": {
+        "type": "numerical",
+        "smd": 5.5074,
+        "treatment_mean": 8.88,
+        "control_mean": 0.5
+      },
+      "historical_gmv_30d": {
+        "type": "numerical",
+        "smd": 2.4523,
+        "treatment_mean": 336.25,
+        "control_mean": 10.0
+      },
+      "active_days_30d": {
+        "type": "numerical",
+        "smd": 4.3296,
+        "treatment_mean": 13.88,
+        "control_mean": 1.5
+      },
+      "user_level": {
+        "type": "categorical",
+        "max_proportion_gap": 1.0,
+        "levels": {
+          "bronze": {
+            "treatment_pct": 0.0,
+            "control_pct": 100.0,
+            "gap": 1.0
+          },
+          "gold": {
+            "treatment_pct": 50.0,
+            "control_pct": 0.0,
+            "gap": 0.5
+          },
+          "platinum": {
+            "treatment_pct": 25.0,
+            "control_pct": 0.0,
+            "gap": 0.25
+          },
+          "silver": {
+            "treatment_pct": 25.0,
+            "control_pct": 0.0,
+            "gap": 0.25
+          }
+        }
+      }
+    },
+    "threshold": 0.1,
+    "imbalanced_covariate_count": 4,
+    "imbalance_details": [
+      "historical_orders_30d SMD=5.5074 超过阈值 0.1",
+      "historical_gmv_30d SMD=2.4523 超过阈值 0.1",
+      "active_days_30d SMD=4.3296 超过阈值 0.1",
+      "user_level 最大比例差异 1.0000 超过阈值 0.1"
+    ]
+  },
+  "outlier_summary": {
+    "total_subsidy_records": 8,
+    "q1": 14.25,
+    "q3": 26.25,
+    "iqr": 12.0,
+    "lower_bound": -3.75,
+    "upper_bound": 44.25,
+    "outlier_count": 7,
+    "outlier_rows": [
+      {
+        "user_id": "u1",
+        "subsidy_amount": 10.0
+      },
+      {
+        "user_id": "u2",
+        "subsidy_amount": 20.0
+      },
+      {
+        "user_id": "u2",
+        "subsidy_amount": 25.0
+      },
+      {
+        "user_id": "u3",
+        "subsidy_amount": 12.0
+      },
+      {
+        "user_id": "u4",
+        "subsidy_amount": 18.0
+      },
+      {
+        "user_id": "u5",
+        "subsidy_amount": 30.0
+      },
+      {
+        "user_id": "u7",
+        "subsidy_amount": 15.0
+      }
+    ],
+    "empty_or_null_subsidy_count": 3
+  },
+  "time_window_alignment": {
+    "total_orders_with_exposure": 9,
+    "aligned_in_window": 5,
+    "misaligned_count": 4,
+    "misaligned_details": [
+      {
+        "user_id": "u2",
+        "order_id": "o3",
+        "order_time": "2026-05-10",
+        "campaign_window": "2026-05-01:2026-05-07"
+      },
+      {
+        "user_id": "u3",
+        "order_id": "o4",
+        "order_time": "2026-04-30",
+        "campaign_window": "2026-05-01:2026-05-07"
+      },
+      {
+        "user_id": "u5",
+        "order_id": "o6",
+        "order_time": "2026-05-08",
+        "campaign_window": "2026-05-01:2026-05-07"
+      },
+      {
+        "user_id": "u10",
+        "order_id": "o9",
+        "order_time": "2026-04-29",
+        "campaign_window": "2026-05-01:2026-05-07"
+      }
+    ]
+  },
+  "warnings": [
+    {
+      "tag": "COVARIATE_IMBALANCE",
+      "message": "有 4 个协变量组间不均衡：historical_orders_30d SMD=5.5074 超过阈值 0.1；historical_gmv_30d SMD=2.4523 超过阈值 0.1；active_days_30d SMD=4.3296 超过阈值 0.1；user_level 最大比例差异 1.0000 超过阈值 0.1"
+    },
+    {
+      "tag": "SUBSIDY_OUTLIER",
+      "message": "补贴金额存在 7 个极端值（IQR法），最高值远超正常范围，请核查是否存在录入错误或特殊策略。"
+    },
+    {
+      "tag": "MISSING_SUBSIDY",
+      "message": "有 3 条奖励记录补贴金额为空或缺失。"
+    },
+    {
+      "tag": "TIME_WINDOW_MISALIGNMENT",
+      "message": "有 4 笔订单的下单时间不在用户所属 campaign 窗口内，可能为窗口外自然转化或窗口定义有误。"
+    },
+    {
+      "tag": "MISSING_USER_INFO",
+      "message": "用户表中 city_id 列存在空值，可能影响基于地域的分层分析。"
+    }
+  ],
+  "how_to_do_differently": "1. 数据采集阶段：在ETL中增加主键唯一性约束和NOT NULL校验，从源头减少脏数据。2. 曝光记录：确保每个被随机分组的用户都在campaign_exposure中有且仅有一条记录，可采用upsert逻辑维护。3. 补贴录入：对subsidy_amount设置业务合理范围（如[0, 200]），超出则触发人工审核。4. 时间窗口对齐：在下单时实时校验order_time是否落在用户所属campaign_window内，标记窗口外转化。5. 组间平衡：在随机分组后立即执行SMD检查，若发现不均衡可通过分层采样或PS加权修正。6. 审计自动化：将上述检查封装为CI/CD流水线中的data quality gate，每次活动样本生成后自动触发审计报告。"
+}

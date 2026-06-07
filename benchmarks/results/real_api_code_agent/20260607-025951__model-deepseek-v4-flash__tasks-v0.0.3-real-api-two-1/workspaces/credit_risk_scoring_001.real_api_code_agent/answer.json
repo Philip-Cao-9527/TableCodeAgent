@@ -1,0 +1,238 @@
+{
+  "row_counts": {
+    "total_rows": 8,
+    "unique_applications": 7
+  },
+  "field_summary": {
+    "columns": [
+      "application_id",
+      "user_id",
+      "application_time",
+      "loan_amount",
+      "income",
+      "age",
+      "region",
+      "credit_score",
+      "existing_debt",
+      "employment_years",
+      "default_90d",
+      "post_loan_collection_calls"
+    ],
+    "dtypes": {
+      "application_id": "str",
+      "user_id": "str",
+      "application_time": "str",
+      "loan_amount": "int64",
+      "income": "int64",
+      "age": "float64",
+      "region": "str",
+      "credit_score": "int64",
+      "existing_debt": "int64",
+      "employment_years": "float64",
+      "default_90d": "float64",
+      "post_loan_collection_calls": "int64"
+    },
+    "numeric_features": [
+      "loan_amount",
+      "income",
+      "age",
+      "credit_score",
+      "existing_debt",
+      "employment_years"
+    ],
+    "categorical_features": [
+      "region"
+    ],
+    "target_column": "default_90d",
+    "leakage_columns": [
+      "post_loan_collection_calls"
+    ],
+    "key_columns": [
+      "application_id"
+    ]
+  },
+  "data_quality": {
+    "missing_values": {
+      "age": 1,
+      "default_90d": 1
+    },
+    "duplicate_keys": {
+      "has_duplicates": true,
+      "duplicate_ids": [
+        "a003"
+      ],
+      "duplicate_count": 2
+    },
+    "invalid_age_count": 1,
+    "invalid_age_examples": [
+      "a004"
+    ],
+    "leakage_columns_present": [
+      "post_loan_collection_calls"
+    ]
+  },
+  "feature_processing": {
+    "description": "对原始特征进行最小处理：年龄异常值截断（<18或>100视为缺失），收入为0视为缺失，缺失值以中位数填充；使用标准规则卡评分，不训练生产模型。排除 default_90d（目标变量）和 post_loan_collection_calls（贷后泄漏变量）作为贷前特征。",
+    "features_used": [
+      "loan_amount",
+      "income",
+      "age",
+      "credit_score",
+      "existing_debt",
+      "employment_years",
+      "region"
+    ],
+    "excluded_features": {
+      "target_variable": "default_90d",
+      "leakage_variables": [
+        "post_loan_collection_calls"
+      ]
+    }
+  },
+  "scoring_result": {
+    "method": "可解释规则卡评分 (interpretable rule-card scoring)",
+    "score_range": "0-100 (越高越安全)",
+    "rules": [
+      "credit_score >= 720 → +30分, >=660→+20, >=620→+10, <620→+0",
+      "employment_years >= 5 → +20分, >=2→+15, >=1→+10, <1→+0",
+      "debt_to_income <= 0.2 → +20分, <=0.4→+15, <=0.6→+10, >0.6→+0",
+      "loan_to_income <= 0.5 → +15分, <=1.0→+10, <=2.0→+5, >2.0→+0",
+      "18 <= age <= 70 → +15分, otherwise → +0"
+    ],
+    "max_points": 100,
+    "applications": [
+      {
+        "application_id": "a001",
+        "risk_score": 100.0,
+        "risk_level": "low",
+        "points": 100,
+        "rules_triggered": [],
+        "actual_default_90d": null
+      },
+      {
+        "application_id": "a002",
+        "risk_score": 30.0,
+        "risk_level": "high",
+        "points": 30,
+        "rules_triggered": [
+          "credit_score_below_620",
+          "employment_years_below_1",
+          "high_debt_to_income_ratio"
+        ],
+        "actual_default_90d": null
+      },
+      {
+        "application_id": "a003",
+        "risk_score": 40.0,
+        "risk_level": "high",
+        "points": 40,
+        "rules_triggered": [
+          "credit_score_below_620",
+          "high_debt_to_income_ratio"
+        ],
+        "actual_default_90d": null
+      },
+      {
+        "application_id": "a003",
+        "risk_score": 40.0,
+        "risk_level": "high",
+        "points": 40,
+        "rules_triggered": [
+          "credit_score_below_620",
+          "high_debt_to_income_ratio"
+        ],
+        "actual_default_90d": null
+      },
+      {
+        "application_id": "a004",
+        "risk_score": 20.0,
+        "risk_level": "high",
+        "points": 20,
+        "rules_triggered": [
+          "employment_years_below_1",
+          "zero_income",
+          "invalid_age"
+        ],
+        "actual_default_90d": null
+      },
+      {
+        "application_id": "a005",
+        "risk_score": 80.0,
+        "risk_level": "low",
+        "points": 80,
+        "rules_triggered": [],
+        "actual_default_90d": null
+      },
+      {
+        "application_id": "a006",
+        "risk_score": 50.0,
+        "risk_level": "medium",
+        "points": 50,
+        "rules_triggered": [
+          "high_debt_to_income_ratio"
+        ],
+        "actual_default_90d": null
+      },
+      {
+        "application_id": "a007",
+        "risk_score": 65.0,
+        "risk_level": "medium",
+        "points": 65,
+        "rules_triggered": [
+          "age_missing"
+        ],
+        "actual_default_90d": null
+      }
+    ]
+  },
+  "business_rule_checks": {
+    "checks": [
+      {
+        "rule": "年龄必须在18-70岁之间",
+        "violations": [
+          "a004"
+        ]
+      },
+      {
+        "rule": "收入必须大于0",
+        "violations": [
+          "a004"
+        ]
+      },
+      {
+        "rule": "主键 application_id 必须唯一",
+        "violations": [
+          "a003"
+        ]
+      }
+    ]
+  },
+  "explanations": {
+    "purpose": "对信贷申请样本进行风险评分，识别高风险申请以便进一步审核或拒绝。",
+    "how_scoring_works": "使用5条可解释规则（信用分、工作年限、负债收入比、贷款收入比、年龄）对每个申请进行打分，满分100分，分数越高代表信用风险越低。不使用 default_90d（目标变量）和 post_loan_collection_calls（贷后泄漏变量）作为贷前特征。",
+    "data_quality_note": "发现1个重复主键、1个异常年龄、以及1个贷后泄漏字段，已在评分前进行处理。"
+  },
+  "warnings": [
+    "主键重复: application_id ['a003'] 存在重复记录。",
+    "存在1条异常年龄记录 (app ['a004'])，评分中已按缺失处理。",
+    "存在1条收入为0的记录 (app ['a004'])，可能为缺失或异常值。",
+    "发现贷后泄漏字段 ['post_loan_collection_calls']，已排除在贷前评分特征之外。"
+  ],
+  "how_to_do_differently": "在真实生产环境中，建议：(1) 使用更多的历史申请数据训练机器学习模型（如LightGBM）；(2) 进行细致的特征工程，包括WOE编码、分箱等；(3) 建立完整的模型验证流程（回测、PSI监控等）；(4) 结合外部征信数据增强特征维度。当前演示对8条样本使用规则卡评分，仅用于说明workflow流程，不替代专业风控模型。",
+  "validation": {
+    "output_keys": [
+      "row_counts",
+      "field_summary",
+      "data_quality",
+      "feature_processing",
+      "scoring_result",
+      "business_rule_checks",
+      "explanations",
+      "warnings",
+      "how_to_do_differently",
+      "validation"
+    ],
+    "rule_card_reproducible": true,
+    "note": "规则卡评分完全可复现，不涉及随机数或训练过程。"
+  }
+}

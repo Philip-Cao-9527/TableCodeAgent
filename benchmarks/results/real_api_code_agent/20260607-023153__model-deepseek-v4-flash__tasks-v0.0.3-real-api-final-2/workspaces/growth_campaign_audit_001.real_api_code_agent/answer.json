@@ -1,0 +1,40 @@
+{
+  "row_counts": {
+    "users": 10,
+    "campaign_exposure": 10,
+    "orders": 9,
+    "rewards": 9
+  },
+  "join_cardinality": {
+    "exposure_to_orders": {
+      "left_table": "campaign_exposure",
+      "right_table": "orders",
+      "join_keys": [
+        "user_id"
+      ],
+      "left_row_count": 10,
+      "right_row_count": 9,
+      "joined_row_count": 11,
+      "cardinality": "one_to_many",
+      "row_expansion_detected": true
+    },
+    "exposure_to_rewards": {
+      "left_table": "campaign_exposure",
+      "right_table": "rewards",
+      "join_keys": [
+        "user_id",
+        "campaign_id",
+        "campaign_window"
+      ],
+      "left_row_count": 10,
+      "right_row_count": 9,
+      "joined_row_count": 11,
+      "cardinality": "one_to_many",
+      "row_expansion_detected": true
+    }
+  },
+  "group_distribution": {
+    "treatment_count": 8,
+    "control_count": 2,
+    "minority_to_majority_ratio": 0.25,
+    "imbalanced": 

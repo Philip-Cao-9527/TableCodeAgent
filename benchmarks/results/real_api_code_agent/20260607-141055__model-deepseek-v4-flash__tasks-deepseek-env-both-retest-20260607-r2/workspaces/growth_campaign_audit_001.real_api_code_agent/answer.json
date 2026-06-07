@@ -1,0 +1,53 @@
+{
+  "row_counts": {
+    "users": 10,
+    "campaign_exposure": 10,
+    "rewards": 9,
+    "orders": 9,
+    "note": {
+      "users_city_id_missing": 1,
+      "exposure_activity_type_missing": 1,
+      "rewards_subsidy_missing": 1
+    }
+  },
+  "join_cardinality": {
+    "duplicate_key_columns": [
+      "user_id",
+      "campaign_window"
+    ],
+    "exposure_duplicate_count": 0,
+    "exposure_duplicate_examples": [],
+    "join_with_rewards": {
+      "join_keys": [
+        "user_id",
+        "campaign_id",
+        "campaign_window"
+      ],
+      "exposure_rows_after_join": 11,
+      "matched_rows": 9,
+      "unmatched_exposure_rows": 2
+    },
+    "join_with_orders": {
+      "join_keys": [
+        "user_id"
+      ],
+      "exposure_rows_after_join": 11,
+      "matched_rows": 9
+    }
+  },
+  "group_distribution": {
+    "treatment_count": 8,
+    "control_count": 2,
+    "total_exposed": 10,
+    "treatment_control_ratio": 4.0,
+    "min_group_ratio_config": 0.5,
+    "imbalanced": true
+  },
+  "smd_summary": {
+    "smd_threshold": 0.1,
+    "covariates": {
+      "historical_orders_30d": {
+        "treatment_mean": 8.875,
+        "control_mean": 0.5,
+        "smd": 5.5074,
+        "imbalanced": 

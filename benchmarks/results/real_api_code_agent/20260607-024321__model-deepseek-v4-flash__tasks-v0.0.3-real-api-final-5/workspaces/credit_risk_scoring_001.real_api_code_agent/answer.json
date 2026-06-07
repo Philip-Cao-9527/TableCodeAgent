@@ -1,0 +1,516 @@
+{
+  "row_counts": {
+    "total_rows": 8,
+    "duplicate_rows": 1,
+    "unique_applications": 7
+  },
+  "field_summary": {
+    "application_id": {
+      "dtype": "string",
+      "non_null": 8,
+      "unique_values": 7
+    },
+    "user_id": {
+      "dtype": "string",
+      "non_null": 8,
+      "unique_values": 7
+    },
+    "application_time": {
+      "dtype": "string",
+      "non_null": 8,
+      "unique_values": 7
+    },
+    "loan_amount": {
+      "dtype": "numeric",
+      "non_null": 8,
+      "min": 3000.0,
+      "max": 50000.0,
+      "mean": 21125.0
+    },
+    "income": {
+      "dtype": "numeric",
+      "non_null": 8,
+      "min": 0.0,
+      "max": 85000.0,
+      "mean": 46125.0
+    },
+    "age": {
+      "dtype": "numeric",
+      "non_null": 7,
+      "min": 17.0,
+      "max": 45.0,
+      "mean": 32.8571
+    },
+    "region": {
+      "dtype": "string",
+      "non_null": 8,
+      "unique_values": 4
+    },
+    "credit_score": {
+      "dtype": "numeric",
+      "non_null": 8,
+      "min": 590.0,
+      "max": 720.0,
+      "mean": 648.75
+    },
+    "existing_debt": {
+      "dtype": "numeric",
+      "non_null": 8,
+      "min": 0.0,
+      "max": 42000.0,
+      "mean": 22125.0
+    },
+    "employment_years": {
+      "dtype": "numeric",
+      "non_null": 8,
+      "min": 0.0,
+      "max": 6.0,
+      "mean": 2.3125
+    },
+    "default_90d": {
+      "dtype": "numeric",
+      "non_null": 7,
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.5714
+    },
+    "post_loan_collection_calls": {
+      "dtype": "numeric",
+      "non_null": 8,
+      "min": 0.0,
+      "max": 5.0,
+      "mean": 2.25
+    }
+  },
+  "data_quality": {
+    "issues": [
+      "Column 'age' has 1 missing value(s).",
+      "Column 'default_90d' has 1 missing value(s).",
+      "Duplicate application_id found: ['a003'].",
+      "Application 'a004' has age=17.0 (below 18).",
+      "Application 'a004' has income=0.0 (non-positive).",
+      "Leakage column(s) ['post_loan_collection_calls'] present — must NOT be used as pre-loan scoring features.",
+      "Target column 'default_90d' present — must NOT be used as a pre-loan scoring feature."
+    ],
+    "issue_count": 7
+  },
+  "feature_processing": {
+    "description": "Minimal processing for rule-card scoring. Missing numerics filled with median. No scaling applied.",
+    "features": [
+      {
+        "feature": "loan_amount",
+        "missing_handling": "Fill missing with median (13500.0)",
+        "missing_count": 0,
+        "used_in_scoring": true
+      },
+      {
+        "feature": "income",
+        "missing_handling": "Fill missing with median (48500.0)",
+        "missing_count": 0,
+        "used_in_scoring": true
+      },
+      {
+        "feature": "age",
+        "missing_handling": "Fill missing with median (34.0)",
+        "missing_count": 1,
+        "used_in_scoring": true
+      },
+      {
+        "feature": "credit_score",
+        "missing_handling": "Fill missing with median (650.0)",
+        "missing_count": 0,
+        "used_in_scoring": true
+      },
+      {
+        "feature": "existing_debt",
+        "missing_handling": "Fill missing with median (16500.0)",
+        "missing_count": 0,
+        "used_in_scoring": true
+      },
+      {
+        "feature": "employment_years",
+        "missing_handling": "Fill missing with median (2.0)",
+        "missing_count": 0,
+        "used_in_scoring": true
+      },
+      {
+        "feature": "region",
+        "missing_handling": "No missing values; one-hot encode if needed",
+        "missing_count": 0,
+        "used_in_scoring": false
+      }
+    ],
+    "excluded_features": {
+      "leakage_columns": [
+        "post_loan_collection_calls"
+      ],
+      "target_column": "default_90d",
+      "reason": "Not available at pre-loan scoring time."
+    }
+  },
+  "scoring_result": {
+    "model_type": "interpretable_rule_card",
+    "score_range": "0 (high risk) – 100 (low risk)",
+    "results": [
+      {
+        "application_id": "a001",
+        "score": 91,
+        "risk_level": "low",
+        "breakdown": {
+          "credit_score": {
+            "raw": 720.0,
+            "points": 25,
+            "weight": 30
+          },
+          "loan_to_income": {
+            "raw": 0.14,
+            "points": 20,
+            "weight": 20
+          },
+          "debt_to_income": {
+            "raw": 0.12,
+            "points": 15,
+            "weight": 15
+          },
+          "employment_years": {
+            "raw": 6.0,
+            "points": 15,
+            "weight": 15
+          },
+          "age": {
+            "raw": 34.0,
+            "points": 8,
+            "weight": 10
+          },
+          "loan_amount": {
+            "raw": 12000.0,
+            "points": 8,
+            "weight": 10
+          }
+        }
+      },
+      {
+        "application_id": "a002",
+        "score": 52,
+        "risk_level": "medium",
+        "breakdown": {
+          "credit_score": {
+            "raw": 610.0,
+            "points": 10,
+            "weight": 30
+          },
+          "loan_to_income": {
+            "raw": 0.29,
+            "points": 20,
+            "weight": 20
+          },
+          "debt_to_income": {
+            "raw": 0.64,
+            "points": 5,
+            "weight": 15
+          },
+          "employment_years": {
+            "raw": 0.5,
+            "points": 4,
+            "weight": 15
+          },
+          "age": {
+            "raw": 22.0,
+            "points": 5,
+            "weight": 10
+          },
+          "loan_amount": {
+            "raw": 8000.0,
+            "points": 8,
+            "weight": 10
+          }
+        }
+      },
+      {
+        "application_id": "a003",
+        "score": 38,
+        "risk_level": "high",
+        "breakdown": {
+          "credit_score": {
+            "raw": 590.0,
+            "points": 5,
+            "weight": 30
+          },
+          "loan_to_income": {
+            "raw": 0.83,
+            "points": 8,
+            "weight": 20
+          },
+          "debt_to_income": {
+            "raw": 0.7,
+            "points": 5,
+            "weight": 15
+          },
+          "employment_years": {
+            "raw": 2.0,
+            "points": 8,
+            "weight": 15
+          },
+          "age": {
+            "raw": 45.0,
+            "points": 10,
+            "weight": 10
+          },
+          "loan_amount": {
+            "raw": 50000.0,
+            "points": 2,
+            "weight": 10
+          }
+        }
+      },
+      {
+        "application_id": "a004",
+        "score": 52,
+        "risk_level": "medium",
+        "breakdown": {
+          "credit_score": {
+            "raw": 680.0,
+            "points": 18,
+            "weight": 30
+          },
+          "loan_to_income": {
+            "raw": 3000.0,
+            "points": 3,
+            "weight": 20
+          },
+          "debt_to_income": {
+            "raw": 0.0,
+            "points": 15,
+            "weight": 15
+          },
+          "employment_years": {
+            "raw": 0,
+            "points": 4,
+            "weight": 15
+          },
+          "age": {
+            "raw": 17.0,
+            "points": 2,
+            "weight": 10
+          },
+          "loan_amount": {
+            "raw": 3000.0,
+            "points": 10,
+            "weight": 10
+          }
+        }
+      },
+      {
+        "application_id": "a005",
+        "score": 90,
+        "risk_level": "low",
+        "breakdown": {
+          "credit_score": {
+            "raw": 700.0,
+            "points": 25,
+            "weight": 30
+          },
+          "loan_to_income": {
+            "raw": 0.29,
+            "points": 20,
+            "weight": 20
+          },
+          "debt_to_income": {
+            "raw": 0.23,
+            "points": 15,
+            "weight": 15
+          },
+          "employment_years": {
+            "raw": 4.0,
+            "points": 12,
+            "weight": 15
+          },
+          "age": {
+            "raw": 38.0,
+            "points": 10,
+            "weight": 10
+          },
+          "loan_amount": {
+            "raw": 15000.0,
+            "points": 8,
+            "weight": 10
+          }
+        }
+      },
+      {
+        "application_id": "a006",
+        "score": 51,
+        "risk_level": "medium",
+        "breakdown": {
+          "credit_score": {
+            "raw": 640.0,
+            "points": 10,
+            "weight": 30
+          },
+          "loan_to_income": {
+            "raw": 0.49,
+            "points": 15,
+            "weight": 20
+          },
+          "debt_to_income": {
+            "raw": 0.84,
+            "points": 5,
+            "weight": 15
+          },
+          "employment_years": {
+            "raw": 1.0,
+            "points": 8,
+            "weight": 15
+          },
+          "age": {
+            "raw": 29.0,
+            "points": 8,
+            "weight": 10
+          },
+          "loan_amount": {
+            "raw": 22000.0,
+            "points": 5,
+            "weight": 10
+          }
+        }
+      },
+      {
+        "application_id": "a007",
+        "score": 70,
+        "risk_level": "low",
+        "breakdown": {
+          "credit_score": {
+            "raw": 660.0,
+            "points": 18,
+            "weight": 30
+          },
+          "loan_to_income": {
+            "raw": 0.23,
+            "points": 20,
+            "weight": 20
+          },
+          "debt_to_income": {
+            "raw": 0.38,
+            "points": 10,
+            "weight": 15
+          },
+          "employment_years": {
+            "raw": 3.0,
+            "points": 12,
+            "weight": 15
+          },
+          "age": {
+            "raw": null,
+            "points": 2,
+            "weight": 10
+          },
+          "loan_amount": {
+            "raw": 9000.0,
+            "points": 8,
+            "weight": 10
+          }
+        }
+      }
+    ],
+    "aggregate": {
+      "mean_score": 63.43,
+      "min_score": 38,
+      "max_score": 91,
+      "risk_distribution": {
+        "low": 3,
+        "medium": 3,
+        "high": 1
+      }
+    }
+  },
+  "business_rule_checks": {
+    "rules": [
+      {
+        "rule": "Age >= 18",
+        "applied": true,
+        "violations": 1,
+        "violation_ids": [
+          "a004"
+        ],
+        "action": "Reject — underage applicant."
+      },
+      {
+        "rule": "Income > 0",
+        "applied": true,
+        "violations": 1,
+        "violation_ids": [
+          "a004"
+        ],
+        "action": "Reject — no verifiable income."
+      },
+      {
+        "rule": "Credit score >= 600",
+        "applied": true,
+        "violations": 2,
+        "violation_ids": [
+          "a003",
+          "a003"
+        ],
+        "action": "Flag for manual review — subprime score."
+      },
+      {
+        "rule": "Debt-to-income ratio <= 1.0",
+        "applied": true,
+        "violations": 0,
+        "violation_ids": [],
+        "action": "Reject or require additional collateral."
+      },
+      {
+        "rule": "Age must not be missing",
+        "applied": true,
+        "violations": 1,
+        "violation_ids": [
+          "a007"
+        ],
+        "action": "Flag for data completion."
+      }
+    ]
+  },
+  "explanations": {
+    "approach": "Uses an interpretable rule card with six features: credit_score, loan_to_income, debt_to_income, employment_years, age, loan_amount. Each contributes points toward a 0–100 score. Missing values imputed with median. Target and post-loan columns excluded.",
+    "why_not_ml": "Only 8 rows — a rule card is reproducible and auditable.",
+    "rule_card_rationale": [
+      "credit_score: Higher score → more points.",
+      "loan_to_income: Ratio > 1.0 signals over-leverage.",
+      "debt_to_income: High burden raises risk.",
+      "employment_years: Stability proxy.",
+      "age: Age bands reflect typical risk profiles.",
+      "loan_amount: Larger loans carry more absolute risk."
+    ]
+  },
+  "warnings": [
+    "Duplicate application_id 'a003' found and deduplicated.",
+    "Column 'age' has 1 missing value (a007) — filled with median for scoring.",
+    "Column 'default_90d' has 1 missing value — label unknown for a007.",
+    "Application 'a004' age=17 (underage) flagged by business rules.",
+    "Application 'a004' income=0 flagged by business rules.",
+    "Leakage column 'post_loan_collection_calls' present — excluded.",
+    "Only 8 rows; results are illustrative, not statistically robust."
+  ],
+  "how_to_do_differently": {
+    "with_more_data": "Train a gradient-boosted model with train/test split and cross-validation.",
+    "feature_engineering": [
+      "Create loan_to_income and debt_to_income ratio features explicitly.",
+      "Bucket age into bands.",
+      "One-hot encode region.",
+      "Add interaction terms like credit_score × employment_years."
+    ],
+    "production_considerations": [
+      "Pipeline with versioned imputation.",
+      "Real-time business rule engine.",
+      "Model monitoring (PSI, drift detection).",
+      "Override trail for manual-review decisions."
+    ]
+  },
+  "validation": {
+    "score_consistency": "Deterministic rule card — same input, same output.",
+    "no_leakage": "default_90d and post_loan_collection_calls not used in scoring.",
+    "missing_handling": "Median imputation applied per feature.",
+    "reproducibility": "All logic in solve.py; no stochastic elements."
+  }
+}

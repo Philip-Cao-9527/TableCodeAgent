@@ -1,0 +1,597 @@
+{
+  "row_counts": {
+    "raw": 8,
+    "after_dedup": 7,
+    "after_drop_missing_key": 8
+  },
+  "field_summary": {
+    "application_id": {
+      "dtype": "string",
+      "non_null": 8,
+      "null_count": 0,
+      "unique": 7,
+      "sample_values": [
+        "a001",
+        "a002",
+        "a003",
+        "a003",
+        "a004"
+      ],
+      "total_unique": 7
+    },
+    "user_id": {
+      "dtype": "string",
+      "non_null": 8,
+      "null_count": 0,
+      "unique": 7,
+      "sample_values": [
+        "u1",
+        "u2",
+        "u3",
+        "u3",
+        "u4"
+      ],
+      "total_unique": 7
+    },
+    "application_time": {
+      "dtype": "string",
+      "non_null": 8,
+      "null_count": 0,
+      "unique": 7,
+      "sample_values": [
+        "2026-01-05",
+        "2026-01-12",
+        "2026-02-03",
+        "2026-02-03",
+        "2026-03-15"
+      ],
+      "total_unique": 7
+    },
+    "loan_amount": {
+      "dtype": "numeric",
+      "non_null": 8,
+      "null_count": 0,
+      "unique": 7,
+      "min": 3000.0,
+      "max": 50000.0,
+      "mean": 21125.0
+    },
+    "income": {
+      "dtype": "numeric",
+      "non_null": 8,
+      "null_count": 0,
+      "unique": 7,
+      "min": 0.0,
+      "max": 85000.0,
+      "mean": 46125.0
+    },
+    "age": {
+      "dtype": "numeric",
+      "non_null": 7,
+      "null_count": 1,
+      "unique": 6,
+      "min": 17.0,
+      "max": 45.0,
+      "mean": 32.857142857142854
+    },
+    "region": {
+      "dtype": "string",
+      "non_null": 8,
+      "null_count": 0,
+      "unique": 4,
+      "sample_values": [
+        "North",
+        "South",
+        "East",
+        "East",
+        "West"
+      ],
+      "total_unique": 4
+    },
+    "credit_score": {
+      "dtype": "numeric",
+      "non_null": 8,
+      "null_count": 0,
+      "unique": 7,
+      "min": 590.0,
+      "max": 720.0,
+      "mean": 648.75
+    },
+    "existing_debt": {
+      "dtype": "numeric",
+      "non_null": 8,
+      "null_count": 0,
+      "unique": 7,
+      "min": 0.0,
+      "max": 42000.0,
+      "mean": 22125.0
+    },
+    "employment_years": {
+      "dtype": "numeric",
+      "non_null": 8,
+      "null_count": 0,
+      "unique": 7,
+      "min": 0.0,
+      "max": 6.0,
+      "mean": 2.3125
+    },
+    "default_90d": {
+      "dtype": "numeric",
+      "non_null": 7,
+      "null_count": 1,
+      "unique": 2,
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.5714285714285714
+    },
+    "post_loan_collection_calls": {
+      "dtype": "numeric",
+      "non_null": 8,
+      "null_count": 0,
+      "unique": 5,
+      "min": 0.0,
+      "max": 5.0,
+      "mean": 2.25
+    }
+  },
+  "data_quality": {
+    "duplicate_keys": {
+      "count": 1,
+      "duplicate_key_values": [
+        "a003"
+      ],
+      "details": "发现重复 application_id: ['a003']"
+    },
+    "missing_values": {
+      "age": {
+        "count": 1,
+        "rate": 0.125
+      },
+      "default_90d": {
+        "count": 1,
+        "rate": 0.125
+      }
+    },
+    "anomalous_age": {
+      "under_18": {
+        "count": 1,
+        "ids": [
+          "a004"
+        ]
+      }
+    },
+    "leakage_columns_detected": {
+      "post_loan_collection_calls": {
+        "present": true,
+        "note": "'post_loan_collection_calls' 是贷后行为字段(pre-loan 不可知)，不能作为贷前评分特征"
+      }
+    }
+  },
+  "feature_processing": {
+    "numerical_features": {
+      "description": "对数值特征进行缺失值填补与标准化说明",
+      "details": {
+        "loan_amount": {
+          "action": "直接使用，无需填补",
+          "reason": "无缺失"
+        },
+        "income": {
+          "action": "保留，注意 zero-income 样本(a004)需标记",
+          "reason": "income=0 可能缺失或异常"
+        },
+        "age": {
+          "action": "用中位数(34)填补缺失值",
+          "reason": "1个缺失(a007)"
+        },
+        "credit_score": {
+          "action": "直接使用",
+          "reason": "无缺失"
+        },
+        "existing_debt": {
+          "action": "直接使用",
+          "reason": "无缺失"
+        },
+        "employment_years": {
+          "action": "直接使用",
+          "reason": "无缺失"
+        }
+      }
+    },
+    "categorical_features": {
+      "description": "对类别特征进行编码说明",
+      "details": {
+        "region": {
+          "action": "保留原始值，或 one-hot 编码",
+          "unique_values": [
+            "East",
+            "North",
+            "South",
+            "West"
+          ]
+        }
+      }
+    },
+    "target": {
+      "column": "default_90d",
+      "note": "default_90d 是目标标签(1=违约)，不能作为贷前特征"
+    },
+    "excluded_columns": {
+      "reason": "以下字段不进入贷前评分模型",
+      "columns": {
+        "application_id": "主键标识",
+        "user_id": "用户标识",
+        "application_time": "申请时间",
+        "default_90d": "目标标签(贷后已知)",
+        "post_loan_collection_calls": "贷后催收数据(泄漏)"
+      }
+    }
+  },
+  "scoring_result": {
+    "method": "可解释规则卡评分 (rule-based scorecard)",
+    "rule_description": {
+      "credit_score": "信用评分: >=700=2, 650-699=1, 600-649=0, <600=-2",
+      "debt_ratio": "负债率(existing_debt/income): <30%=1, 30-60%=0, >60%=-1",
+      "employment_years": "工作年限: >=3年=1, 1-3年=0, <1年=-1",
+      "age": "年龄: 25-60岁=1, 18-24或60-65=0, <18=-2, >65=-1",
+      "loan_income_ratio": "贷款收入比(loan/income): <30%=1, 30-60%=0, >60%=-1"
+    },
+    "max_possible_score": 6,
+    "min_possible_score": -7,
+    "risk_levels": {
+      ">=5": "低风险-通过",
+      "2~4": "中低风险-建议通过",
+      "-1~1": "中风险-需人工审核",
+      "-4~-2": "中高风险-建议拒绝",
+      "<=-5": "高风险-拒绝"
+    },
+    "details": [
+      {
+        "application_id": "a001",
+        "scores": {
+          "credit_score": {
+            "score": 2,
+            "reason": "优秀(>=700)"
+          },
+          "debt_ratio": {
+            "score": 1,
+            "reason": "负债率低(12%)"
+          },
+          "employment_years": {
+            "score": 1,
+            "reason": "稳定(>=3年)"
+          },
+          "age": {
+            "score": 1,
+            "reason": "适龄(25-60)"
+          },
+          "loan_income_ratio": {
+            "score": 1,
+            "reason": "贷款比低(14%)"
+          }
+        },
+        "total_score": 6,
+        "risk_level": "低风险",
+        "action": "通过"
+      },
+      {
+        "application_id": "a002",
+        "scores": {
+          "credit_score": {
+            "score": 0,
+            "reason": "一般(600-649)"
+          },
+          "debt_ratio": {
+            "score": -1,
+            "reason": "负债率高(64%)"
+          },
+          "employment_years": {
+            "score": -1,
+            "reason": "不足(<1年)"
+          },
+          "age": {
+            "score": 0,
+            "reason": "边缘(18-24或60-65)"
+          },
+          "loan_income_ratio": {
+            "score": 1,
+            "reason": "贷款比低(29%)"
+          }
+        },
+        "total_score": -1,
+        "risk_level": "中风险",
+        "action": "需人工审核"
+      },
+      {
+        "application_id": "a003",
+        "scores": {
+          "credit_score": {
+            "score": -2,
+            "reason": "较差(<600)"
+          },
+          "debt_ratio": {
+            "score": -1,
+            "reason": "负债率高(70%)"
+          },
+          "employment_years": {
+            "score": 0,
+            "reason": "一般(1-3年)"
+          },
+          "age": {
+            "score": 1,
+            "reason": "适龄(25-60)"
+          },
+          "loan_income_ratio": {
+            "score": -1,
+            "reason": "贷款比高(83%)"
+          }
+        },
+        "total_score": -3,
+        "risk_level": "中高风险",
+        "action": "建议拒绝"
+      },
+      {
+        "application_id": "a003",
+        "scores": {
+          "credit_score": {
+            "score": -2,
+            "reason": "较差(<600)"
+          },
+          "debt_ratio": {
+            "score": -1,
+            "reason": "负债率高(70%)"
+          },
+          "employment_years": {
+            "score": 0,
+            "reason": "一般(1-3年)"
+          },
+          "age": {
+            "score": 1,
+            "reason": "适龄(25-60)"
+          },
+          "loan_income_ratio": {
+            "score": -1,
+            "reason": "贷款比高(83%)"
+          }
+        },
+        "total_score": -3,
+        "risk_level": "中高风险",
+        "action": "建议拒绝"
+      },
+      {
+        "application_id": "a004",
+        "scores": {
+          "credit_score": {
+            "score": 1,
+            "reason": "良好(650-699)"
+          },
+          "debt_ratio": {
+            "score": -1,
+            "reason": "收入缺失或为零"
+          },
+          "employment_years": {
+            "score": -1,
+            "reason": "不足(<1年)"
+          },
+          "age": {
+            "score": -2,
+            "reason": "未成年(<18)"
+          },
+          "loan_income_ratio": {
+            "score": -1,
+            "reason": "收入缺失或为零"
+          }
+        },
+        "total_score": -4,
+        "risk_level": "中高风险",
+        "action": "建议拒绝"
+      },
+      {
+        "application_id": "a005",
+        "scores": {
+          "credit_score": {
+            "score": 2,
+            "reason": "优秀(>=700)"
+          },
+          "debt_ratio": {
+            "score": 1,
+            "reason": "负债率低(23%)"
+          },
+          "employment_years": {
+            "score": 1,
+            "reason": "稳定(>=3年)"
+          },
+          "age": {
+            "score": 1,
+            "reason": "适龄(25-60)"
+          },
+          "loan_income_ratio": {
+            "score": 1,
+            "reason": "贷款比低(29%)"
+          }
+        },
+        "total_score": 6,
+        "risk_level": "低风险",
+        "action": "通过"
+      },
+      {
+        "application_id": "a006",
+        "scores": {
+          "credit_score": {
+            "score": 0,
+            "reason": "一般(600-649)"
+          },
+          "debt_ratio": {
+            "score": -1,
+            "reason": "负债率高(84%)"
+          },
+          "employment_years": {
+            "score": 0,
+            "reason": "一般(1-3年)"
+          },
+          "age": {
+            "score": 1,
+            "reason": "适龄(25-60)"
+          },
+          "loan_income_ratio": {
+            "score": 0,
+            "reason": "贷款比适中(49%)"
+          }
+        },
+        "total_score": 0,
+        "risk_level": "中风险",
+        "action": "需人工审核"
+      },
+      {
+        "application_id": "a007",
+        "scores": {
+          "credit_score": {
+            "score": 1,
+            "reason": "良好(650-699)"
+          },
+          "debt_ratio": {
+            "score": 0,
+            "reason": "负债率适中(38%)"
+          },
+          "employment_years": {
+            "score": 1,
+            "reason": "稳定(>=3年)"
+          },
+          "age": {
+            "score": 0,
+            "reason": "缺失"
+          },
+          "loan_income_ratio": {
+            "score": 1,
+            "reason": "贷款比低(23%)"
+          }
+        },
+        "total_score": 3,
+        "risk_level": "中低风险",
+        "action": "建议通过"
+      }
+    ]
+  },
+  "business_rule_checks": {
+    "age_check": {
+      "rule": "申请人年龄须 >= 18 岁",
+      "violations": [
+        {
+          "application_id": "a004",
+          "age": "17",
+          "issue": "年龄17岁，未成年"
+        }
+      ]
+    },
+    "credit_score_check": {
+      "rule": "信用评分 >= 600 为基本准入线",
+      "violations": [
+        {
+          "application_id": "a003",
+          "credit_score": "590",
+          "issue": "信用评分低于600"
+        },
+        {
+          "application_id": "a003",
+          "credit_score": "590",
+          "issue": "信用评分低于600"
+        }
+      ]
+    },
+    "income_check": {
+      "rule": "年收入须大于0",
+      "violations": [
+        {
+          "application_id": "a004",
+          "income": "0",
+          "issue": "收入为0，需核实"
+        }
+      ]
+    },
+    "duplicate_application_check": {
+      "rule": "申请记录不应重复",
+      "violations": [
+        {
+          "application_id": "a003",
+          "occurrences": 2
+        }
+      ]
+    },
+    "missing_data_check": {
+      "rule": "关键字段不应缺失",
+      "violations": [
+        {
+          "application_id": "a007",
+          "missing_fields": [
+            "age",
+            "default_90d"
+          ]
+        }
+      ]
+    }
+  },
+  "explanations": {
+    "workflow_summary": "对信贷申请表执行了字段检查、数据质量审核、缺失/重复/异常检测、贷后泄漏识别、规则卡评分及业务规则校验",
+    "scoring_method": "使用5维度可解释规则卡(credit_score/debt_ratio/employment_years/age/loan_income_ratio)，每个维度打分后汇总，根据总分映射风险等级。不使用 default_90d 和 post_loan_collection_calls",
+    "leakage_note": "post_loan_collection_calls 是贷后催收数据，在贷前不可知，不能用作评分特征",
+    "feature_usage_note": "default_90d 是目标标签(贷后90天违约)，仅用于结果分析/验证，不作为贷前评分输入"
+  },
+  "warnings": [
+    {
+      "type": "duplicate",
+      "severity": "high",
+      "message": "application_id 存在重复(a003出现2次)，可能影响统计准确性"
+    },
+    {
+      "type": "missing_values",
+      "severity": "medium",
+      "message": "age有1个缺失(a007)，default_90d有1个缺失(a007)"
+    },
+    {
+      "type": "anomalous_age",
+      "severity": "high",
+      "message": "a004年龄为17岁，未达到法定信贷年龄要求"
+    },
+    {
+      "type": "zero_income",
+      "severity": "high",
+      "message": "a004收入为0，需核实是否为数据错误或失业状态"
+    },
+    {
+      "type": "leakage",
+      "severity": "critical",
+      "message": "post_loan_collection_calls 存在于数据中但属于贷后信息，评分时必须排除"
+    },
+    {
+      "type": "low_credit_score",
+      "severity": "medium",
+      "message": "a002(610)和a003(590)信用评分偏低，a003低于600准入线"
+    }
+  ],
+  "how_to_do_differently": [
+    "1. 假设数据量更大(>1万条)，可训练轻量逻辑回归或决策树模型替代规则卡，保持可解释性",
+    "2. 引入外部征信数据(如人行征信、多头借贷数据)丰富特征",
+    "3. 对异常值(a004年龄17、收入0)建议联系申请人核实",
+    "4. 缺失值填补可采用更稳健的方法(如模型预测填补)",
+    "5. 对 region 特征可做 target encoding 代替 one-hot(若训练集足够)",
+    "6. 做时间序列切分验证(按 application_time)，避免数据穿越",
+    "7. 增加 A/B 测试或 PSI 监控模型稳定性和迁移性"
+  ],
+  "validation": {
+    "output_keys_check": [
+      "row_counts",
+      "field_summary",
+      "data_quality",
+      "feature_processing",
+      "scoring_result",
+      "business_rule_checks",
+      "explanations",
+      "warnings",
+      "how_to_do_differently",
+      "validation"
+    ],
+    "all_keys_present": true,
+    "scoring_excludes_leakage": true,
+    "scoring_excludes_target": true,
+    "note": "本字段为自校验结果，最终以 pytest validation 为准"
+  }
+}

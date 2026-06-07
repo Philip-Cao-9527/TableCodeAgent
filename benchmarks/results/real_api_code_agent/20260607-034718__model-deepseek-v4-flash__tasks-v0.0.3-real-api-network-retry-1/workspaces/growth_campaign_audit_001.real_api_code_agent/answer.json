@@ -1,0 +1,83 @@
+{
+  "row_counts": {
+    "users": {
+      "rows": 10,
+      "columns": 6
+    },
+    "campaign_exposure": {
+      "rows": 10,
+      "columns": 5
+    },
+    "orders": {
+      "rows": 9,
+      "columns": 5
+    },
+    "rewards": {
+      "rows": 9,
+      "columns": 5
+    }
+  },
+  "join_cardinality": {
+    "users_to_campaign_exposure": {
+      "left_table": "users",
+      "right_table": "campaign_exposure",
+      "left_rows": 10,
+      "right_rows": 10,
+      "join_key": "user_id",
+      "joined_rows": 10,
+      "left_unique_keys": 10,
+      "right_unique_keys": 10,
+      "row_expansion_detected": false,
+      "note": "1:1 映射，无扩行"
+    },
+    "campaign_exposure_to_rewards": {
+      "left_table": "campaign_exposure",
+      "right_table": "rewards",
+      "join_keys": [
+        "user_id",
+        "campaign_id",
+        "campaign_window"
+      ],
+      "left_rows": 10,
+      "right_rows": 9,
+      "joined_rows": 11,
+      "row_expansion_detected": true,
+      "note": "出现扩行: 11 vs 10"
+    },
+    "users_to_orders": {
+      "left_table": "users",
+      "right_table": "orders",
+      "join_key": "user_id",
+      "left_rows": 10,
+      "right_rows": 9,
+      "joined_rows": 11,
+      "left_unique_keys": 10,
+      "right_unique_keys": 8,
+      "row_expansion_detected": true,
+      "note": "1:N 映射（存在扩行），部分用户有多笔订单"
+    }
+  },
+  "group_distribution": {
+    "treatment_count": 8,
+    "control_count": 2,
+    "total": 10,
+    "treatment_pct": 80.0,
+    "control_pct": 20.0,
+    "minority_to_majority_ratio": 0.25,
+    "imbalanced": true,
+    "threshold": 0.5
+  },
+  "smd_summary": {
+    "covariates_checked": [
+      "historical_orders_30d",
+      "historical_gmv_30d",
+      "active_days_30d",
+      "user_level"
+    ],
+    "smd_threshold": 0.1,
+    "details": {
+      "historical_orders_30d": {
+        "smd": 5.5074,
+        "treatment_mean": 8.88,
+        "control_mean": 0.5,
+        "imbalanced": 

@@ -1,0 +1,533 @@
+{
+  "row_counts": {
+    "total_rows": 8,
+    "distinct_application_ids": 7,
+    "duplicate_rows": 1
+  },
+  "field_summary": {
+    "application_id": {
+      "dtype": "string",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7
+    },
+    "user_id": {
+      "dtype": "string",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7
+    },
+    "application_time": {
+      "dtype": "string",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7
+    },
+    "loan_amount": {
+      "dtype": "Int64",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7,
+      "min": 3000.0,
+      "max": 50000.0,
+      "mean": 21125.0
+    },
+    "income": {
+      "dtype": "Int64",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7,
+      "min": 0.0,
+      "max": 85000.0,
+      "mean": 46125.0
+    },
+    "age": {
+      "dtype": "Int64",
+      "non_null_count": 7,
+      "null_count": 1,
+      "null_rate": 0.125,
+      "unique_count": 6,
+      "min": 17.0,
+      "max": 45.0,
+      "mean": 32.86
+    },
+    "region": {
+      "dtype": "string",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4
+    },
+    "credit_score": {
+      "dtype": "Int64",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7,
+      "min": 590.0,
+      "max": 720.0,
+      "mean": 648.75
+    },
+    "existing_debt": {
+      "dtype": "Int64",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7,
+      "min": 0.0,
+      "max": 42000.0,
+      "mean": 22125.0
+    },
+    "employment_years": {
+      "dtype": "Float64",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7,
+      "min": 0.0,
+      "max": 6.0,
+      "mean": 2.31
+    },
+    "default_90d": {
+      "dtype": "Int64",
+      "non_null_count": 7,
+      "null_count": 1,
+      "null_rate": 0.125,
+      "unique_count": 2,
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.57
+    },
+    "post_loan_collection_calls": {
+      "dtype": "Int64",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 5,
+      "min": 0.0,
+      "max": 5.0,
+      "mean": 2.25
+    }
+  },
+  "data_quality": {
+    "missing_values": {
+      "age": {
+        "missing_count": 1,
+        "missing_rate": 0.125
+      },
+      "default_90d": {
+        "missing_count": 1,
+        "missing_rate": 0.125
+      }
+    },
+    "duplicate_key_ids": [
+      "a003"
+    ],
+    "duplicate_key_count": 1,
+    "underage_applicants": {
+      "count": 1,
+      "application_ids": [
+        "a004"
+      ],
+      "ages": [
+        17
+      ]
+    },
+    "zero_or_negative_income": {
+      "count": 1,
+      "application_ids": [
+        "a004"
+      ]
+    },
+    "leakage_columns_detected": [
+      "post_loan_collection_calls"
+    ],
+    "leakage_note": "post_loan_collection_calls 是贷后催收行为指标，发生在贷款发放之后，不能用作贷前评分特征。default_90d 是目标变量，也不能用作特征。",
+    "target_missing_count": 1,
+    "target_missing_ids": [
+      "a007"
+    ],
+    "missing_required_columns": []
+  },
+  "feature_processing": {
+    "numeric_features": [
+      "loan_amount",
+      "income",
+      "age",
+      "credit_score",
+      "existing_debt",
+      "employment_years"
+    ],
+    "categorical_features": [
+      "region"
+    ],
+    "excluded_features": {
+      "post_loan_collection_calls": "贷后泄漏变量，不可用于贷前评分",
+      "default_90d": "目标变量，不可用作特征"
+    },
+    "derived_features": [
+      {
+        "name": "debt_to_income_ratio",
+        "formula": "existing_debt / income",
+        "note": "收入为0时标记为无穷大，单独处理"
+      },
+      {
+        "name": "loan_to_income_ratio",
+        "formula": "loan_amount / income",
+        "note": "衡量贷款规模相对收入的比例"
+      }
+    ],
+    "missing_handling": {
+      "age": "以中位数填充（当前中位数约33）",
+      "default_90d": "目标缺失，评分时跳过该样本的标签，不影响特征构造"
+    },
+    "processing_steps": [
+      "1. 解析日期 application_time 为 datetime",
+      "2. 将 age 转为数值，缺失值以中位数填充",
+      "3. 将 income、credit_score 等转为数值",
+      "4. 构造 debt_to_income_ratio 衍生特征",
+      "5. 构造 loan_to_income_ratio 衍生特征",
+      "6. region 类别特征做 one-hot 或 ordinal 编码（视模型需求）",
+      "7. 去除重复的 application_id 行（保留第一条）"
+    ]
+  },
+  "scoring_result": {
+    "scorecard_name": "可解释规则卡 v1 (基于5个维度)",
+    "dimensions": [
+      "credit_score (信用分)",
+      "debt_to_income_ratio (债务收入比)",
+      "employment_years (工作年限)",
+      "age (年龄)",
+      "loan_to_income_ratio (贷款收入比)"
+    ],
+    "score_range": "每个维度 0-10 分（年龄未成年为 -10 罚分），总分 0-50",
+    "risk_level_thresholds": {
+      "低风险": ">= 35",
+      "中低风险": ">= 25",
+      "中风险": ">= 15",
+      "高风险": "< 15"
+    },
+    "results": [
+      {
+        "application_id": "a001",
+        "total_score": 47,
+        "risk_level": "低风险",
+        "components": {
+          "credit_score": {
+            "score": 10,
+            "reason": "信用分 >= 700：优质"
+          },
+          "debt_to_income": {
+            "score": 10,
+            "reason": "债务收入比 0.12：低负债"
+          },
+          "employment_years": {
+            "score": 10,
+            "reason": "工作 6.0 年：非常稳定"
+          },
+          "age": {
+            "score": 7,
+            "reason": "年龄 34.0：中年，收入稳定期"
+          },
+          "loan_to_income": {
+            "score": 10,
+            "reason": "贷款收入比 0.14：保守借贷"
+          }
+        }
+      },
+      {
+        "application_id": "a002",
+        "total_score": 15,
+        "risk_level": "中风险",
+        "components": {
+          "credit_score": {
+            "score": 3,
+            "reason": "信用分 600-649：中等偏下"
+          },
+          "debt_to_income": {
+            "score": 0,
+            "reason": "债务收入比 0.64：严重高负债"
+          },
+          "employment_years": {
+            "score": 1,
+            "reason": "工作 0.5 年：不稳定"
+          },
+          "age": {
+            "score": 5,
+            "reason": "年龄 22.0：青年"
+          },
+          "loan_to_income": {
+            "score": 6,
+            "reason": "贷款收入比 0.29：适中"
+          }
+        }
+      },
+      {
+        "application_id": "a003",
+        "total_score": 11,
+        "risk_level": "高风险",
+        "components": {
+          "credit_score": {
+            "score": 0,
+            "reason": "信用分 < 600：高风险"
+          },
+          "debt_to_income": {
+            "score": 0,
+            "reason": "债务收入比 0.70：严重高负债"
+          },
+          "employment_years": {
+            "score": 4,
+            "reason": "工作 2.0 年：一般稳定"
+          },
+          "age": {
+            "score": 7,
+            "reason": "年龄 45.0：中年，收入稳定期"
+          },
+          "loan_to_income": {
+            "score": 0,
+            "reason": "贷款收入比 0.83：激进借贷"
+          }
+        }
+      },
+      {
+        "application_id": "a003",
+        "total_score": 11,
+        "risk_level": "高风险",
+        "components": {
+          "credit_score": {
+            "score": 0,
+            "reason": "信用分 < 600：高风险"
+          },
+          "debt_to_income": {
+            "score": 0,
+            "reason": "债务收入比 0.70：严重高负债"
+          },
+          "employment_years": {
+            "score": 4,
+            "reason": "工作 2.0 年：一般稳定"
+          },
+          "age": {
+            "score": 7,
+            "reason": "年龄 45.0：中年，收入稳定期"
+          },
+          "loan_to_income": {
+            "score": 0,
+            "reason": "贷款收入比 0.83：激进借贷"
+          }
+        }
+      },
+      {
+        "application_id": "a004",
+        "total_score": -3,
+        "risk_level": "高风险",
+        "components": {
+          "credit_score": {
+            "score": 6,
+            "reason": "信用分 650-699：中等偏上"
+          },
+          "debt_to_income": {
+            "score": 0,
+            "reason": "收入为0或缺失，债务比风险极高"
+          },
+          "employment_years": {
+            "score": 1,
+            "reason": "工作 0.0 年：不稳定"
+          },
+          "age": {
+            "score": -10,
+            "reason": "年龄 17.0：未成年，法律风险"
+          },
+          "loan_to_income": {
+            "score": 0,
+            "reason": "收入缺失或为0，贷款收入比极高风险"
+          }
+        }
+      },
+      {
+        "application_id": "a005",
+        "total_score": 36,
+        "risk_level": "低风险",
+        "components": {
+          "credit_score": {
+            "score": 10,
+            "reason": "信用分 >= 700：优质"
+          },
+          "debt_to_income": {
+            "score": 6,
+            "reason": "债务收入比 0.23：可控负债"
+          },
+          "employment_years": {
+            "score": 7,
+            "reason": "工作 4.0 年：稳定"
+          },
+          "age": {
+            "score": 7,
+            "reason": "年龄 38.0：中年，收入稳定期"
+          },
+          "loan_to_income": {
+            "score": 6,
+            "reason": "贷款收入比 0.29：适中"
+          }
+        }
+      },
+      {
+        "application_id": "a006",
+        "total_score": 15,
+        "risk_level": "中风险",
+        "components": {
+          "credit_score": {
+            "score": 3,
+            "reason": "信用分 600-649：中等偏下"
+          },
+          "debt_to_income": {
+            "score": 0,
+            "reason": "债务收入比 0.84：严重高负债"
+          },
+          "employment_years": {
+            "score": 4,
+            "reason": "工作 1.0 年：一般稳定"
+          },
+          "age": {
+            "score": 5,
+            "reason": "年龄 29.0：青年"
+          },
+          "loan_to_income": {
+            "score": 3,
+            "reason": "贷款收入比 0.49：偏高"
+          }
+        }
+      },
+      {
+        "application_id": "a007",
+        "total_score": 28,
+        "risk_level": "中低风险",
+        "components": {
+          "credit_score": {
+            "score": 6,
+            "reason": "信用分 650-699：中等偏上"
+          },
+          "debt_to_income": {
+            "score": 6,
+            "reason": "债务收入比 0.38：可控负债"
+          },
+          "employment_years": {
+            "score": 7,
+            "reason": "工作 3.0 年：稳定"
+          },
+          "age": {
+            "score": 3,
+            "reason": "年龄缺失"
+          },
+          "loan_to_income": {
+            "score": 6,
+            "reason": "贷款收入比 0.23：适中"
+          }
+        }
+      }
+    ]
+  },
+  "business_rule_checks": {
+    "min_age_check": {
+      "rule": "申请人年龄须 >= 18",
+      "violation_count": 1,
+      "violation_ids": [
+        "a004"
+      ],
+      "status": "FAIL"
+    },
+    "positive_income_check": {
+      "rule": "年收入须 > 0",
+      "violation_count": 1,
+      "violation_ids": [
+        "a004"
+      ],
+      "status": "FAIL"
+    },
+    "unique_application_check": {
+      "rule": "application_id 必须唯一",
+      "violation_count": 1,
+      "violation_ids": [
+        "a003"
+      ],
+      "status": "FAIL"
+    },
+    "required_fields_check": {
+      "rule": "必需字段不可缺失",
+      "violation_details": {
+        "age": {
+          "missing_count": 1,
+          "missing_rate": 0.125
+        },
+        "default_90d": {
+          "missing_count": 1,
+          "missing_rate": 0.125
+        }
+      },
+      "status": "FAIL"
+    }
+  },
+  "explanations": {
+    "workflow_summary": "本 workflow 对信贷申请样本进行端到端风险评分：读取 CSV → 字段完整性检查 → 数据质量审计（缺失、重复、异常、泄漏）→ 特征构造说明 → 规则卡评分 → 业务规则校验 → 输出结构化 JSON。",
+    "leakage_handling": "post_loan_collection_calls 是贷后催收次数，在申请时点不可知，必须排除在特征之外。default_90d 是目标变量，同样不作为特征输入。",
+    "scorecard_rationale": "采用 5 维度规则卡而非机器学习模型，原因：(1) 规则卡完全可解释，适合信贷合规场景；(2) 样本量极小（8 条），无法训练有效模型；(3) 规则卡可直接映射业务策略。",
+    "missing_data_impact": "a007 的 age 和 default_90d 缺失：age 以中位数填充后可参与评分；default_90d 缺失不影响评分，仅影响后续建模时的标签可用性。"
+  },
+  "warnings": [
+    {
+      "severity": "CRITICAL",
+      "message": "申请 a004 年龄 17 岁，低于法定成年年龄 18 岁，应拒绝。",
+      "application_id": "a004"
+    },
+    {
+      "severity": "WARNING",
+      "message": "申请 a004 收入为 0，可能为非就业人口，还款能力存疑。",
+      "application_id": "a004"
+    },
+    {
+      "severity": "WARNING",
+      "message": "a003 存在完全重复行，已自动去重（保留第一条）。",
+      "application_id": "a003"
+    },
+    {
+      "severity": "WARNING",
+      "message": "a007 的 age 字段缺失，评分时以中位数填充。",
+      "application_id": "a007"
+    },
+    {
+      "severity": "INFO",
+      "message": "a007 的 default_90d（目标变量）缺失，该样本无法用于监督学习训练。",
+      "application_id": "a007"
+    }
+  ],
+  "how_to_do_differently": [
+    "若样本量足够（>1000），可训练 XGBoost / LightGBM 并输出 SHAP 可解释性报告。",
+    "可引入外部征信数据（如征信报告、多头借贷数据）增强特征。",
+    "规则卡的权重可基于历史违约率统计校准，而非等权打分。",
+    "缺失值处理可改用更精细的模型预测填充而非中位数填充。",
+    "可增加时间序列验证：通过 application_time 划分训练/测试集以验证时效性。",
+    "可对 region 做 target encoding 或 frequency encoding 替代 one-hot。"
+  ],
+  "validation": {
+    "output_keys_present": [
+      "row_counts",
+      "field_summary",
+      "data_quality",
+      "feature_processing",
+      "scoring_result",
+      "business_rule_checks",
+      "explanations",
+      "warnings",
+      "how_to_do_differently",
+      "validation"
+    ],
+    "no_leakage_in_features": true,
+    "no_target_as_feature": true,
+    "scorecard_method": "rule_based",
+    "scorecard_version": "1.0"
+  }
+}

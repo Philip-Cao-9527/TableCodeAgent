@@ -1,0 +1,43 @@
+{
+  "id": "growth_campaign_audit_001",
+  "task_type": "growth_campaign_audit",
+  "question": "对营销活动样本构造进行数据审计，检查多表 join、treatment/control 分布、组间平衡、补贴极端值和订单时间窗口错配。",
+  "benchmark_modes": [
+    "growth_l0_tools",
+    "growth_workflow",
+    "sandbox_code_agent"
+  ],
+  "tables": {
+    "users": "users.csv",
+    "campaign_exposure": "campaign_exposure.csv",
+    "rewards": "rewards.csv",
+    "orders": "orders.csv"
+  },
+  "audit_config": {
+    "duplicate_key_columns": ["user_id", "campaign_window"],
+    "join_keys": ["user_id", "campaign_id", "campaign_window"],
+    "group_column": "treatment_group",
+    "treatment_value": "treatment",
+    "control_value": "control",
+    "min_group_ratio": 0.5,
+    "covariates": ["historical_orders_30d", "historical_gmv_30d", "active_days_30d", "user_level"],
+    "smd_threshold": 0.1,
+    "subsidy_column": "subsidy_amount",
+    "order_time_column": "order_time",
+    "campaign_window_column": "campaign_window"
+  },
+  "output_contract": {
+    "validation_mode": "pytest",
+    "answer_json_required_keys": [
+      "row_counts",
+      "join_cardinality",
+      "group_distribution",
+      "smd_summary",
+      "outlier_summary",
+      "time_window_alignment",
+      "warnings",
+      "how_to_do_differently"
+    ],
+    "schema_description": "answer.json 顶层必须直接输出这些字段；不要把审计结果整体包在 audit_results 下面。warnings 应包含可检索的风险标签和中文业务提示。"
+  }
+}

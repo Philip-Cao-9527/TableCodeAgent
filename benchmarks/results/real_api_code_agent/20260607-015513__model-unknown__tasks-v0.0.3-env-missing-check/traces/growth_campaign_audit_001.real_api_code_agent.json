@@ -1,0 +1,55 @@
+{
+  "trace_version": "v0.0.3",
+  "task_id": "growth_campaign_audit_001",
+  "mode": "real_api_code_agent",
+  "provider": "provider_chatanywhere",
+  "model_name": null,
+  "api_called": false,
+  "skipped": true,
+  "llm_tool_call_observed": false,
+  "tool_call_count": 0,
+  "tool_calls": [],
+  "final_answer": null,
+  "expected_answer": null,
+  "validation": {
+    "passed": false,
+    "actual": null,
+    "expected": "api env exists",
+    "diff": null
+  },
+  "failure_type": "api_env_missing",
+  "metrics": {
+    "code_execution_success_rate": null,
+    "test_pass_rate": null,
+    "validation_pass_rate": null,
+    "generated_code_saved": false,
+    "answer_file_saved": false,
+    "solve_py_runtime_seconds": null,
+    "sandbox_timeout_count": 0,
+    "dependency_failure_count": 0,
+    "tool_error_count": 0
+  },
+  "elapsed_ms": 0,
+  "started_at": "2026-06-07T01:55:13Z",
+  "ended_at": "2026-06-07T01:55:13Z",
+  "benchmark_category": "real_api_code_agent",
+  "result_dir": "benchmarks\\results\\real_api_code_agent\\20260607-015513__model-unknown__tasks-v0.0.3-env-missing-check",
+  "code_generation_source": "llm_generated",
+  "output_contract": {
+    "validation_mode": "pytest",
+    "answer_json_required_keys": [
+      "row_counts",
+      "join_cardinality",
+      "group_distribution",
+      "smd_summary",
+      "outlier_summary",
+      "time_window_alignment",
+      "warnings",
+      "how_to_do_differently"
+    ],
+    "schema_description": "answer.json 顶层必须直接输出这些字段；不要把审计结果整体包在 audit_results 下面。warnings 应包含可检索的风险标签和中文业务提示。"
+  },
+  "schema_check": null,
+  "error": "API env file not found: configs\\api\\local\\provider_chatanywhere.env",
+  "trace_path": "benchmarks\\results\\real_api_code_agent\\20260607-015513__model-unknown__tasks-v0.0.3-env-missing-check\\traces\\growth_campaign_audit_001.real_api_code_agent.json"
+}

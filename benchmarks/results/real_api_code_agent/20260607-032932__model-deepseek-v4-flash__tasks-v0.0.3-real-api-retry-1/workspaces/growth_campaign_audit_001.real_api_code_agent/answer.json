@@ -1,0 +1,69 @@
+{
+  "row_counts": {
+    "users": 10,
+    "campaign_exposure": 10,
+    "rewards": 9,
+    "orders": 9
+  },
+  "join_cardinality": {
+    "exposure_to_rewards": {
+      "left_table": "campaign_exposure",
+      "right_table": "rewards",
+      "join_keys": [
+        "user_id",
+        "campaign_id",
+        "campaign_window"
+      ],
+      "left_row_count": 10,
+      "right_row_count": 9,
+      "joined_row_count": 11,
+      "row_expansion_detected": true,
+      "cardinality_risk": "right 表 user_id=u2 存在 2 条记录，join 后行数扩张"
+    },
+    "exposure_to_orders": {
+      "left_table": "campaign_exposure",
+      "right_table": "orders",
+      "join_keys": [
+        "user_id"
+      ],
+      "left_row_count": 10,
+      "right_row_count": 9,
+      "joined_row_count": 11,
+      "row_expansion_detected": true,
+      "cardinality_risk": "right 表 user_id=u2 存在 2 条订单，join 后行数扩张"
+    },
+    "exposure_to_users": {
+      "left_table": "campaign_exposure",
+      "right_table": "users",
+      "join_keys": [
+        "user_id"
+      ],
+      "left_row_count": 10,
+      "right_row_count": 10,
+      "joined_row_count": 10,
+      "row_expansion_detected": false,
+      "cardinality_risk": "无风险，一对一双向唯一"
+    }
+  },
+  "group_distribution": {
+    "treatment_group_column": "treatment_group",
+    "treatment_count": 8,
+    "control_count": 2,
+    "minority_to_majority_ratio": 0.25,
+    "imbalanced": true,
+    "note": "对照组仅有 2 人，实验组 8 人，比例严重失衡"
+  },
+  "smd_summary": {
+    "covariates": [
+      "historical_orders_30d",
+      "historical_gmv_30d",
+      "active_days_30d",
+      "user_level"
+    ],
+    "smd_threshold": 0.1,
+    "results": {
+      "historical_orders_30d": {
+        "smd": 5.5074,
+        "treatment_mean": 8.875,
+        "control_mean": 0.5,
+        "violates_threshold": 

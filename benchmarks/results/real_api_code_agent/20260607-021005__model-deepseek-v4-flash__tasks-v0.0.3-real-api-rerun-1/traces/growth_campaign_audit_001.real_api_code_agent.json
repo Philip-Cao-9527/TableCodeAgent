@@ -1,0 +1,443 @@
+{
+  "trace_version": "v0.0.3",
+  "task_id": "growth_campaign_audit_001",
+  "mode": "real_api_code_agent",
+  "provider": "provider_chatanywhere",
+  "model_name": "deepseek-v4-flash",
+  "api_called": true,
+  "skipped": false,
+  "llm_tool_call_observed": true,
+  "tool_call_count": 25,
+  "tool_calls": [
+    {
+      "name": "read_file",
+      "arguments": {
+        "file_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\task.json"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Error reading file: 'gbk' codec can't decode byte 0x80 in position 105: illegal multibyte sequence"
+      },
+      "elapsed_ms": 2
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\campaign_exposure.csv",
+        "preview_rows": 10
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 10
+      },
+      "elapsed_ms": 10
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\orders.csv",
+        "preview_rows": 10
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 9
+      },
+      "elapsed_ms": 6
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\rewards.csv",
+        "preview_rows": 10
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 9
+      },
+      "elapsed_ms": 6
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\users.csv",
+        "preview_rows": 10
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 10
+      },
+      "elapsed_ms": 6
+    },
+    {
+      "name": "profile_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\campaign_exposure.csv"
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 10,
+        "column_count": 5
+      },
+      "elapsed_ms": 25
+    },
+    {
+      "name": "profile_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\orders.csv"
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 9,
+        "column_count": 5
+      },
+      "elapsed_ms": 25
+    },
+    {
+      "name": "profile_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\rewards.csv"
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 9,
+        "column_count": 5
+      },
+      "elapsed_ms": 23
+    },
+    {
+      "name": "profile_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\users.csv"
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 10,
+        "column_count": 6
+      },
+      "elapsed_ms": 26
+    },
+    {
+      "name": "read_file",
+      "arguments": {
+        "file_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\task.json"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Error reading file: 'gbk' codec can't decode byte 0x80 in position 105: illegal multibyte sequence"
+      },
+      "elapsed_ms": 1
+    },
+    {
+      "name": "run_shell",
+      "arguments": {
+        "command": "python -c \"\nwith open(r'D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\task.json', 'rb') as f:\n    raw = f.read()\nprint(raw[:500])\nprint('---')\nprint(raw.decode('utf-8'))\n\""
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Benchmark workspace policy denied shell command; use only `python solve.py` inside the workspace."
+      },
+      "elapsed_ms": 0
+    },
+    {
+      "name": "list_files",
+      "arguments": {
+        "pattern": "*.json",
+        "path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "task.json"
+      },
+      "elapsed_ms": 1
+    },
+    {
+      "name": "run_shell",
+      "arguments": {
+        "command": "python -c \"import json; f=open(r'D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\task.json','r',encoding='utf-8'); print(json.dumps(json.load(f),ensure_ascii=False,indent=2)); f.close()\""
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Benchmark workspace policy denied shell command; use only `python solve.py` inside the workspace."
+      },
+      "elapsed_ms": 0
+    },
+    {
+      "name": "check_unique_key",
+      "arguments": {
+        "key_columns": [
+          "user_id"
+        ],
+        "table_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\campaign_exposure.csv"
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 10
+      },
+      "elapsed_ms": 6
+    },
+    {
+      "name": "check_unique_key",
+      "arguments": {
+        "key_columns": [
+          "order_id"
+        ],
+        "table_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\orders.csv"
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 9
+      },
+      "elapsed_ms": 6
+    },
+    {
+      "name": "check_treatment_control_distribution",
+      "arguments": {
+        "table_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\campaign_exposure.csv",
+        "group_column": "treatment_group",
+        "treatment_value": "treatment",
+        "control_value": "control",
+        "min_group_ratio": 0.1
+      },
+      "result_summary": {
+        "ok": true
+      },
+      "elapsed_ms": 6
+    },
+    {
+      "name": "check_join_cardinality",
+      "arguments": {
+        "left_keys": [
+          "user_id"
+        ],
+        "left_table_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\campaign_exposure.csv",
+        "right_keys": [
+          "user_id"
+        ],
+        "right_table_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\orders.csv"
+      },
+      "result_summary": {
+        "ok": true
+      },
+      "elapsed_ms": 14
+    },
+    {
+      "name": "check_join_cardinality",
+      "arguments": {
+        "left_keys": [
+          "user_id"
+        ],
+        "left_table_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\campaign_exposure.csv",
+        "right_keys": [
+          "user_id"
+        ],
+        "right_table_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\rewards.csv"
+      },
+      "result_summary": {
+        "ok": true
+      },
+      "elapsed_ms": 14
+    },
+    {
+      "name": "check_join_cardinality",
+      "arguments": {
+        "left_keys": [
+          "user_id"
+        ],
+        "left_table_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\campaign_exposure.csv",
+        "right_keys": [
+          "user_id"
+        ],
+        "right_table_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\users.csv"
+      },
+      "result_summary": {
+        "ok": true
+      },
+      "elapsed_ms": 14
+    },
+    {
+      "name": "check_subsidy_outliers",
+      "arguments": {
+        "column": "subsidy_amount",
+        "iqr_multiplier": 1.5,
+        "table_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\rewards.csv"
+      },
+      "result_summary": {
+        "ok": true
+      },
+      "elapsed_ms": 6
+    },
+    {
+      "name": "check_time_window_alignment",
+      "arguments": {
+        "exposure_table_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\campaign_exposure.csv",
+        "orders_table_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\orders.csv",
+        "user_key": "user_id",
+        "campaign_window_column": "campaign_window",
+        "order_time_column": "order_time"
+      },
+      "result_summary": {
+        "ok": true
+      },
+      "elapsed_ms": 16
+    },
+    {
+      "name": "check_group_balance",
+      "arguments": {
+        "covariates": [
+          "user_level",
+          "historical_orders_30d",
+          "historical_gmv_30d",
+          "active_days_30d"
+        ],
+        "group_column": "treatment_group",
+        "table_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\campaign_exposure.csv"
+      },
+      "result_summary": {
+        "ok": true
+      },
+      "elapsed_ms": 5
+    },
+    {
+      "name": "write_file",
+      "arguments": {
+        "content": "\"\"\"\nsolve.py - 营销活动样本构造数据审计 (growth_campaign_audit_001)\n输出 answer.json 到当前目录，满足 output_contract。\n\"\"\"\n\nimport json\nimport math\nimport os\nimport warnings\nfrom datetime import datetime\n\nimport pandas as pd\nimport numpy as np\n\nwarnings.filterwarnings(\"ignore\")\n\nBASE_DIR = os.path.dirname(os.path.abspath(__file__))\n\n\ndef load_csv(name):\n    return pd.read_csv(os.path.join(BASE_DIR, name))\n\n\ndef parse_window(w):\n    \"\"\"Parse 'YYYY-MM-DD:YYYY-MM-DD' into (start_date, end_date) as datetime objects.\"\"\"\n    parts = w.split(\":\")\n    return pd.to_datetime(parts[0]), pd.to_datetime(parts[1])\n\n\ndef compute_smd(series_t, series_c):\n    \"\"\"Compute standardized mean difference for a numeric series between two groups.\"\"\"\n    mean_t = series_t.mean()\n    mean_c = series_c.mean()\n    var_t = series_t.var(ddof=1)\n    var_c = series_c.var(ddof=1)\n    n_t = series_t.count()\n    n_c = series_c.count()\n    if n_t < 2 or n_c < 2:\n        return None\n    pooled_std = math.sqrt(((n_t - 1) * var_t + (n_c - 1) * var_c) / (n_t + n_c - 2))\n    if pooled_std == 0 or pd.isna(pooled_std):\n        return None\n    return (mean_t - mean_c) / pooled_std\n\n\ndef main():\n    # ── 1. 加载数据 ──────────────────────────────────────────────\n    exposure = load_csv(\"campaign_exposure.csv\")\n    orders = load_csv(\"orders.csv\")\n    rewards = load_csv(\"rewards.csv\")\n    users = load_csv(\"users.csv\")\n\n    # ── 2. 基础行数 ──────────────────────────────────────────────\n    row_counts = {\n        \"campaign_exposure\": len(exposure),\n        \"orders\": len(orders),\n        \"rewards\": len(rewards),\n        \"users\": len(users),\n    }\n\n    # ── 3. 多表 join 基数检查 ────────────────────────────────────\n    # exposure → orders\n    exp_ord = exposure.merge(orders, on=\"user_id\", how=\"left\", suffixes=(\"\", \"_order\"))\n    # exposure → rewards\n    exp_rwd = exposure.merge(rewards, on=\"user_id\", how=\"left\", suffixes=(\"_exp\", \"_rwd\"))\n    # exposure → users\n    exp_usr = exposure.merge(users, on=\"user_id\", how=\"left\")\n\n    join_cardinality = {\n        \"exposure_to_orders\": {\n            \"left_rows\": len(exposure),\n            \"right_rows\": len(orders),\n            \"joined_rows\": len(exp_ord),\n            \"expansion_ratio\": round(len(exp_ord) / len(exposure), 4),\n            \"cardinality\": \"one_to_many\",\n            \"note\": \"u2 has 2 orders, causing 1.1x row expansion\",\n        },\n        \"exposure_to_rewards\": {\n            \"left_rows\": len(exposure),\n            \"right_rows\": len(rewards),\n            \"joined_rows\": len(exp_rwd),\n            \"expansion_ratio\": round(len(exp_rwd) / len(exposure), 4),\n            \"cardinality\": \"one_to_many\",\n            \"note\": \"u2 has 2 rewards, causing 1.1x row expansion\",\n        },\n        \"exposure_to_users\": {\n            \"left_rows\": len(exposure),\n            \"right_rows\": len(users),\n            \"joined_rows\": len(exp_usr),\n            \"expansion_ratio\": round(len(exp_usr) / len(exposure), 4),\n            \"cardinality\": \"one_to_one\",\n            \"note\": \"no row expansion\",\n        },\n    }\n\n    # ── 4. treatment/control 分布 ────────────────────────────────\n    group_counts = exposure[\"treatment_group\"].value_counts()\n    group_distribution = {\n        \"treatment\": int(group_counts.get(\"treatment\", 0)),\n        \"control\": int(group_counts.get(\"control\", 0)),\n        \"total\": len(exposure),\n        \"control_to_treatment_ratio\": round(\n            group_counts.get(\"control\", 0) / group_counts.get(\"treatment\", 1), 4\n        ),\n        \"imbalance_warning\": group_counts.get(\"control\", 0) / group_counts.get(\"treatment\", 1) < 0.3,\n    }\n\n    # ── 5. SMD / 组间平衡 ────────────────────────────────────────\n    # 需要把 users 表 join 到 exposure 上才能拿到协变量\n    merged = exposure.merge(users, on=\"user_id\", how=\"left\")\n    treat = merged[merged[\"treatment_group\"] == \"treatment\"]\n    control = merged[merged[\"treatment_group\"] == \"control\"]\n\n    numeric_covariates = [\"historical_orders_30d\", \"historical_gmv_30d\", \"active_days_30d\"]\n    smd_summary = {}\n    for col in numeric_covariates:\n        s_t = pd.to_numeric(treat[col], errors=\"coerce\")\n        s_c = pd.to_numeric(control[col], errors=\"coerce\")\n        smd_val = compute_smd(s_t, s_c)\n        smd_summary[col] = {\n            \"smd\": round(smd_val, 6) if smd_val is not None else None,\n            \"treatment_mean\": round(s_t.mean(), 4) if s_t.count() > 0 else None,\n            \"control_mean\": round(s_c.mean(), 4) if s_c.count() > 0 else None,\n            \"balanced\": smd_val is not None and abs(smd_val) < 0.1,\n        }\n\n    # categorical: user_level\n    ul_t = treat[\"user_level\"].value_counts()\n    ul_c = control[\"user_level\"].value_counts()\n    all_levels = sorted(set(merged[\"user_level\"].dropna().unique()))\n    cat_balance = {}\n    for lvl in all_levels:\n        p_t = ul_t.get(lvl, 0) / max(len(treat), 1)\n        p_c = ul_c.get(lvl, 0) / max(len(control), 1)\n        cat_balance[f\"user_level={lvl}\"] = {\n            \"treatment_proportion\": round(p_t, 4),\n            \"control_proportion\": round(p_c, 4),\n            \"gap\": round(p_t - p_c, 4),\n        }\n\n    smd_summary[\"user_level\"] = {\n        \"type\": \"categorical\",\n        \"categories\": cat_balance,\n        \"note\": \"user_level is categorical; proportions reported instead of SMD\",\n    }\n\n    # ── 6. 补贴极端值 (IQR) ─────────────────────────────────────\n    sub_vals = pd.to_numeric(rewards[\"subsidy_amount\"], errors=\"coerce\")\n    q1 = sub_vals.quantile(0.25)\n    q3 = sub_vals.quantile(0.75)\n    iqr = q3 - q1\n    lower = q1 - 1.5 * iqr\n    upper = q3 + 1.5 * iqr\n    outliers = rewards[sub_vals.notna() & ((sub_vals < lower) | (sub_vals > upper))]\n    outlier_summary = {\n        \"method\": \"iqr_1.5\",\n        \"q1\": round(q1, 4),\n        \"q3\": round(q3, 4),\n        \"iqr\": round(iqr, 4),\n        \"lower_bound\": round(lower, 4),\n        \"upper_bound\": round(upper, 4),\n        \"outlier_count\": len(outliers),\n        \"outlier_user_ids\": outliers[\"user_id\"].tolist(),\n        \"outlier_details\": [\n            {\n                \"user_id\": row[\"user_id\"],\n                \"subsidy_amount\": int(row[\"subsidy_amount\"]),\n                \"activity_type\": row[\"activity_type\"],\n            }\n            for _, row in outliers.iterrows()\n        ],\n    }\n\n    # ── 7. 订单时间窗口错配 ─────────────────────────────────────\n    order_merged = exposure.merge(orders, on=\"user_id\", how=\"inner\")\n    mismatches = []\n    for _, row in order_merged.iterrows():\n        try:\n            w_start, w_end = parse_window(row[\"campaign_window\"])\n            o_time = pd.to_datetime(row[\"order_time\"])\n            if o_time < w_start or o_time > w_end:\n                mismatches.append(\n                    {\n                        \"user_id\": row[\"user_id\"],\n                        \"order_id\": row[\"order_id\"],\n                        \"order_time\": row[\"order_time\"],\n                        \"campaign_window\": row[\"campaign_window\"],\n                        \"gmv\": int(row[\"gmv\"]),\n                    }\n                )\n        except Exception:\n            pass\n\n    time_window_alignment = {\n        \"total_inner_orders\": len(order_merged),\n        \"mismatch_count\": len(mismatches),\n        \"mismatch_details\": mismatches,\n        \"mismatch_rate\": round(len(mismatches) / max(len(order_merged), 1), 4),\n    }\n\n    # ── 8. 综合 warnings ────────────────────────────────────────\n    warnings_list = []\n\n    # 8a. 组间不平衡\n    if group_distribution[\"imbalance_warning\"]:\n        warnings_list.append(\n            {\n                \"tag\": \"GROUP_IMBALANCE\",\n                \"severity\": \"high\",\n                \"message\": f\"对照组比例偏低 (control={group_distribution['control']}, treatment={group_distribution['treatment']})，可能影响 A/B 测试统计功效\",\n            }\n        )\n\n    # 8b. SMD 不平衡\n    for col, info in smd_summary.items():\n        if isinstance(info, dict) and info.get(\"smd\") is not None and abs(info[\"smd\"]) >= 0.1:\n            warnings_list.append(\n                {\n                    \"tag\": \"COVARIATE_IMBALANCE\",\n                    \"severity\": \"medium\",\n                    \"message\": f\"协变量 {col} 的 SMD={info['smd']:.4f}，超过 0.1 阈值，treatment/control 在该维度分布不均\",\n                }\n            )\n\n    # 8c. 补贴极端值\n    if outlier_summary[\"outlier_count\"] > 0:\n        warnings_list.append(\n            {\n                \"tag\": \"SUBSIDY_OUTLIER\",\n                \"severity\": \"high\",\n                \"message\": f\"发现 {outlier_summary['outlier_count']} 条补贴极端值 (用户 {outlier_summary['outlier_user_ids']})，最高补贴 {outlier_summary['outlier_details'][0]['subsidy_amount'] if outlier_summary['outlier_details'] else 'N/A'}，远超 IQR 上界 {outlier_summary['upper_bound']}\",\n            }\n        )\n\n    # 8d. 时间窗口错配\n    if time_window_alignment[\"mismatch_count\"] > 0:\n        warnings_list.append(\n            {\n                \"tag\": \"TIME_WINDOW_MISMATCH\",\n                \"severity\": \"high\",\n                \"message\": f\"发现 {time_window_alignment['mismatch_count']} 条订单时间超出活动窗口 (错配率 {time_window_alignment['mismatch_rate']:.1%})，可能归因于窗口外自然转化或活动归因口径问题\",\n            }\n        )\n\n    # 8e. 缺失值\n    if exposure[\"activity_type\"].isna().sum() > 0:\n        warnings_list.append(\n            {\n                \"tag\": \"MISSING_VALUE\",\n                \"severity\": \"low\",\n                \"message\": f\"campaign_exposure.activity_type 存在 {exposure['activity_type'].isna().sum()} 条缺失值\",\n            }\n        )\n    if rewards[\"subsidy_amount\"].isna().sum() > 0:\n        warnings_list.append(\n            {\n                \"tag\": \"MISSING_VALUE\",\n                \"severity\": \"low\",\n                \"message\": f\"rewards.subsidy_amount 存在 {rewards['subsidy_amount'].isna().sum()} 条缺失值\",\n            }\n        )\n    if rewards[\"activity_type\"].isna().sum() > 0:\n        warnings_list.append(\n            {\n                \"tag\": \"MISSING_VALUE\",\n                \"severity\": \"low\",\n                \"message\": f\"rewards.activity_type 存在 {rewards['activity_type'].isna().sum()} 条缺失值\",\n            }\n        )\n    if users[\"city_id\"].isna().sum() > 0:\n        warnings_list.append(\n            {\n                \"tag\": \"MISSING_VALUE\",\n                \"severity\": \"low\",\n                \"message\": f\"users.city_id 存在 {users['city_id'].isna().sum()} 条缺失值\",\n            }\n        )\n\n    # 8f. join 行扩张风险\n    for k, v in join_cardinality.items():\n        if v[\"expansion_ratio\"] > 1.0:\n            warnings_list.append(\n                {\n                    \"tag\": \"JOIN_EXPANSION\",\n                    \"severity\": \"medium\",\n                    \"message\": f\"{k} join 产生行扩张 (ratio={v['expansion_ratio']})，如做聚合统计需注意重复计算风险\",\n                }\n            )\n\n    # ── 9. 改进建议 ──────────────────────────────────────────────\n    how_to_do_differently = [\n        \"使用 stratified sampling 或 propensity score matching 优化 treatment/control 样本比例，避免对照组过小\",\n        \"定义更严格的补贴风控规则，对超过 IQR 上限 3 倍的值自动告警并人工复核\",\n        \"统一 activity_type 枚举值约束，消除空值与 'none'/'coupon' 混用\",\n        \"建立订单归属活动窗口的 ETL 校验，对窗口外订单标记 'natural_conversion' 而非直接归因于活动\",\n        \"补全 users.city_id 缺失值（可通过 IP/收货地址反推），或确认缺失为合理场景（如未登录访客）\",\n    ]\n\n    # ── 10. 输出 answer.json ────────────────────────────────────\n    answer = {\n        \"row_counts\": row_counts,\n        \"join_cardinality\": join_cardinality,\n        \"group_distribution\": group_distribution,\n        \"smd_summary\": smd_summary,\n        \"outlier_summary\": outlier_summary,\n        \"time_window_alignment\": time_window_alignment,\n        \"warnings\": warnings_list,\n        \"how_to_do_differently\": how_to_do_differently,\n    }\n\n    out_path = os.path.join(BASE_DIR, \"answer.json\")\n    with open(out_path, \"w\", encoding=\"utf-8\") as f:\n        json.dump(answer, f, ensure_ascii=False, indent=2)\n\n    print(f\"[solve.py] answer.json 已写入 ✅ ({len(answer['warnings'])} 条告警)\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+        "file_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\solve.py"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Error writing file: 'gbk' codec can't encode character '\\u2705' in position 11921: illegal multibyte sequence"
+      },
+      "elapsed_ms": 2
+    },
+    {
+      "name": "edit_file",
+      "arguments": {
+        "file_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\solve.py",
+        "new_string": "    print(f\"[solve.py] answer.json written ({len(answer['warnings'])} warnings)\")",
+        "old_string": "    print(f\"[solve.py] answer.json 已写入 ✅ ({len(answer['warnings'])} 条告警)\")"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Error: You must read this file before editing. Use read_file first to see its current contents."
+      },
+      "elapsed_ms": 1
+    },
+    {
+      "name": "write_file",
+      "arguments": {
+        "content": "\"\"\"\nsolve.py - Campaign sample construction data audit (growth_campaign_audit_001)\nOutputs answer.json to current directory per output_contract.\n\"\"\"\n\nimport json\nimport math\nimport os\nimport warnings\n\nimport pandas as pd\nimport numpy as np\n\nwarnings.filterwarnings(\"ignore\")\n\nBASE_DIR = os.path.dirname(os.path.abspath(__file__))\n\n\ndef load_csv(name):\n    return pd.read_csv(os.path.join(BASE_DIR, name))\n\n\ndef parse_window(w):\n    parts = w.split(\":\")\n    return pd.to_datetime(parts[0]), pd.to_datetime(parts[1])\n\n\ndef compute_smd(series_t, series_c):\n    mean_t = series_t.mean()\n    mean_c = series_c.mean()\n    var_t = series_t.var(ddof=1)\n    var_c = series_c.var(ddof=1)\n    n_t = series_t.count()\n    n_c = series_c.count()\n    if n_t < 2 or n_c < 2:\n        return None\n    pooled_std = math.sqrt(((n_t - 1) * var_t + (n_c - 1) * var_c) / (n_t + n_c - 2))\n    if pooled_std == 0 or pd.isna(pooled_std):\n        return None\n    return (mean_t - mean_c) / pooled_std\n\n\ndef main():\n    # 1. Load data\n    exposure = load_csv(\"campaign_exposure.csv\")\n    orders = load_csv(\"orders.csv\")\n    rewards = load_csv(\"rewards.csv\")\n    users = load_csv(\"users.csv\")\n\n    # 2. Row counts\n    row_counts = {\n        \"campaign_exposure\": len(exposure),\n        \"orders\": len(orders),\n        \"rewards\": len(rewards),\n        \"users\": len(users),\n    }\n\n    # 3. Join cardinality\n    exp_ord = exposure.merge(orders, on=\"user_id\", how=\"left\", suffixes=(\"\", \"_order\"))\n    exp_rwd = exposure.merge(rewards, on=\"user_id\", how=\"left\", suffixes=(\"_exp\", \"_rwd\"))\n    exp_usr = exposure.merge(users, on=\"user_id\", how=\"left\")\n\n    join_cardinality = {\n        \"exposure_to_orders\": {\n            \"left_rows\": len(exposure),\n            \"right_rows\": len(orders),\n            \"joined_rows\": len(exp_ord),\n            \"expansion_ratio\": round(len(exp_ord) / len(exposure), 4),\n            \"cardinality\": \"one_to_many\",\n            \"note\": \"u2 has 2 orders, causing 1.1x row expansion\",\n        },\n        \"exposure_to_rewards\": {\n            \"left_rows\": len(exposure),\n            \"right_rows\": len(rewards),\n            \"joined_rows\": len(exp_rwd),\n            \"expansion_ratio\": round(len(exp_rwd) / len(exposure), 4),\n            \"cardinality\": \"one_to_many\",\n            \"note\": \"u2 has 2 rewards, causing 1.1x row expansion\",\n        },\n        \"exposure_to_users\": {\n            \"left_rows\": len(exposure),\n            \"right_rows\": len(users),\n            \"joined_rows\": len(exp_usr),\n            \"expansion_ratio\": round(len(exp_usr) / len(exposure), 4),\n            \"cardinality\": \"one_to_one\",\n            \"note\": \"no row expansion\",\n        },\n    }\n\n    # 4. Treatment/control distribution\n    group_counts = exposure[\"treatment_group\"].value_counts()\n    group_distribution = {\n        \"treatment\": int(group_counts.get(\"treatment\", 0)),\n        \"control\": int(group_counts.get(\"control\", 0)),\n        \"total\": len(exposure),\n        \"control_to_treatment_ratio\": round(\n            group_counts.get(\"control\", 0) / group_counts.get(\"treatment\", 1), 4\n        ),\n        \"imbalance_warning\": group_counts.get(\"control\", 0) / group_counts.get(\"treatment\", 1) < 0.3,\n    }\n\n    # 5. SMD / group balance\n    merged = exposure.merge(users, on=\"user_id\", how=\"left\")\n    treat = merged[merged[\"treatment_group\"] == \"treatment\"]\n    control = merged[merged[\"treatment_group\"] == \"control\"]\n\n    numeric_covariates = [\"historical_orders_30d\", \"historical_gmv_30d\", \"active_days_30d\"]\n    smd_summary = {}\n    for col in numeric_covariates:\n        s_t = pd.to_numeric(treat[col], errors=\"coerce\")\n        s_c = pd.to_numeric(control[col], errors=\"coerce\")\n        smd_val = compute_smd(s_t, s_c)\n        smd_summary[col] = {\n            \"smd\": round(smd_val, 6) if smd_val is not None else None,\n            \"treatment_mean\": round(s_t.mean(), 4) if s_t.count() > 0 else None,\n            \"control_mean\": round(s_c.mean(), 4) if s_c.count() > 0 else None,\n            \"balanced\": smd_val is not None and abs(smd_val) < 0.1,\n        }\n\n    # Categorical: user_level\n    ul_t = treat[\"user_level\"].value_counts()\n    ul_c = control[\"user_level\"].value_counts()\n    all_levels = sorted(set(merged[\"user_level\"].dropna().unique()))\n    cat_balance = {}\n    for lvl in all_levels:\n        p_t = ul_t.get(lvl, 0) / max(len(treat), 1)\n        p_c = ul_c.get(lvl, 0) / max(len(control), 1)\n        cat_balance[\"user_level=\" + str(lvl)] = {\n            \"treatment_proportion\": round(p_t, 4),\n            \"control_proportion\": round(p_c, 4),\n            \"gap\": round(p_t - p_c, 4),\n        }\n\n    smd_summary[\"user_level\"] = {\n        \"type\": \"categorical\",\n        \"categories\": cat_balance,\n        \"note\": \"user_level is categorical; proportions reported instead of SMD\",\n    }\n\n    # 6. Subsidy outliers (IQR)\n    sub_vals = pd.to_numeric(rewards[\"subsidy_amount\"], errors=\"coerce\")\n    q1 = sub_vals.quantile(0.25)\n    q3 = sub_vals.quantile(0.75)\n    iqr = q3 - q1\n    lower = q1 - 1.5 * iqr\n    upper = q3 + 1.5 * iqr\n    outliers = rewards[sub_vals.notna() & ((sub_vals < lower) | (sub_vals > upper))]\n    outlier_summary = {\n        \"method\": \"iqr_1.5\",\n        \"q1\": round(q1, 4),\n        \"q3\": round(q3, 4),\n        \"iqr\": round(iqr, 4),\n        \"lower_bound\": round(lower, 4),\n        \"upper_bound\": round(upper, 4),\n        \"outlier_count\": len(outliers),\n        \"outlier_user_ids\": outliers[\"user_id\"].tolist(),\n        \"outlier_details\": [\n            {\n                \"user_id\": row[\"user_id\"],\n                \"subsidy_amount\": int(row[\"subsidy_amount\"]),\n                \"activity_type\": row[\"activity_type\"],\n            }\n            for _, row in outliers.iterrows()\n        ],\n    }\n\n    # 7. Time window alignment\n    order_merged = exposure.merge(orders, on=\"user_id\", how=\"inner\")\n    mismatches = []\n    for _, row in order_merged.iterrows():\n        try:\n            w_start, w_end = parse_window(row[\"campaign_window\"])\n            o_time = pd.to_datetime(row[\"order_time\"])\n            if o_time < w_start or o_time > w_end:\n                mismatches.append(\n                    {\n                        \"user_id\": row[\"user_id\"],\n                        \"order_id\": row[\"order_id\"],\n                        \"order_time\": row[\"order_time\"],\n                        \"campaign_window\": row[\"campaign_window\"],\n                        \"gmv\": int(row[\"gmv\"]),\n                    }\n                )\n        except Exception:\n            pass\n\n    time_window_alignment = {\n        \"total_inner_orders\": len(order_merged),\n        \"mismatch_count\": len(mismatches),\n        \"mismatch_details\": mismatches,\n        \"mismatch_rate\": round(len(mismatches) / max(len(order_merged), 1), 4),\n    }\n\n    # 8. Warnings\n    warnings_list = []\n\n    if group_distribution[\"imbalance_warning\"]:\n        warnings_list.append(\n            {\n                \"tag\": \"GROUP_IMBALANCE\",\n                \"severity\": \"high\",\n                \"message\": \"Control group proportion is low (control={}, treatment={}), may affect A/B test statistical power\".format(\n                    group_distribution[\"control\"], group_distribution[\"treatment\"]\n                ),\n            }\n        )\n\n    for col, info in smd_summary.items():\n        if isinstance(info, dict) and info.get(\"smd\") is not None and abs(info[\"smd\"]) >= 0.1:\n            warnings_list.append(\n                {\n                    \"tag\": \"COVARIATE_IMBALANCE\",\n                    \"severity\": \"medium\",\n                    \"message\": \"Covariate {} has SMD={:.4f}, exceeding 0.1 threshold, distribution differs between groups\".format(\n                        col, info[\"smd\"]\n                    ),\n                }\n            )\n\n    if outlier_summary[\"outlier_count\"] > 0:\n        amt = outlier_summary[\"outlier_details\"][0][\"subsidy_amount\"] if outlier_summary[\"outlier_details\"] else \"N/A\"\n        warnings_list.append(\n            {\n                \"tag\": \"SUBSIDY_OUTLIER\",\n                \"severity\": \"high\",\n                \"message\": \"Found {} subsidy outliers (users {}), max subsidy {}, far above IQR upper bound {}\".format(\n                    outlier_summary[\"outlier_count\"],\n                    outlier_summary[\"outlier_user_ids\"],\n                    amt,\n                    outlier_summary[\"upper_bound\"],\n                ),\n            }\n        )\n\n    if time_window_alignment[\"mismatch_count\"] > 0:\n        warnings_list.append(\n            {\n                \"tag\": \"TIME_WINDOW_MISMATCH\",\n                \"severity\": \"high\",\n                \"message\": \"Found {} orders outside campaign window (mismatch rate {:.1%}), may be natural conversions or attribution issue\".format(\n                    time_window_alignment[\"mismatch_count\"],\n                    time_window_alignment[\"mismatch_rate\"],\n                ),\n            }\n        )\n\n    if exposure[\"activity_type\"].isna().sum() > 0:\n        warnings_list.append(\n            {\n                \"tag\": \"MISSING_VALUE\",\n                \"severity\": \"low\",\n                \"message\": \"campaign_exposure.activity_type has {} missing values\".format(\n                    exposure[\"activity_type\"].isna().sum()\n                ),\n            }\n        )\n    if rewards[\"subsidy_amount\"].isna().sum() > 0:\n        warnings_list.append(\n            {\n                \"tag\": \"MISSING_VALUE\",\n                \"severity\": \"low\",\n                \"message\": \"rewards.subsidy_amount has {} missing values\".format(\n                    rewards[\"subsidy_amount\"].isna().sum()\n                ),\n            }\n        )\n    if rewards[\"activity_type\"].isna().sum() > 0:\n        warnings_list.append(\n            {\n                \"tag\": \"MISSING_VALUE\",\n                \"severity\": \"low\",\n                \"message\": \"rewards.activity_type has {} missing values\".format(\n                    rewards[\"activity_type\"].isna().sum()\n                ),\n            }\n        )\n    if users[\"city_id\"].isna().sum() > 0:\n        warnings_list.append(\n            {\n                \"tag\": \"MISSING_VALUE\",\n                \"severity\": \"low\",\n                \"message\": \"users.city_id has {} missing values\".format(\n                    users[\"city_id\"].isna().sum()\n                ),\n            }\n        )\n\n    for k, v in join_cardinality.items():\n        if v[\"expansion_ratio\"] > 1.0:\n            warnings_list.append(\n                {\n                    \"tag\": \"JOIN_EXPANSION\",\n                    \"severity\": \"medium\",\n                    \"message\": \"{} join produces row expansion (ratio={}), aggregation may double-count\".format(\n                        k, v[\"expansion_ratio\"]\n                    ),\n                }\n            )\n\n    # 9. Improvement suggestions\n    how_to_do_differently = [\n        \"Use stratified sampling or propensity score matching to improve treatment/control ratio\",\n        \"Define strict subsidy risk rules: auto-alert for values >3x IQR upper bound\",\n        \"Standardize activity_type enum to prevent mixing empty values with 'none'/'coupon'\",\n        \"Add ETL validation for order-to-campaign window alignment, tag out-of-window orders as natural_conversion\",\n        \"Fill missing city_id in users table via IP/shipping address reverse lookup\",\n    ]\n\n    # 10. Write answer.json\n    answer = {\n        \"row_counts\": row_counts,\n        \"join_cardinality\": join_cardinality,\n        \"group_distribution\": group_distribution,\n        \"smd_summary\": smd_summary,\n        \"outlier_summary\": outlier_summary,\n        \"time_window_alignment\": time_window_alignment,\n        \"warnings\": warnings_list,\n        \"how_to_do_differently\": how_to_do_differently,\n    }\n\n    out_path = os.path.join(BASE_DIR, \"answer.json\")\n    with open(out_path, \"w\", encoding=\"utf-8\") as f:\n        json.dump(answer, f, ensure_ascii=False, indent=2)\n\n    print(\"[solve.py] answer.json written ({} warnings)\".format(len(answer[\"warnings\"])))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+        "file_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\solve.py"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Error: You must read this file before writing. Use read_file first to see its current contents."
+      },
+      "elapsed_ms": 1
+    }
+  ],
+  "final_answer": null,
+  "expected_answer": null,
+  "validation": {
+    "passed": false,
+    "actual": null,
+    "expected": "real_api_code_agent completed",
+    "diff": null
+  },
+  "failure_type": "real_api_code_agent_error",
+  "metrics": {
+    "code_execution_success_rate": null,
+    "test_pass_rate": null,
+    "validation_pass_rate": null,
+    "generated_code_saved": false,
+    "answer_file_saved": false,
+    "solve_py_runtime_seconds": null,
+    "sandbox_timeout_count": 0,
+    "dependency_failure_count": 0,
+    "tool_error_count": 0
+  },
+  "elapsed_ms": 172394,
+  "started_at": "2026-06-07T02:10:05Z",
+  "ended_at": "2026-06-07T02:12:57Z",
+  "benchmark_category": "real_api_code_agent",
+  "result_dir": "benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1",
+  "code_generation_source": "llm_generated",
+  "output_contract": {
+    "validation_mode": "pytest",
+    "answer_json_required_keys": [
+      "row_counts",
+      "join_cardinality",
+      "group_distribution",
+      "smd_summary",
+      "outlier_summary",
+      "time_window_alignment",
+      "warnings",
+      "how_to_do_differently"
+    ],
+    "schema_description": "answer.json 顶层必须直接输出这些字段；不要把审计结果整体包在 audit_results 下面。warnings 应包含可检索的风险标签和中文业务提示。"
+  },
+  "schema_check": null,
+  "dependency_check": {
+    "ok": true,
+    "checks": [
+      {
+        "package": "pandas",
+        "import_name": "pandas",
+        "required_for": "pandas_backend",
+        "installed": true,
+        "version": "3.0.3"
+      },
+      {
+        "package": "numpy",
+        "import_name": "numpy",
+        "required_for": "array_backend",
+        "installed": true,
+        "version": "2.4.6"
+      },
+      {
+        "package": "openpyxl",
+        "import_name": "openpyxl",
+        "required_for": "xlsx_backend",
+        "installed": true,
+        "version": "3.1.5"
+      },
+      {
+        "package": "pytest",
+        "import_name": "pytest",
+        "required_for": "sandbox_test_runner",
+        "installed": true,
+        "version": "9.0.3"
+      },
+      {
+        "package": "openai",
+        "import_name": "openai",
+        "required_for": "real_api_code_agent",
+        "installed": true,
+        "version": "2.40.0"
+      },
+      {
+        "package": "anthropic",
+        "import_name": "anthropic",
+        "required_for": "real_api_code_agent",
+        "installed": true,
+        "version": "0.105.2"
+      },
+      {
+        "package": "rich",
+        "import_name": "rich",
+        "required_for": "real_api_code_agent_ui",
+        "installed": true,
+        "version": "15.0.0"
+      }
+    ],
+    "missing": [],
+    "failure_type": null,
+    "auto_install": true,
+    "install_logs": []
+  },
+  "workspace_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent",
+  "generated_code_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\solve.py",
+  "answer_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\workspaces\\growth_campaign_audit_001.real_api_code_agent\\answer.json",
+  "error": "UnicodeEncodeError: 'gbk' codec can't encode character '\\u2139' in position 0: illegal multibyte sequence",
+  "api_error_type": "UnicodeEncodeError",
+  "trace_path": "benchmarks\\results\\real_api_code_agent\\20260607-021005__model-deepseek-v4-flash__tasks-v0.0.3-real-api-rerun-1\\traces\\growth_campaign_audit_001.real_api_code_agent.json"
+}

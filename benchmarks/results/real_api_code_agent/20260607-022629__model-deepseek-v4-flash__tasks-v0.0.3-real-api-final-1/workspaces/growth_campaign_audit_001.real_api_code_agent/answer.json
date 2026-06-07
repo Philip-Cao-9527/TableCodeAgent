@@ -1,0 +1,224 @@
+{
+  "row_counts": {
+    "campaign_exposure": 10,
+    "users": 10,
+    "rewards": 9,
+    "orders": 9
+  },
+  "join_cardinality": {
+    "exposure_to_rewards_keys": [
+      "user_id",
+      "campaign_id",
+      "campaign_window"
+    ],
+    "exposure_to_orders_keys": [
+      "user_id"
+    ],
+    "exposure_to_users_keys": [
+      "user_id"
+    ],
+    "exposure_rows": 10,
+    "exposure_rewards_joined_rows": 11,
+    "exposure_orders_joined_rows": 11,
+    "exposure_users_joined_rows": 10,
+    "exposure_duplicate_rows_on_key": 0,
+    "exposure_unique_keys": 10,
+    "rewards_users_with_rewards": 8,
+    "orders_users_with_orders": 8,
+    "exposure_users_without_rewards": [
+      "u10",
+      "u9"
+    ],
+    "exposure_users_without_orders": [
+      "u6",
+      "u7"
+    ]
+  },
+  "group_distribution": {
+    "treatment_count": 8,
+    "control_count": 2,
+    "treatment_control_ratio": 0.25,
+    "min_required_ratio": 0.5,
+    "ratio_pass": false,
+    "all_group_counts": {
+      "treatment": 8,
+      "control": 2
+    }
+  },
+  "smd_summary": {
+    "covariates_used": [
+      "historical_orders_30d",
+      "historical_gmv_30d",
+      "active_days_30d",
+      "user_level"
+    ],
+    "smd_threshold": 0.1,
+    "results": {
+      "historical_orders_30d": {
+        "smd": 5.507366,
+        "treatment_mean": 8.875,
+        "control_mean": 0.5,
+        "threshold": 0.1,
+        "pass": "False"
+      },
+      "historical_gmv_30d": {
+        "smd": 2.452307,
+        "treatment_mean": 336.25,
+        "control_mean": 10.0,
+        "threshold": 0.1,
+        "pass": "False"
+      },
+      "active_days_30d": {
+        "smd": 4.329559,
+        "treatment_mean": 13.875,
+        "control_mean": 1.5,
+        "threshold": 0.1,
+        "pass": "False"
+      },
+      "user_level": {
+        "balance_gaps_pct": {
+          "bronze": 100.0,
+          "gold": 50.0,
+          "platinum": 25.0,
+          "silver": 25.0
+        },
+        "max_gap_pct": 100.0,
+        "pass": "False"
+      }
+    },
+    "all_pass": false,
+    "failed_covariates": [
+      "historical_orders_30d",
+      "historical_gmv_30d",
+      "active_days_30d",
+      "user_level"
+    ]
+  },
+  "outlier_summary": {
+    "column": "subsidy_amount",
+    "q1": 14.25,
+    "q3": 26.25,
+    "iqr": 12.0,
+    "lower_bound": -3.75,
+    "upper_bound": 44.25,
+    "outlier_count": 1,
+    "total_non_null": 8,
+    "outlier_details": [
+      {
+        "user_id": "u8",
+        "subsidy_amount": 500.0
+      }
+    ],
+    "max_subsidy_amount": 500.0,
+    "has_outliers": true
+  },
+  "time_window_alignment": {
+    "exposed_users_with_orders": 8,
+    "orders_in_window": 5,
+    "orders_outside_window": 4,
+    "total_orders_exposed": 9,
+    "exposed_users_without_orders": [
+      "u6",
+      "u7"
+    ],
+    "misalignment_rate": 0.4444,
+    "details": [
+      {
+        "user_id": "u2",
+        "order_id": "o3",
+        "order_time": "2026-05-10",
+        "campaign_window": "2026-05-01:2026-05-07",
+        "issue": "outside_window",
+        "days_offset": 3
+      },
+      {
+        "user_id": "u3",
+        "order_id": "o4",
+        "order_time": "2026-04-30",
+        "campaign_window": "2026-05-01:2026-05-07",
+        "issue": "outside_window",
+        "days_offset": -1
+      },
+      {
+        "user_id": "u5",
+        "order_id": "o6",
+        "order_time": "2026-05-08",
+        "campaign_window": "2026-05-01:2026-05-07",
+        "issue": "outside_window",
+        "days_offset": 1
+      },
+      {
+        "user_id": "u10",
+        "order_id": "o9",
+        "order_time": "2026-04-29",
+        "campaign_window": "2026-05-01:2026-05-07",
+        "issue": "outside_window",
+        "days_offset": -2
+      }
+    ]
+  },
+  "warnings": [
+    {
+      "risk_tag": "GROUP_IMBALANCE",
+      "description": "对照组/实验组比例 0.25 低于最低要求 0.5，样本分组严重不均衡",
+      "severity": "high"
+    },
+    {
+      "risk_tag": "COVARIATE_IMBALANCE",
+      "description": "以下协变量在组间存在显著差异 (SMD >= 0.1): ['historical_orders_30d', 'historical_gmv_30d', 'active_days_30d', 'user_level']，可能影响效应估计",
+      "severity": "high",
+      "failed_covariates": [
+        "historical_orders_30d",
+        "historical_gmv_30d",
+        "active_days_30d",
+        "user_level"
+      ]
+    },
+    {
+      "risk_tag": "SUBSIDY_OUTLIER",
+      "description": "补贴金额存在 1 个极端值 (上限 44.25)，最高值 500.0，需排查是否为录入错误或特殊策略",
+      "severity": "medium",
+      "outlier_count": 1
+    },
+    {
+      "risk_tag": "TIME_WINDOW_MISMATCH",
+      "description": "有 4/9 笔订单不在活动窗口内，转化的归因口径可能不准确",
+      "severity": "high",
+      "misaligned_count": 4
+    },
+    {
+      "risk_tag": "MISSING_EXPOSURE_ACTIVITY",
+      "description": "campaign_exposure 中有 1 条记录的 activity_type 为空",
+      "severity": "low"
+    },
+    {
+      "risk_tag": "REWARDS_GAP",
+      "description": "以下曝光用户未在 rewards 表中出现: ['u10', 'u9']，可能缺少补贴记录",
+      "severity": "medium",
+      "users": [
+        "u10",
+        "u9"
+      ]
+    },
+    {
+      "risk_tag": "NO_ORDER_USERS",
+      "description": "以下曝光用户没有任何订单记录: ['u6', 'u7']",
+      "severity": "medium",
+      "users": [
+        "u6",
+        "u7"
+      ]
+    }
+  ],
+  "how_to_do_differently": {
+    "note": "以下是针对本数据审计流程的改进方向",
+    "suggestions": [
+      "在实验设计阶段使用分层随机化(stratified randomization)或PSM来确保treatment/control组间协变量均衡，避免事后才发现严重不平衡",
+      "对subsidy_amount设置业务合理的上下限阈值，在数据入库环节做校验拦截，而非事后排查",
+      "建立campaign_window与order_time的入库级联约束，确保只有窗口内的订单才能关联到活动曝光记录",
+      "完善数据完整性约束：campaign_exposure的activity_type应有非空约束，rewards的subsidy_amount应有非空约束",
+      "增加exposure-rewards之间的外键引用或定期对账机制，避免曝光用户缺少对应的奖励记录",
+      "审计流程本身可以自动化配置化，每次活动投放后自动生成审计报告"
+    ]
+  }
+}

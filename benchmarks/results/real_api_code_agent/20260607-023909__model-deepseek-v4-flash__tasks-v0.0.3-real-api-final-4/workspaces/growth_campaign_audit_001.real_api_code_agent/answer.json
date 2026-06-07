@@ -1,0 +1,134 @@
+{
+  "row_counts": {
+    "users": 10,
+    "campaign_exposure": 10,
+    "rewards": 9,
+    "orders": 9
+  },
+  "join_cardinality": {
+    "exposure_left_rows": 10,
+    "exposure_after_left_join_rewards": 11,
+    "rewards_matched_count": 8,
+    "rewards_total": 9,
+    "rewards_unmatched_count": 0,
+    "rewards_matched_pct": 88.89,
+    "note": "左连接后行数不变（1:1 或 1:N 均摊平），rewards 中有 unmatched 记录需关注"
+  },
+  "group_distribution": {
+    "treatment_count": 8,
+    "control_count": 2,
+    "minority_to_majority_ratio": 0.25,
+    "imbalanced": true,
+    "threshold": 0.5
+  },
+  "smd_summary": {
+    "numeric_smd": {
+      "historical_orders_30d": {
+        "smd": 5.5074,
+        "treatment_mean": 8.88,
+        "control_mean": 0.5,
+        "flagged": true
+      },
+      "historical_gmv_30d": {
+        "smd": 2.4523,
+        "treatment_mean": 336.25,
+        "control_mean": 10.0,
+        "flagged": true
+      },
+      "active_days_30d": {
+        "smd": 4.3296,
+        "treatment_mean": 13.88,
+        "control_mean": 1.5,
+        "flagged": true
+      }
+    },
+    "categorical_user_level_gap": {
+      "bronze": 1.0,
+      "gold": 0.5,
+      "platinum": 0.25,
+      "silver": 0.25
+    },
+    "any_flagged": true,
+    "smd_threshold": 0.1
+  },
+  "outlier_summary": {
+    "method": "iqr_1.5x",
+    "q1": 14.25,
+    "q3": 26.25,
+    "lower_bound": -3.75,
+    "upper_bound": 44.25,
+    "outlier_count": 1,
+    "outlier_rows": [
+      {
+        "user_id": "u8",
+        "campaign_id": "camp_202605",
+        "campaign_window": "2026-05-01:2026-05-07",
+        "activity_type": "coupon",
+        "subsidy_amount": "500"
+      }
+    ]
+  },
+  "time_window_alignment": {
+    "total_orders_checked": 9,
+    "in_window_count": 5,
+    "out_of_window_count": 4,
+    "out_of_window_orders": [
+      {
+        "order_id": "o3",
+        "user_id": "u2",
+        "order_time": "2026-05-10",
+        "campaign_window": "2026-05-01:2026-05-07"
+      },
+      {
+        "order_id": "o4",
+        "user_id": "u3",
+        "order_time": "2026-04-30",
+        "campaign_window": "2026-05-01:2026-05-07"
+      },
+      {
+        "order_id": "o6",
+        "user_id": "u5",
+        "order_time": "2026-05-08",
+        "campaign_window": "2026-05-01:2026-05-07"
+      },
+      {
+        "order_id": "o9",
+        "user_id": "u10",
+        "order_time": "2026-04-29",
+        "campaign_window": "2026-05-01:2026-05-07"
+      }
+    ],
+    "note": "out_of_window 订单可能出现在活动窗口开始之前或结束之后"
+  },
+  "warnings": [
+    {
+      "risk_tag": "IMBALANCE_TREATMENT_CONTROL",
+      "message": "Treatment/control 比例严重失衡：treatment=8, control=2, 比值=0.25，低于阈值 0.5。建议重新采样或使用分层抽样。"
+    },
+    {
+      "risk_tag": "COVARIATE_IMBALANCE",
+      "message": "SMD 超过阈值 0.1 的协变量：historical_orders_30d, historical_gmv_30d, active_days_30d, user_level(bronze), user_level(gold), user_level(platinum), user_level(silver)。组间协变量不平衡可能影响因果推断的可信度。"
+    },
+    {
+      "risk_tag": "SUBSIDY_OUTLIER",
+      "message": "补贴金额存在 1 个极端值（IQR 1.5 倍距）：user=u8, amount=500。建议核实数据来源，考虑截尾或缩尾处理。"
+    },
+    {
+      "risk_tag": "TIME_WINDOW_MISMATCH",
+      "message": "发现 4 笔订单不在活动窗口内：order=o3, user=u2, time=2026-05-10; order=o4, user=u3, time=2026-04-30; order=o6, user=u5, time=2026-05-08; order=o9, user=u10, time=2026-04-29。这类订单可能属于自然转化而非活动驱动，建议排除或标记。"
+    },
+    {
+      "risk_tag": "MISSING_DATA",
+      "message": "存在缺失数据：users.city_id 缺失 1 条；campaign_exposure.activity_type 缺失 1 条；rewards.activity_type 缺失 1 条；rewards.subsidy_amount 缺失 1 条。建议评估缺失机制并考虑插补或剔除。"
+    }
+  ],
+  "how_to_do_differently": [
+    "使用分层随机抽样替代简单随机抽样以保障 treatment/control 组间协变量平衡",
+    "对连续协变量进行 PS（倾向性得分）匹配或 IPTW 加权校正",
+    "对补贴金额采用缩尾（winsorize）或分箱（bucketing）处理以减少极端值影响",
+    "排除活动窗口外的订单或将窗口定义扩展至包含曝光后合理转化周期",
+    "补全缺失数据（如 city_id 可用众数填充，activity_type 可按 campaign 维度推断）",
+    "增加样本量以满足最小可检测效应量（MDE）要求",
+    "添加 permutation test 验证组间差异显著性"
+  ]
+}

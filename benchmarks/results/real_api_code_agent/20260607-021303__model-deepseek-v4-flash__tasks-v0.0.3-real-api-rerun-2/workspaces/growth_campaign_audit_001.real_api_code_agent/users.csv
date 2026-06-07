@@ -1,0 +1,11 @@
+user_id,city_id,user_level,historical_orders_30d,historical_gmv_30d,active_days_30d
+u1,101,gold,8,240,12
+u2,101,gold,9,300,15
+u3,102,silver,7,180,10
+u4,102,gold,10,400,16
+u5,,platinum,12,500,20
+u6,103,gold,8,220,11
+u7,103,silver,6,150,9
+u8,104,platinum,11,700,18
+u9,104,bronze,1,20,2
+u10,105,bronze,0,0,1

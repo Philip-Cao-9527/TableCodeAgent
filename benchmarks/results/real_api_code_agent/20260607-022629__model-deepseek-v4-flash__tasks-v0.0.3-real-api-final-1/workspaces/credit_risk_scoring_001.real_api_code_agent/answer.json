@@ -1,0 +1,539 @@
+{
+  "row_counts": {
+    "total_rows": 8,
+    "unique_applications": 7,
+    "unique_users": 7,
+    "duplicate_rows": 1,
+    "duplicate_application_ids": [
+      "a003"
+    ]
+  },
+  "field_summary": {
+    "application_id": {
+      "dtype": "string",
+      "non_null_count": 8,
+      "missing_count": 0,
+      "missing_rate": 0.0,
+      "unique_count": 7
+    },
+    "user_id": {
+      "dtype": "string",
+      "non_null_count": 8,
+      "missing_count": 0,
+      "missing_rate": 0.0,
+      "unique_count": 7
+    },
+    "application_time": {
+      "dtype": "string",
+      "non_null_count": 8,
+      "missing_count": 0,
+      "missing_rate": 0.0,
+      "unique_count": 7
+    },
+    "loan_amount": {
+      "dtype": "string",
+      "non_null_count": 8,
+      "missing_count": 0,
+      "missing_rate": 0.0,
+      "unique_count": 7,
+      "min": 3000.0,
+      "max": 50000.0,
+      "mean": 21125.0
+    },
+    "income": {
+      "dtype": "string",
+      "non_null_count": 8,
+      "missing_count": 0,
+      "missing_rate": 0.0,
+      "unique_count": 7,
+      "min": 0.0,
+      "max": 85000.0,
+      "mean": 46125.0
+    },
+    "age": {
+      "dtype": "string",
+      "non_null_count": 7,
+      "missing_count": 1,
+      "missing_rate": 0.125,
+      "unique_count": 6,
+      "min": 17.0,
+      "max": 45.0,
+      "mean": 32.86
+    },
+    "region": {
+      "dtype": "string",
+      "non_null_count": 8,
+      "missing_count": 0,
+      "missing_rate": 0.0,
+      "unique_count": 4
+    },
+    "credit_score": {
+      "dtype": "string",
+      "non_null_count": 8,
+      "missing_count": 0,
+      "missing_rate": 0.0,
+      "unique_count": 7,
+      "min": 590.0,
+      "max": 720.0,
+      "mean": 648.75
+    },
+    "existing_debt": {
+      "dtype": "string",
+      "non_null_count": 8,
+      "missing_count": 0,
+      "missing_rate": 0.0,
+      "unique_count": 7,
+      "min": 0.0,
+      "max": 42000.0,
+      "mean": 22125.0
+    },
+    "employment_years": {
+      "dtype": "string",
+      "non_null_count": 8,
+      "missing_count": 0,
+      "missing_rate": 0.0,
+      "unique_count": 7,
+      "min": 0.0,
+      "max": 6.0,
+      "mean": 2.31
+    },
+    "default_90d": {
+      "dtype": "string",
+      "non_null_count": 7,
+      "missing_count": 1,
+      "missing_rate": 0.125,
+      "unique_count": 2,
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.57
+    },
+    "post_loan_collection_calls": {
+      "dtype": "string",
+      "non_null_count": 8,
+      "missing_count": 0,
+      "missing_rate": 0.0,
+      "unique_count": 5,
+      "min": 0.0,
+      "max": 5.0,
+      "mean": 2.25
+    }
+  },
+  "data_quality": {
+    "total_issues": 6,
+    "issues": [
+      {
+        "type": "missing_value",
+        "column": "age",
+        "count": 1,
+        "indices": [
+          7
+        ]
+      },
+      {
+        "type": "missing_value",
+        "column": "default_90d",
+        "count": 1,
+        "indices": [
+          7
+        ]
+      },
+      {
+        "type": "duplicate_primary_key",
+        "column": "application_id",
+        "duplicate_ids": [
+          "a003"
+        ],
+        "detail": [
+          {
+            "row_index": 2,
+            "application_id": "a003",
+            "user_id": "u3",
+            "application_time": "2026-02-03",
+            "loan_amount": "50000",
+            "income": "60000",
+            "age": "45",
+            "region": "East",
+            "credit_score": "590",
+            "existing_debt": "42000",
+            "employment_years": "2",
+            "default_90d": "1",
+            "post_loan_collection_calls": "5"
+          },
+          {
+            "row_index": 3,
+            "application_id": "a003",
+            "user_id": "u3",
+            "application_time": "2026-02-03",
+            "loan_amount": "50000",
+            "income": "60000",
+            "age": "45",
+            "region": "East",
+            "credit_score": "590",
+            "existing_debt": "42000",
+            "employment_years": "2",
+            "default_90d": "1",
+            "post_loan_collection_calls": "5"
+          }
+        ]
+      },
+      {
+        "type": "anomalous_age",
+        "threshold": "age < 18",
+        "indices": [
+          4
+        ],
+        "values": [
+          17
+        ]
+      },
+      {
+        "type": "zero_income",
+        "indices": [
+          4
+        ],
+        "count": 1
+      },
+      {
+        "type": "leakage_column_present",
+        "columns": [
+          "post_loan_collection_calls"
+        ],
+        "note": "这些字段包含贷后信息，不能用于贷前评分特征"
+      }
+    ]
+  },
+  "feature_processing": {
+    "pipeline_steps": [
+      {
+        "step": "drop_duplicates",
+        "description": "按 application_id 去重，保留第一条记录",
+        "affected_rows": 1
+      },
+      {
+        "step": "handle_missing_age",
+        "description": "用年龄中位数填充缺失值",
+        "strategy": "median",
+        "fill_value": 34.0
+      },
+      {
+        "step": "handle_missing_target",
+        "description": "default_90d 缺失行在训练时剔除，评分时不影响",
+        "strategy": "drop_for_training"
+      },
+      {
+        "step": "anomalous_age_cap",
+        "description": "年龄 < 18 的样本标记为异常，可考虑拒绝或人工审核"
+      },
+      {
+        "step": "zero_income_handling",
+        "description": "收入为 0 的样本标记异常，可考虑拒绝或人工审核"
+      },
+      {
+        "step": "feature_derivation",
+        "description": "构造 dti_ratio = existing_debt / income，loan_income_ratio = loan_amount / income"
+      },
+      {
+        "step": "remove_leakage",
+        "description": "剔除 post_loan_collection_calls（贷后字段）"
+      },
+      {
+        "step": "remove_target",
+        "description": "default_90d 仅用作标签，不进入评分特征"
+      },
+      {
+        "step": "numeric_scale",
+        "description": "数值特征保持原始量纲，规则卡直接使用阈值打分"
+      }
+    ],
+    "features_used_for_scoring": [
+      "loan_amount",
+      "income",
+      "age",
+      "credit_score",
+      "existing_debt",
+      "employment_years",
+      "region"
+    ],
+    "features_excluded": {
+      "default_90d": "目标变量，贷前不可知",
+      "post_loan_collection_calls": "贷后泄漏字段，贷前不可知"
+    }
+  },
+  "scoring_result": {
+    "scorecard_name": "可解释规则卡 v1",
+    "scoring_feature_set": [
+      "credit_score",
+      "income",
+      "loan_income_ratio",
+      "employment_years",
+      "age",
+      "existing_debt",
+      "region"
+    ],
+    "scores": [
+      {
+        "application_id": "a001",
+        "score_breakdown": {
+          "credit_score_points": 30,
+          "income_points": 20,
+          "loan_income_ratio_points": 15,
+          "employment_years_points": 15,
+          "age_points": 10,
+          "existing_debt_points": 10,
+          "region_points": 5
+        },
+        "total_score": 105,
+        "max_possible": 110,
+        "risk_tier": "低风险 (A)"
+      },
+      {
+        "application_id": "a002",
+        "score_breakdown": {
+          "credit_score_points": 10,
+          "income_points": 10,
+          "loan_income_ratio_points": 15,
+          "employment_years_points": 0,
+          "age_points": 0,
+          "existing_debt_points": 10,
+          "region_points": 5
+        },
+        "total_score": 50,
+        "max_possible": 110,
+        "risk_tier": "中高风险 (C)"
+      },
+      {
+        "application_id": "a003",
+        "score_breakdown": {
+          "credit_score_points": 0,
+          "income_points": 20,
+          "loan_income_ratio_points": 5,
+          "employment_years_points": 10,
+          "age_points": 10,
+          "existing_debt_points": 5,
+          "region_points": 5
+        },
+        "total_score": 55,
+        "max_possible": 110,
+        "risk_tier": "中高风险 (C)"
+      },
+      {
+        "application_id": "a003",
+        "score_breakdown": {
+          "credit_score_points": 0,
+          "income_points": 20,
+          "loan_income_ratio_points": 5,
+          "employment_years_points": 10,
+          "age_points": 10,
+          "existing_debt_points": 5,
+          "region_points": 5
+        },
+        "total_score": 55,
+        "max_possible": 110,
+        "risk_tier": "中高风险 (C)"
+      },
+      {
+        "application_id": "a004",
+        "score_breakdown": {
+          "credit_score_points": 20,
+          "income_points": 5,
+          "loan_income_ratio_points": 0,
+          "employment_years_points": 0,
+          "age_points": 0,
+          "existing_debt_points": 15,
+          "region_points": 5
+        },
+        "total_score": 45,
+        "max_possible": 110,
+        "risk_tier": "中高风险 (C)"
+      },
+      {
+        "application_id": "a005",
+        "score_breakdown": {
+          "credit_score_points": 30,
+          "income_points": 15,
+          "loan_income_ratio_points": 15,
+          "employment_years_points": 10,
+          "age_points": 10,
+          "existing_debt_points": 10,
+          "region_points": 5
+        },
+        "total_score": 95,
+        "max_possible": 110,
+        "risk_tier": "低风险 (A)"
+      },
+      {
+        "application_id": "a006",
+        "score_breakdown": {
+          "credit_score_points": 10,
+          "income_points": 15,
+          "loan_income_ratio_points": 10,
+          "employment_years_points": 5,
+          "age_points": 10,
+          "existing_debt_points": 5,
+          "region_points": 5
+        },
+        "total_score": 60,
+        "max_possible": 110,
+        "risk_tier": "中高风险 (C)"
+      },
+      {
+        "application_id": "a007",
+        "score_breakdown": {
+          "credit_score_points": 20,
+          "income_points": 10,
+          "loan_income_ratio_points": 15,
+          "employment_years_points": 10,
+          "age_points": 0,
+          "existing_debt_points": 10,
+          "region_points": 5
+        },
+        "total_score": 70,
+        "max_possible": 110,
+        "risk_tier": "中低风险 (B)"
+      }
+    ],
+    "rule_definitions": {
+      "credit_score": {
+        ">=700": 30,
+        ">=650": 20,
+        ">=600": 10,
+        "<600": 0
+      },
+      "income": {
+        ">=60000": 20,
+        ">=40000": 15,
+        ">=20000": 10,
+        "<20000": 5
+      },
+      "loan_income_ratio": {
+        "<0.3": 15,
+        "<0.5": 10,
+        ">=0.5": 5
+      },
+      "employment_years": {
+        ">=5": 15,
+        ">=2": 10,
+        ">=1": 5,
+        "<1": 0
+      },
+      "age": {
+        "25-65": 10,
+        "otherwise": 0
+      },
+      "existing_debt": {
+        "<10000": 15,
+        "<30000": 10,
+        ">=30000": 5
+      },
+      "region": {
+        "any": 5
+      }
+    },
+    "tier_thresholds": {
+      "低风险 (A)": "score >= 82.5",
+      "中低风险 (B)": "score >= 60.5",
+      "中高风险 (C)": "score >= 38.5",
+      "高风险 (D)": "score < 38.5"
+    }
+  },
+  "business_rule_checks": [
+    {
+      "rule": "申请人年龄 >= 18",
+      "passed": false,
+      "violations": 1,
+      "detail": [
+        {
+          "application_id": "a004",
+          "age": "17"
+        }
+      ]
+    },
+    {
+      "rule": "年收入 > 0",
+      "passed": false,
+      "violations": 1,
+      "detail": [
+        {
+          "application_id": "a004",
+          "income": "0"
+        }
+      ]
+    },
+    {
+      "rule": "信用评分 >= 600",
+      "passed": false,
+      "violations": 2,
+      "detail": [
+        {
+          "application_id": "a003",
+          "credit_score": "590"
+        },
+        {
+          "application_id": "a003",
+          "credit_score": "590"
+        }
+      ]
+    },
+    {
+      "rule": "申请主键唯一",
+      "passed": false,
+      "violations": 2,
+      "detail": [
+        "a003"
+      ]
+    },
+    {
+      "rule": "必填字段无缺失",
+      "passed": false,
+      "violations": 1,
+      "detail": [
+        {
+          "column": "age",
+          "indices": [
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "rule": "贷款金额 > 0",
+      "passed": true,
+      "violations": 0,
+      "detail": []
+    },
+    {
+      "rule": "工作年限 >= 0",
+      "passed": true,
+      "violations": 0,
+      "detail": []
+    }
+  ],
+  "explanations": {
+    "overall": "本评分使用可解释规则卡（scorecard）对信贷申请样本进行贷前风险评分。规则卡对每个数值特征按业务常识设定阈值分段赋分，最终总分映射到四个风险等级。所有评分特征均为贷前可用信息，不含 default_90d 和 post_loan_collection_calls。",
+    "scorecard_rationale": "信用评分权重最高（30分），收入次之（20分），贷款收入比和现有债务各15分，工作年限15分，年龄10分，地区统一5分。总分110分。",
+    "data_quality_impact": "发现 a007 缺少年龄和 default_90d、a003 重复、a004 年龄17岁且收入为0，这些异常在业务规则校验中被标记，需要在评分前做清洗或人工审核。"
+  },
+  "warnings": [
+    "发现重复主键记录（application_id=a003），评分前应去重。",
+    "年龄字段存在缺失值（a007），建议用中位数填充或剔除。",
+    "default_90d 存在缺失值（a007），模型训练时需剔除该样本。",
+    "存在年龄低于18岁的申请人（a004），需人工审核或拒绝。",
+    "存在收入为0的申请人（a004），需确认是否为数据错误或特殊场景。",
+    "数据包含贷后字段 post_loan_collection_calls，已从评分特征中排除。"
+  ],
+  "how_to_do_differently": [
+    "使用更细粒度的评分卡（如 FICO 风格分段）提升区分度",
+    "引入外部征信数据（如多头借贷、逾期历史）增强特征",
+    "使用逻辑回归或 XGBoost 替代规则卡，提升预测精度",
+    "对收入为0、年龄异常样本做更细致的 rule-based 拒绝或人工审核流程",
+    "增加时间序列维度的特征（如收入增长趋势、历史借贷频率）",
+    "做严格的训练/验证/测试集划分及回溯测试",
+    "引入对抗验证检测分布偏移"
+  ],
+  "validation": {
+    "leakage_columns_excluded": true,
+    "target_not_in_features": true,
+    "scorecard_rule_count": 7,
+    "note": "output_contract 所有必填键均已覆盖"
+  }
+}

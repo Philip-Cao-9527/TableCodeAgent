@@ -1,5 +1,7 @@
 node_modules/
 dist/
+.venv/
+venv/
 .env
 __pycache__/
 *.pyc
@@ -8,6 +10,7 @@ __pycache__/
 .ruff_cache/
 .coverage
 htmlcov/
+.agents/
 
 # API secrets / local configs
 .env

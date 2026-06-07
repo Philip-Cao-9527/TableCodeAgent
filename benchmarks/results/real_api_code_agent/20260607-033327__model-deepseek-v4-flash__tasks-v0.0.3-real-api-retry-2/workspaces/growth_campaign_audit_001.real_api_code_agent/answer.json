@@ -1,0 +1,216 @@
+{
+  "row_counts": {
+    "users": 10,
+    "campaign_exposure": 10,
+    "rewards": 9,
+    "orders": 9
+  },
+  "join_cardinality": {
+    "key_columns": [
+      "user_id",
+      "campaign_id",
+      "campaign_window"
+    ],
+    "exposure_key_check": {
+      "table": "campaign_exposure",
+      "total_rows": 10,
+      "unique_keys": 10,
+      "duplicate_key_rows": 0,
+      "has_duplicates": false
+    },
+    "rewards_key_check": {
+      "table": "rewards",
+      "total_rows": 9,
+      "unique_keys": 8,
+      "duplicate_key_rows": 2,
+      "has_duplicates": true
+    },
+    "orders_key_check": {
+      "table": "orders",
+      "total_rows": 9,
+      "unique_keys": 8,
+      "duplicate_key_rows": 2,
+      "has_duplicates": true
+    },
+    "exposure_rewards_join_rows": 11,
+    "exposure_rewards_join_expansion_ratio": 1.1
+  },
+  "group_distribution": {
+    "treatment": 8,
+    "control": 2,
+    "total_exposed": 10,
+    "treatment_control_ratio": 4.0,
+    "ratio_check": "WARN"
+  },
+  "smd_summary": {
+    "covariates": {
+      "historical_orders_30d": {
+        "smd": 5.507366,
+        "imbalanced": true
+      },
+      "historical_gmv_30d": {
+        "smd": 2.452307,
+        "imbalanced": true
+      },
+      "active_days_30d": {
+        "smd": 4.329559,
+        "imbalanced": true
+      },
+      "user_level": {
+        "smd": 1.0,
+        "imbalanced": true
+      }
+    },
+    "smd_threshold": 0.1,
+    "vars_over_threshold": [
+      "historical_orders_30d",
+      "historical_gmv_30d",
+      "active_days_30d",
+      "user_level"
+    ],
+    "balance_verdict": "IMBALANCED"
+  },
+  "outlier_summary": {
+    "column": "subsidy_amount",
+    "q1": 14.25,
+    "q3": 26.25,
+    "iqr": 12.0,
+    "lower_fence": -3.75,
+    "upper_fence": 44.25,
+    "outlier_count": 1,
+    "outlier_values": [
+      500.0
+    ],
+    "missing_count": 1
+  },
+  "time_window_alignment": {
+    "total_orders_joined": 9,
+    "aligned_count": 5,
+    "misaligned_count": 4,
+    "misaligned_details": [
+      {
+        "user_id": "u2",
+        "order_id": "o3",
+        "order_time": "2026-05-10",
+        "campaign_window": "2026-05-01:2026-05-07"
+      },
+      {
+        "user_id": "u3",
+        "order_id": "o4",
+        "order_time": "2026-04-30",
+        "campaign_window": "2026-05-01:2026-05-07"
+      },
+      {
+        "user_id": "u5",
+        "order_id": "o6",
+        "order_time": "2026-05-08",
+        "campaign_window": "2026-05-01:2026-05-07"
+      },
+      {
+        "user_id": "u10",
+        "order_id": "o9",
+        "order_time": "2026-04-29",
+        "campaign_window": "2026-05-01:2026-05-07"
+      }
+    ]
+  },
+  "warnings": [
+    {
+      "risk_tag": "MISSING_VALUES",
+      "table": "users",
+      "columns": [
+        "city_id"
+      ],
+      "message": "表 users 存在缺失值：['city_id']"
+    },
+    {
+      "risk_tag": "MISSING_VALUES",
+      "table": "campaign_exposure",
+      "columns": [
+        "activity_type"
+      ],
+      "message": "表 campaign_exposure 存在缺失值：['activity_type']"
+    },
+    {
+      "risk_tag": "MISSING_VALUES",
+      "table": "rewards",
+      "columns": [
+        "activity_type",
+        "subsidy_amount"
+      ],
+      "message": "表 rewards 存在缺失值：['activity_type', 'subsidy_amount']"
+    },
+    {
+      "risk_tag": "DUPLICATE_KEYS",
+      "table": "rewards",
+      "message": "表 rewards 在 join keys 上存在重复行，可能导致 join 后行膨胀"
+    },
+    {
+      "risk_tag": "DUPLICATE_KEYS",
+      "table": "orders",
+      "message": "表 orders 在 join keys 上存在重复行，可能导致 join 后行膨胀"
+    },
+    {
+      "risk_tag": "GROUP_IMBALANCE",
+      "table": "campaign_exposure",
+      "message": "treatment/control 比例偏离 0.5~2.0 范围，可能影响 A/B 测试统计功效"
+    },
+    {
+      "risk_tag": "COVARIATE_IMBALANCE",
+      "variables": [
+        "historical_orders_30d",
+        "historical_gmv_30d",
+        "active_days_30d",
+        "user_level"
+      ],
+      "message": "以下协变量在组间不平衡（SMD > 0.1）：['historical_orders_30d', 'historical_gmv_30d', 'active_days_30d', 'user_level']，建议使用 CUPED 或分层随机化调整"
+    },
+    {
+      "risk_tag": "SUBSIDY_OUTLIERS",
+      "count": 1,
+      "values": [
+        500.0
+      ],
+      "message": "补贴金额发现 1 个极端值（IQR 法），最高值 500.0，需排查异常发放或数据录入错误"
+    },
+    {
+      "risk_tag": "TIME_WINDOW_MISALIGNMENT",
+      "count": 4,
+      "details": [
+        {
+          "user_id": "u2",
+          "order_id": "o3",
+          "order_time": "2026-05-10",
+          "campaign_window": "2026-05-01:2026-05-07"
+        },
+        {
+          "user_id": "u3",
+          "order_id": "o4",
+          "order_time": "2026-04-30",
+          "campaign_window": "2026-05-01:2026-05-07"
+        },
+        {
+          "user_id": "u5",
+          "order_id": "o6",
+          "order_time": "2026-05-08",
+          "campaign_window": "2026-05-01:2026-05-07"
+        },
+        {
+          "user_id": "u10",
+          "order_id": "o9",
+          "order_time": "2026-04-29",
+          "campaign_window": "2026-05-01:2026-05-07"
+        }
+      ],
+      "message": "有 4 笔订单的订单时间不在 campaign_window 范围内，可能为窗口外自然转化或数据登记时间偏差"
+    }
+  ],
+  "how_to_do_differently": [
+    "数据采集阶段应加强必填字段校验，减少缺失值进入分析流程",
+    "对 exposure / rewards 表应在入库时按 join keys 去重，或在 ETL 阶段做 upsert 处理",
+    "改用分层抽样或倾向性评分匹配（PSM）重新构造 treatment/control 样本",
+    "采用 CUPED（方差缩减）或逆概率加权（IPW）在效果评估阶段校正组间差异",
+    "补贴发放应设置金额上限风控规则，并对超出 fence 的记录进行人工复核",
+    "订单归因逻辑应限定在 campaign_window 内，或对窗口外订单单独标记自然转化"
+  ]
+}

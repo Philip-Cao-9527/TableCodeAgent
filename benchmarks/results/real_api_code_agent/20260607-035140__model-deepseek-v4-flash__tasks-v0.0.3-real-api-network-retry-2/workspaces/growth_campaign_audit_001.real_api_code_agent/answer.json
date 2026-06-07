@@ -1,0 +1,56 @@
+{
+  "row_counts": {
+    "users": 10,
+    "campaign_exposure": 10,
+    "rewards": 9,
+    "orders": 9
+  },
+  "join_cardinality": {
+    "users_to_campaign_exposure": {
+      "left_table": "users",
+      "right_table": "campaign_exposure",
+      "join_keys": [
+        "user_id"
+      ],
+      "left_rows": 10,
+      "right_rows": 10,
+      "inner_rows": 10,
+      "max_expansion_per_left": 1,
+      "note": "1:1 映射, 所有 user 都在 exposure 中有记录"
+    },
+    "exposure_to_rewards": {
+      "left_table": "campaign_exposure",
+      "right_table": "rewards",
+      "join_keys": [
+        "user_id",
+        "campaign_id",
+        "campaign_window"
+      ],
+      "left_rows": 10,
+      "right_rows": 9,
+      "left_join_rows": 11,
+      "max_expansion_per_left": 2,
+      "note": "rewards 存在同用户多次补贴记录, 产生 1:N 扩展"
+    },
+    "exposure_to_orders": {
+      "left_table": "campaign_exposure",
+      "right_table": "orders",
+      "join_keys": [
+        "user_id"
+      ],
+      "left_rows": 10,
+      "right_rows": 9,
+      "left_join_rows": 11,
+      "max_expansion_per_left": 2,
+      "note": "部分用户有多笔订单, 产生 1:N 扩展"
+    }
+  },
+  "group_distribution": {
+    "total_samples": 10,
+    "treatment_count": 8,
+    "control_count": 2,
+    "treatment_pct": 80.0,
+    "control_pct": 20.0,
+    "control_to_treatment_ratio": 0.25,
+    "min_group_ratio_threshold": 0.5,
+    "is_imbalanced": 

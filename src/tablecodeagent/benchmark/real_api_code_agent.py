@@ -221,7 +221,66 @@ def _extract_answer_value(answer: Any) -> Any:
     return answer
 
 
-def _validate_answer_json(answer_path: Path, expected_path: Path | None) -> dict[str, Any]:
+def _schema_check_answer_json(answer_path: Path, output_contract: dict[str, Any] | None) -> dict[str, Any]:
+    contract = output_contract or {}
+    required_keys = list(contract.get("answer_json_required_keys") or [])
+    validation_mode = contract.get("validation_mode")
+    if not required_keys:
+        return {
+            "passed": None,
+            "validation_mode": validation_mode,
+            "required_keys": [],
+            "missing_keys": [],
+            "actual_keys": [],
+        }
+    if not answer_path.exists():
+        return {
+            "passed": False,
+            "validation_mode": validation_mode,
+            "required_keys": required_keys,
+            "missing_keys": required_keys,
+            "actual_keys": [],
+        }
+    try:
+        answer = read_json(answer_path)
+    except Exception as error:
+        return {
+            "passed": False,
+            "validation_mode": validation_mode,
+            "required_keys": required_keys,
+            "missing_keys": required_keys,
+            "actual_keys": [],
+            "error": f"{type(error).__name__}: {error}",
+        }
+    actual_keys = sorted(answer.keys()) if isinstance(answer, dict) else []
+    missing_keys = [key for key in required_keys if key not in actual_keys]
+    return {
+        "passed": not missing_keys,
+        "validation_mode": validation_mode,
+        "required_keys": required_keys,
+        "missing_keys": missing_keys,
+        "actual_keys": actual_keys,
+    }
+
+
+def _pytest_failure_summary(test_result: dict[str, Any] | None) -> str | None:
+    if not test_result or test_result.get("exit_code") == 0:
+        return None
+    text = "\n".join(part for part in (test_result.get("stdout"), test_result.get("stderr")) if part)
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    interesting = [
+        line for line in lines
+        if "AssertionError" in line or line.startswith("FAILED ") or line.startswith("E       ")
+    ]
+    summary_lines = interesting[:6] or lines[:6]
+    return "\n".join(summary_lines)[:1200] if summary_lines else None
+
+
+def _validate_answer_json(
+    answer_path: Path,
+    expected_path: Path | None,
+    output_contract: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     if not answer_path.exists():
         return {"passed": False, "actual": None, "expected": "answer.json exists", "diff": None}
     answer = read_json(answer_path)
@@ -229,6 +288,13 @@ def _validate_answer_json(answer_path: Path, expected_path: Path | None) -> dict
         return {"passed": True, "actual": answer, "expected": "answer.json exists", "diff": None}
     expected = read_json(expected_path)
     if "answer" not in expected:
+        if (output_contract or {}).get("validation_mode") == "pytest":
+            return {
+                "passed": None,
+                "actual": "answer.json saved",
+                "expected": "pytest is authoritative for this task",
+                "diff": None,
+            }
         validation = answer.get("validation") if isinstance(answer, dict) else None
         if isinstance(validation, dict) and "passed" in validation:
             return {
@@ -244,6 +310,10 @@ def _validate_answer_json(answer_path: Path, expected_path: Path | None) -> dict
 def _task_prompt(task_dir: Path) -> str:
     task = read_json(task_dir / "task.json")
     files = sorted(path.name for path in task_dir.iterdir() if path.is_file() and path.name != "expected.json")
+    output_contract = task.get("output_contract") or {}
+    contract_text = json.dumps(output_contract, ensure_ascii=False, indent=2) if output_contract else "{}"
+    implementation_hints = task.get("implementation_hints") or {}
+    hints_text = json.dumps(implementation_hints, ensure_ascii=False, indent=2) if implementation_hints else "{}"
     return (
         "你正在参加 TableCodeAgent 的真实 API 代码生成 benchmark。\n"
         f"当前 benchmark workspace 绝对路径: {task_dir.resolve()}\n"
@@ -251,13 +321,15 @@ def _task_prompt(task_dir: Path) -> str:
         "要求：\n"
         "1. 只能读取 task.json 和数据文件；不要读取 expected.json，也不要假设 expected.json 存在。\n"
         "2. solve.py 运行后必须在当前目录写出 answer.json。\n"
-        "3. answer.json 应包含足够的结构化结果，便于外部 pytest 或 validator 校验。\n"
+        "3. answer.json 必须满足 task.json 中公开的 output_contract；如果 output_contract 为空，也要输出清晰的结构化结果。\n"
         "4. 优先使用 pandas 等成熟库处理表格。\n"
         "5. 不要写入 API key、.env 或 configs/api/local 路径。\n"
         "6. 如果需要解释，请在写完 solve.py 后简短说明。\n\n"
         f"任务 id: {task.get('id')}\n"
         f"任务问题: {task.get('question')}\n"
         f"可用文件: {files}\n"
+        f"公开输出契约 output_contract:\n{contract_text}\n"
+        f"公开实现提示 implementation_hints:\n{hints_text}\n"
         "重要：不要读取或写入 workspace 外的文件；不要在仓库根目录写 solve.py 或 answer.json。\n"
     )
 
@@ -289,10 +361,14 @@ async def run_real_api_code_agent(
         "test_pass_rate": None,
         "validation_pass_rate": None,
         "generated_code_saved": False,
+        "answer_file_saved": False,
         "solve_py_runtime_seconds": None,
         "sandbox_timeout_count": 0,
         "dependency_failure_count": 0,
+        "tool_error_count": 0,
     }
+    trace["output_contract"] = task.get("output_contract") or {}
+    trace["schema_check"] = None
 
     if not env_file.exists():
         trace["skipped"] = True
@@ -326,6 +402,17 @@ async def run_real_api_code_agent(
         table_tool_names = set(TABLE_TOOL_NAMES)
 
         def trace_callback(event: dict[str, Any]) -> None:
+            if event.get("event") == "tool_error":
+                trace["tool_errors"] = trace.get("tool_errors", [])
+                trace["tool_errors"].append({
+                    "name": event.get("name"),
+                    "arguments": event.get("arguments", {}),
+                    "error_type": event.get("error_type"),
+                    "error": event.get("error"),
+                    "elapsed_ms": event.get("elapsed_ms"),
+                })
+                trace["metrics"]["tool_error_count"] = len(trace["tool_errors"])
+                return
             if event.get("event") != "tool_result":
                 return
             name = event.get("name")
@@ -375,6 +462,7 @@ async def run_real_api_code_agent(
             max_output_chars=40000,
             env=sandbox_env,
         )
+        schema_check = _schema_check_answer_json(answer_path, trace["output_contract"])
         expected_path = _restore_expected_for_external_check(expected_hidden, workspace)
         test_path = workspace / "tests" / "test_solution.py"
         test_result = None
@@ -385,14 +473,23 @@ async def run_real_api_code_agent(
                 max_output_chars=40000,
                 env=sandbox_env,
             )
-        validation = _validate_answer_json(answer_path, expected_path)
+        validation = _validate_answer_json(answer_path, expected_path, trace["output_contract"])
+        pytest_summary = _pytest_failure_summary(test_result)
 
         trace["sandbox_results"] = {"run_python": run_result, "run_tests": test_result}
+        trace["schema_check"] = schema_check
         trace["validation"] = validation
+        trace["pytest_exit_code"] = None if test_result is None else test_result.get("exit_code")
+        trace["pytest_failure_summary"] = pytest_summary
         trace["metrics"].update({
             "code_execution_success_rate": 1.0 if run_result["exit_code"] == 0 else 0.0,
             "test_pass_rate": None if test_result is None else (1.0 if test_result["exit_code"] == 0 else 0.0),
-            "validation_pass_rate": 1.0 if validation.get("passed") is True else 0.0,
+            "validation_pass_rate": (
+                1.0 if validation.get("passed") is True
+                else 0.0 if validation.get("passed") is False
+                else None
+            ),
+            "answer_file_saved": answer_path.exists(),
             "solve_py_runtime_seconds": run_result["duration_seconds"],
             "sandbox_timeout_count": int(bool(run_result["timeout"])) + (
                 int(bool(test_result["timeout"])) if test_result else 0
@@ -405,15 +502,18 @@ async def run_real_api_code_agent(
             trace["failure_type"] = "code_execution_failed"
         elif test_result is not None and test_result["timeout"]:
             trace["failure_type"] = "sandbox_timeout"
+        elif schema_check.get("passed") is False:
+            trace["failure_type"] = "answer_schema_mismatch"
         elif test_result is not None and test_result["exit_code"] != 0:
             trace["failure_type"] = "pytest_failed"
-        elif validation.get("passed") is not True:
+        elif validation.get("passed") is False:
             trace["failure_type"] = "validation_failed"
     except Exception as error:
         if trace.get("failure_type") is None:
             trace["failure_type"] = "real_api_code_agent_error"
         trace["validation"] = {"passed": False, "actual": None, "expected": "real_api_code_agent completed", "diff": None}
         trace["error"] = f"{type(error).__name__}: {error}"
+        trace["api_error_type"] = type(error).__name__ if trace.get("api_called") else None
 
     return _finish(result_dir, trace, started)
 

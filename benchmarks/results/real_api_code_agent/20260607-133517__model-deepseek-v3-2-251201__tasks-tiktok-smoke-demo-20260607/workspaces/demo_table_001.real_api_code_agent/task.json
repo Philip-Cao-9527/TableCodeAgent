@@ -1,0 +1,12 @@
+{
+  "id": "demo_table_001",
+  "question": "计算 North 区域的总 revenue。",
+  "data_file": "data.csv",
+  "query": {
+    "metric": "sum",
+    "column": "revenue",
+    "filters": {
+      "region": "North"
+    }
+  }
+}

@@ -1,0 +1,188 @@
+{
+  "row_counts": {
+    "users": 10,
+    "campaign_exposure": 10,
+    "rewards": 9,
+    "orders": 9
+  },
+  "join_cardinality": {
+    "exposure_left_join_users": {
+      "base_rows": 10,
+      "result_rows": 10,
+      "has_expansion": false,
+      "missing_right_rows": 1
+    },
+    "exposure_left_join_rewards": {
+      "base_rows": 10,
+      "result_rows": 11,
+      "has_expansion": true,
+      "missing_right_rows": 3
+    },
+    "exposure_left_join_orders": {
+      "base_rows": 10,
+      "result_rows": 11,
+      "has_expansion": true,
+      "missing_right_rows": 2
+    }
+  },
+  "group_distribution": {
+    "treatment_count": 8,
+    "control_count": 2,
+    "ratio_treatment_over_control": 4.0,
+    "treatment_pct": 80.0,
+    "control_pct": 20.0
+  },
+  "smd_summary": {
+    "covariates": {
+      "historical_orders_30d": {
+        "treatment_mean": 8.875,
+        "control_mean": 0.5,
+        "smd": 4.3706,
+        "imbalanced": true
+      },
+      "historical_gmv_30d": {
+        "treatment_mean": 336.25,
+        "control_mean": 10.0,
+        "smd": 1.8583,
+        "imbalanced": true
+      },
+      "active_days_30d": {
+        "treatment_mean": 13.875,
+        "control_mean": 1.5,
+        "smd": 3.3166,
+        "imbalanced": true
+      },
+      "user_level": {
+        "level_gaps": {
+          "bronze": {
+            "treatment_prop": 0.0,
+            "control_prop": 1.0,
+            "gap": 1.0
+          },
+          "gold": {
+            "treatment_prop": 0.5,
+            "control_prop": 0.0,
+            "gap": 0.5
+          },
+          "platinum": {
+            "treatment_prop": 0.25,
+            "control_prop": 0.0,
+            "gap": 0.25
+          },
+          "silver": {
+            "treatment_prop": 0.25,
+            "control_prop": 0.0,
+            "gap": 0.25
+          }
+        },
+        "max_gap": 1.0,
+        "imbalanced": true
+      }
+    },
+    "imbalanced_covariates": [
+      "historical_orders_30d",
+      "historical_gmv_30d",
+      "active_days_30d",
+      "user_level"
+    ],
+    "smd_threshold": 0.1
+  },
+  "outlier_summary": {
+    "q1": 14.25,
+    "q3": 26.25,
+    "iqr": 12.0,
+    "lower_bound": -3.75,
+    "upper_bound": 44.25,
+    "outlier_count": 1,
+    "outlier_details": [
+      {
+        "user_id": "u8",
+        "subsidy_amount": 500.0,
+        "reason": "过高"
+      }
+    ]
+  },
+  "time_window_alignment": {
+    "total_orders_with_exposure": 9,
+    "misaligned_count": 4,
+    "misaligned_details": [
+      {
+        "user_id": "u2",
+        "order_id": "o3",
+        "order_time": "2026-05-10",
+        "campaign_window": "2026-05-01:2026-05-07",
+        "window_start": "2026-05-01",
+        "window_end": "2026-05-07"
+      },
+      {
+        "user_id": "u3",
+        "order_id": "o4",
+        "order_time": "2026-04-30",
+        "campaign_window": "2026-05-01:2026-05-07",
+        "window_start": "2026-05-01",
+        "window_end": "2026-05-07"
+      },
+      {
+        "user_id": "u5",
+        "order_id": "o6",
+        "order_time": "2026-05-08",
+        "campaign_window": "2026-05-01:2026-05-07",
+        "window_start": "2026-05-01",
+        "window_end": "2026-05-07"
+      },
+      {
+        "user_id": "u10",
+        "order_id": "o9",
+        "order_time": "2026-04-29",
+        "campaign_window": "2026-05-01:2026-05-07",
+        "window_start": "2026-05-01",
+        "window_end": "2026-05-07"
+      }
+    ]
+  },
+  "warnings": [
+    {
+      "tag": "JOIN_MISSING_RIGHT",
+      "detail": "exposure_left_join_users 有 1 条记录未能匹配到右表数据"
+    },
+    {
+      "tag": "JOIN_EXPANSION",
+      "detail": "exposure_left_join_rewards 产生了行数膨胀（11 vs 10 条），请检查是否存在一对多关系"
+    },
+    {
+      "tag": "JOIN_MISSING_RIGHT",
+      "detail": "exposure_left_join_rewards 有 3 条记录未能匹配到右表数据"
+    },
+    {
+      "tag": "JOIN_EXPANSION",
+      "detail": "exposure_left_join_orders 产生了行数膨胀（11 vs 10 条），请检查是否存在一对多关系"
+    },
+    {
+      "tag": "JOIN_MISSING_RIGHT",
+      "detail": "exposure_left_join_orders 有 2 条记录未能匹配到右表数据"
+    },
+    {
+      "tag": "GROUP_IMBALANCE",
+      "detail": "treatment/control 比例 4.00 超出 0.5~2.0 范围，建议检查随机分桶逻辑"
+    },
+    {
+      "tag": "COVARIATE_IMBALANCE",
+      "detail": "协变量 ['historical_orders_30d', 'historical_gmv_30d', 'active_days_30d', 'user_level'] 的 SMD 超过阈值 0.1，treatment/control 组间存在系统性偏差"
+    },
+    {
+      "tag": "SUBSIDY_OUTLIER",
+      "detail": "补贴金额发现 1 个离群值，请核实是否存在异常发放或灌水风险"
+    },
+    {
+      "tag": "TIME_WINDOW_MISALIGN",
+      "detail": "有 4 笔订单的订单时间不在 campaign_window 范围内，可能存在时间窗口错配"
+    }
+  ],
+  "how_to_do_differently": [
+    "建议在数据录入阶段即对 user_id 做外键约束，避免 join 时出现悬空记录",
+    "建议在分桶时进行 stratified sampling，确保 treatment/control 在关键协变量上平衡",
+    "建议对 subsidy_amount 设置业务合理阈值，在发放环节拦截异常值",
+    "建议在 campaign_window 设计时前后各加缓冲天（grace period），减少时间窗口边界截断问题",
+    "建议增加数据质量监控 pipeline，在 ETL 完成后自动执行上述审计检查"
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "row_counts": {
+    "users": 10,
+    "campaign_exposure": 10,
+    "orders": 9,
+    "rewards": 9
+  },
+  "join_cardinality": {
+    "exposure_left_join_orders": {
+      "exposure_rows": 10,
+      "orders_rows": 9,
+      "left_join_rows": 11,
+      "null_after_join": 2,
+      "note": "部分曝光用户在 orders 中无匹配订单（如 u6、u7）"
+    },
+    "exposure_left_join_rewards": {
+      "exposure_rows": 10,
+      "rewards_rows": 9,
+      "left_join_rows": 11,
+      "null_after_join": 3,
+      "note": "部分用户无 rewards 记录"
+    },
+    "exposure_duplicate_check": {
+      "duplicate_key_columns": [
+        "user_id",
+        "campaign_window"
+      ],
+      "duplicate_row_count": 0,
+      "note": "无重复"
+    },
+    "rewards_duplicate_check": {
+      "duplicate_key_columns": [
+        "user_id",
+        "campaign_id",
+        "campaign_window"
+      ],
+      "duplicate_row_count": 2,
+      "note": "发现 2 行重复（u2 有两条补贴记录）"
+    }
+  },
+  "group_distribution": {
+    "counts": {
+      "treatment": 8,
+      "control": 2
+    },
+    "total": 10,
+    "treatment_control_ratio": 4.0,
+    "min_group_ratio_threshold": 0.5,
+    "imbalanced": true,
+    "note": "treatment=8, control=2, ratio=4.0"
+  },
+  "smd_summary": {
+    "smd_threshold": 0.1,
+    "covariates": [
+      "historical_orders_30d",
+      "historical_gmv_30d",
+      "active_days_30d",
+      "user_level"
+    ],
+    "results": [
+      {
+        "covariate": "historical_orders_30d",
+        "type": "numeric",
+        "treatment_mean": 8.875,
+        "control_mean": 0.5,
+        "smd": 5.5074,
+        "imbalanced": 

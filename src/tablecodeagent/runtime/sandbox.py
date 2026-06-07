@@ -14,6 +14,18 @@ DEFAULT_ENV_ALLOWLIST = {
     "VIRTUAL_ENV",
     "CONDA_PREFIX",
     "CONDA_DEFAULT_ENV",
+    "SystemRoot",
+    "SYSTEMROOT",
+    "SYSTEMDRIVE",
+    "WINDIR",
+    "windir",
+    "COMSPEC",
+    "OS",
+    "NUMBER_OF_PROCESSORS",
+    "PROCESSOR_ARCHITECTURE",
+    "TEMP",
+    "TMP",
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD",
     "LANG",
     "LC_ALL",
     "TMPDIR",
@@ -201,6 +213,9 @@ def run_tests_in_sandbox(
         return _policy_denial(command, workspace, f"Sandbox denied forbidden test path: {target}", started)
 
     try:
+        test_env = {"PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"}
+        if env:
+            test_env.update(env)
         result = subprocess.run(
             command,
             cwd=workspace,
@@ -208,7 +223,7 @@ def run_tests_in_sandbox(
             capture_output=True,
             text=True,
             timeout=timeout_seconds,
-            env=_safe_env(env),
+            env=_safe_env(test_env),
         )
         stdout, stdout_truncated = _truncate(result.stdout or "", max_output_chars)
         stderr, stderr_truncated = _truncate(result.stderr or "", max_output_chars)

@@ -1,0 +1,483 @@
+{
+  "row_counts": {
+    "total_rows": 8,
+    "total_columns": 12,
+    "columns": [
+      "application_id",
+      "user_id",
+      "application_time",
+      "loan_amount",
+      "income",
+      "age",
+      "region",
+      "credit_score",
+      "existing_debt",
+      "employment_years",
+      "default_90d",
+      "post_loan_collection_calls"
+    ]
+  },
+  "field_summary": {
+    "application_id": {
+      "dtype": "string",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7
+    },
+    "user_id": {
+      "dtype": "string",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7
+    },
+    "application_time": {
+      "dtype": "string",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7
+    },
+    "loan_amount": {
+      "dtype": "numeric",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7,
+      "min": 3000.0,
+      "max": 50000.0,
+      "mean": 21125.0
+    },
+    "income": {
+      "dtype": "numeric",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7,
+      "min": 0.0,
+      "max": 85000.0,
+      "mean": 46125.0
+    },
+    "age": {
+      "dtype": "numeric",
+      "non_null_count": 7,
+      "null_count": 1,
+      "null_rate": 0.125,
+      "unique_count": 6,
+      "min": 17.0,
+      "max": 45.0,
+      "mean": 32.86
+    },
+    "region": {
+      "dtype": "string",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4
+    },
+    "credit_score": {
+      "dtype": "numeric",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7,
+      "min": 590.0,
+      "max": 720.0,
+      "mean": 648.75
+    },
+    "existing_debt": {
+      "dtype": "numeric",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7,
+      "min": 0.0,
+      "max": 42000.0,
+      "mean": 22125.0
+    },
+    "employment_years": {
+      "dtype": "numeric",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7,
+      "min": 0.0,
+      "max": 6.0,
+      "mean": 2.31
+    },
+    "default_90d": {
+      "dtype": "numeric",
+      "non_null_count": 7,
+      "null_count": 1,
+      "null_rate": 0.125,
+      "unique_count": 2,
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.57
+    },
+    "post_loan_collection_calls": {
+      "dtype": "numeric",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 5,
+      "min": 0.0,
+      "max": 5.0,
+      "mean": 2.25
+    }
+  },
+  "data_quality": {
+    "duplicate_key_check": {
+      "key_columns": [
+        "application_id"
+      ],
+      "has_duplicates": true,
+      "duplicate_ids": [
+        "a003"
+      ],
+      "detail": [
+        {
+          "application_id": "a003",
+          "occurrences": 2,
+          "row_indices": [
+            2,
+            3
+          ]
+        }
+      ]
+    },
+    "missing_values": {
+      "age": {
+        "count": 1,
+        "row_indices": [
+          7
+        ]
+      },
+      "default_90d": {
+        "count": 1,
+        "row_indices": [
+          7
+        ]
+      }
+    },
+    "abnormal_age_check": {
+      "has_issues": true,
+      "detail": [
+        {
+          "row_index": 4,
+          "application_id": "a004",
+          "age": 17.0
+        },
+        {
+          "row_index": 7,
+          "application_id": "a007",
+          "age": null,
+          "note": "missing age"
+        }
+      ],
+      "age_threshold": "age < 18 or age > 100 or missing"
+    },
+    "leakage_columns": {
+      "identified": [
+        "post_loan_collection_calls"
+      ],
+      "reason": "post_loan_collection_calls is collected after loan origination (post-loan behaviour), it cannot be known at application time and would cause data leakage if used as a pre-loan feature."
+    }
+  },
+  "feature_processing": {
+    "numeric_features_used": [
+      "loan_amount",
+      "income",
+      "age",
+      "credit_score",
+      "existing_debt",
+      "employment_years"
+    ],
+    "categorical_features_used": [
+      "region"
+    ],
+    "excluded_features": {
+      "default_90d": "target variable — cannot be used as a pre-loan feature",
+      "post_loan_collection_calls": "post-loan leakage — not available at application time"
+    },
+    "processing_steps": [
+      "1. parse numeric columns; coerce age to numeric, fill missing age with median",
+      "2. one-hot encode region (North, South, East, West) for interpretability",
+      "3. compute derived ratios: debt_to_income (existing_debt / income), loan_to_income (loan_amount / income)",
+      "4. standardize features via min-max scaling for consistent score contribution"
+    ]
+  },
+  "scoring_result": {
+    "method": "interpretable_rule_card",
+    "max_possible_score": 150,
+    "rule_card_definition": {
+      "credit_score": {
+        "buckets": [
+          [
+            720,
+            "inf",
+            0
+          ],
+          [
+            680,
+            720,
+            10
+          ],
+          [
+            640,
+            680,
+            20
+          ],
+          [
+            600,
+            640,
+            30
+          ],
+          [
+            "-inf",
+            600,
+            40
+          ]
+        ]
+      },
+      "loan_to_income_ratio": {
+        "buckets": [
+          [
+            0,
+            0.2,
+            0
+          ],
+          [
+            0.2,
+            0.4,
+            10
+          ],
+          [
+            0.4,
+            0.6,
+            20
+          ],
+          [
+            0.6,
+            1.0,
+            30
+          ],
+          [
+            1.0,
+            "inf",
+            40
+          ]
+        ]
+      },
+      "debt_to_income_ratio": {
+        "buckets": [
+          [
+            0,
+            0.3,
+            0
+          ],
+          [
+            0.3,
+            0.6,
+            10
+          ],
+          [
+            0.6,
+            1.0,
+            20
+          ],
+          [
+            1.0,
+            "inf",
+            30
+          ]
+        ]
+      },
+      "employment_years": {
+        "buckets": [
+          [
+            5,
+            "inf",
+            0
+          ],
+          [
+            2,
+            5,
+            10
+          ],
+          [
+            1,
+            2,
+            15
+          ],
+          [
+            "-inf",
+            1,
+            20
+          ]
+        ]
+      },
+      "region_risk": {
+        "South": 10,
+        "default": 0
+      }
+    },
+    "applications": [
+      {
+        "application_id": "a001",
+        "credit_score_points": 0,
+        "loan_to_income_points": 0,
+        "debt_to_income_points": 0,
+        "employment_years_points": 0,
+        "region_risk_points": 0,
+        "total_risk_score": 0,
+        "risk_level": "low"
+      },
+      {
+        "application_id": "a002",
+        "credit_score_points": 30,
+        "loan_to_income_points": 10,
+        "debt_to_income_points": 20,
+        "employment_years_points": 20,
+        "region_risk_points": 10,
+        "total_risk_score": 90,
+        "risk_level": "high"
+      },
+      {
+        "application_id": "a003",
+        "credit_score_points": 40,
+        "loan_to_income_points": 30,
+        "debt_to_income_points": 20,
+        "employment_years_points": 10,
+        "region_risk_points": 0,
+        "total_risk_score": 100,
+        "risk_level": "high"
+      },
+      {
+        "application_id": "a003",
+        "credit_score_points": 40,
+        "loan_to_income_points": 30,
+        "debt_to_income_points": 20,
+        "employment_years_points": 10,
+        "region_risk_points": 0,
+        "total_risk_score": 100,
+        "risk_level": "high"
+      },
+      {
+        "application_id": "a004",
+        "credit_score_points": 10,
+        "loan_to_income_points": 40,
+        "debt_to_income_points": 20,
+        "employment_years_points": 20,
+        "region_risk_points": 0,
+        "total_risk_score": 90,
+        "risk_level": "high"
+      },
+      {
+        "application_id": "a005",
+        "credit_score_points": 10,
+        "loan_to_income_points": 10,
+        "debt_to_income_points": 0,
+        "employment_years_points": 10,
+        "region_risk_points": 0,
+        "total_risk_score": 30,
+        "risk_level": "low"
+      },
+      {
+        "application_id": "a006",
+        "credit_score_points": 20,
+        "loan_to_income_points": 20,
+        "debt_to_income_points": 20,
+        "employment_years_points": 15,
+        "region_risk_points": 10,
+        "total_risk_score": 85,
+        "risk_level": "high"
+      },
+      {
+        "application_id": "a007",
+        "credit_score_points": 20,
+        "loan_to_income_points": 10,
+        "debt_to_income_points": 10,
+        "employment_years_points": 10,
+        "region_risk_points": 0,
+        "total_risk_score": 50,
+        "risk_level": "medium"
+      }
+    ]
+  },
+  "business_rule_checks": [
+    {
+      "rule": "minimum_age_18",
+      "application_id": "a004",
+      "status": "FAIL",
+      "detail": "Age is 17.0, below minimum of 18"
+    },
+    {
+      "rule": "positive_income",
+      "application_id": "a004",
+      "status": "FAIL",
+      "detail": "Income is 0.0, must be > 0"
+    },
+    {
+      "rule": "minimum_credit_score_600",
+      "application_id": "a003",
+      "status": "WARN",
+      "detail": "Credit score is 590.0"
+    },
+    {
+      "rule": "minimum_credit_score_600",
+      "application_id": "a003",
+      "status": "WARN",
+      "detail": "Credit score is 590.0"
+    },
+    {
+      "rule": "unique_application_id",
+      "application_id": "a003",
+      "status": "FAIL",
+      "detail": "Duplicate application_id(s) found: ['a003']"
+    }
+  ],
+  "explanations": {
+    "purpose": "对信贷申请样本进行风险评分，使用可解释规则卡而非黑箱模型。",
+    "rule_card_rationale": "规则卡使用 5 个维度（信用分、贷款收入比、负债收入比、工作年限、地区），每个维度分档打分，总分越高风险越大。各维度业务含义透明，可追溯。",
+    "why_no_ml": "样本仅8条，无法训练有统计意义的机器学习模型；规则卡在此场景下更稳健、可解释、可审计。",
+    "leakage_handling": "post_loan_collection_calls 是贷后催收次数，属于贷后行为，不能作为贷前评分特征。default_90d 是目标变量，同样不能用作特征。"
+  },
+  "warnings": [
+    "a007 has missing age and missing default_90d — age was imputed with median, default_90d ignored as target",
+    "a004 has age=17 (under 18) and income=0 — both are business rule violations; the application may need manual review",
+    "a003 appears as a complete duplicate row — this may indicate a data ingestion error",
+    "Dataset only contains 8 rows — any scoring is illustrative and not statistically robust"
+  ],
+  "how_to_do_differently": [
+    "With more data (1000+ rows), train a logistic regression or XGBoost model with cross-validation",
+    "Add external credit bureau data for richer feature set",
+    "Implement time-based train/test split to prevent look-ahead bias",
+    "Perform feature selection via mutual information or permutation importance",
+    "Calibrate score to probability of default using Platt scaling or isotonic regression",
+    "Build a monitoring dashboard for score drift and population stability"
+  ],
+  "validation": {
+    "required_keys_check": {
+      "keys": [
+        "row_counts",
+        "field_summary",
+        "data_quality",
+        "feature_processing",
+        "scoring_result",
+        "business_rule_checks",
+        "explanations",
+        "warnings",
+        "how_to_do_differently",
+        "validation"
+      ],
+      "all_present": true
+    },
+    "no_leakage_in_features": {
+      "default_90d_in_features": false,
+      "post_loan_collection_calls_in_features": false
+    },
+    "rule_card_reproducible": true
+  }
+}

@@ -1,0 +1,435 @@
+{
+  "task_id": "credit_risk_scoring_001",
+  "row_counts": {
+    "applications": 8
+  },
+  "field_summary": {
+    "profile": {
+      "path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-140352__model-deepseek-v4-flash__tasks-deepseek-env-both-retest-20260607\\workspaces\\credit_risk_scoring_001.real_api_code_agent\\applications.csv",
+      "format": "csv",
+      "header_rows": 1,
+      "row_count": 8,
+      "column_count": 12,
+      "columns": [
+        "application_id",
+        "user_id",
+        "application_time",
+        "loan_amount",
+        "income",
+        "age",
+        "region",
+        "credit_score",
+        "existing_debt",
+        "employment_years",
+        "default_90d",
+        "post_loan_collection_calls"
+      ],
+      "missing_values": {
+        "application_id": 0,
+        "user_id": 0,
+        "application_time": 0,
+        "loan_amount": 0,
+        "income": 0,
+        "age": 1,
+        "region": 0,
+        "credit_score": 0,
+        "existing_debt": 0,
+        "employment_years": 0,
+        "default_90d": 1,
+        "post_loan_collection_calls": 0
+      },
+      "numeric_stats": {
+        "loan_amount": {
+          "count": 8,
+          "min": 3000.0,
+          "max": 50000.0,
+          "mean": 21125.0,
+          "sum": 169000.0
+        },
+        "income": {
+          "count": 8,
+          "min": 0.0,
+          "max": 85000.0,
+          "mean": 46125.0,
+          "sum": 369000.0
+        },
+        "age": {
+          "count": 7,
+          "min": 17.0,
+          "max": 45.0,
+          "mean": 32.857142857142854,
+          "sum": 230.0
+        },
+        "credit_score": {
+          "count": 8,
+          "min": 590.0,
+          "max": 720.0,
+          "mean": 648.75,
+          "sum": 5190.0
+        },
+        "existing_debt": {
+          "count": 8,
+          "min": 0.0,
+          "max": 42000.0,
+          "mean": 22125.0,
+          "sum": 177000.0
+        },
+        "employment_years": {
+          "count": 8,
+          "min": 0.0,
+          "max": 6.0,
+          "mean": 2.3125,
+          "sum": 18.5
+        },
+        "default_90d": {
+          "count": 7,
+          "min": 0.0,
+          "max": 1.0,
+          "mean": 0.5714285714285714,
+          "sum": 4.0
+        },
+        "post_loan_collection_calls": {
+          "count": 8,
+          "min": 0.0,
+          "max": 5.0,
+          "mean": 2.25,
+          "sum": 18.0
+        }
+      },
+      "column_profiles": {
+        "application_id": {
+          "missing_count": 0,
+          "missing_rate": 0.0,
+          "unique_count": 7,
+          "inferred_type": "string",
+          "numeric_stats": null,
+          "flags": []
+        },
+        "user_id": {
+          "missing_count": 0,
+          "missing_rate": 0.0,
+          "unique_count": 7,
+          "inferred_type": "string",
+          "numeric_stats": null,
+          "flags": []
+        },
+        "application_time": {
+          "missing_count": 0,
+          "missing_rate": 0.0,
+          "unique_count": 7,
+          "inferred_type": "date",
+          "numeric_stats": null,
+          "flags": []
+        },
+        "loan_amount": {
+          "missing_count": 0,
+          "missing_rate": 0.0,
+          "unique_count": 7,
+          "inferred_type": "integer",
+          "numeric_stats": {
+            "count": 8,
+            "min": 3000.0,
+            "max": 50000.0,
+            "mean": 21125.0,
+            "sum": 169000.0
+          },
+          "flags": []
+        },
+        "income": {
+          "missing_count": 0,
+          "missing_rate": 0.0,
+          "unique_count": 7,
+          "inferred_type": "integer",
+          "numeric_stats": {
+            "count": 8,
+            "min": 0.0,
+            "max": 85000.0,
+            "mean": 46125.0,
+            "sum": 369000.0
+          },
+          "flags": []
+        },
+        "age": {
+          "missing_count": 1,
+          "missing_rate": 0.125,
+          "unique_count": 6,
+          "inferred_type": "integer",
+          "numeric_stats": {
+            "count": 7,
+            "min": 17.0,
+            "max": 45.0,
+            "mean": 32.857142857142854,
+            "sum": 230.0
+          },
+          "flags": [
+            "has_missing"
+          ]
+        },
+        "region": {
+          "missing_count": 0,
+          "missing_rate": 0.0,
+          "unique_count": 4,
+          "inferred_type": "string",
+          "numeric_stats": null,
+          "flags": []
+        },
+        "credit_score": {
+          "missing_count": 0,
+          "missing_rate": 0.0,
+          "unique_count": 7,
+          "inferred_type": "integer",
+          "numeric_stats": {
+            "count": 8,
+            "min": 590.0,
+            "max": 720.0,
+            "mean": 648.75,
+            "sum": 5190.0
+          },
+          "flags": []
+        },
+        "existing_debt": {
+          "missing_count": 0,
+          "missing_rate": 0.0,
+          "unique_count": 7,
+          "inferred_type": "integer",
+          "numeric_stats": {
+            "count": 8,
+            "min": 0.0,
+            "max": 42000.0,
+            "mean": 22125.0,
+            "sum": 177000.0
+          },
+          "flags": []
+        },
+        "employment_years": {
+          "missing_count": 0,
+          "missing_rate": 0.0,
+          "unique_count": 7,
+          "inferred_type": "number",
+          "numeric_stats": {
+            "count": 8,
+            "min": 0.0,
+            "max": 6.0,
+            "mean": 2.3125,
+            "sum": 18.5
+          },
+          "flags": []
+        },
+        "default_90d": {
+          "missing_count": 1,
+          "missing_rate": 0.125,
+          "unique_count": 2,
+          "inferred_type": "integer",
+          "numeric_stats": {
+            "count": 7,
+            "min": 0.0,
+            "max": 1.0,
+            "mean": 0.5714285714285714,
+            "sum": 4.0
+          },
+          "flags": [
+            "has_missing"
+          ]
+        },
+        "post_loan_collection_calls": {
+          "missing_count": 0,
+          "missing_rate": 0.0,
+          "unique_count": 5,
+          "inferred_type": "integer",
+          "numeric_stats": {
+            "count": 8,
+            "min": 0.0,
+            "max": 5.0,
+            "mean": 2.25,
+            "sum": 18.0
+          },
+          "flags": []
+        }
+      },
+      "duplicate_row_count": 1,
+      "quality_flags": [
+        "duplicate_rows",
+        "columns_with_missing"
+      ]
+    },
+    "target_column": "default_90d",
+    "time_column": "application_time"
+  },
+  "data_quality": {
+    "required_columns": [
+      "application_id",
+      "user_id",
+      "application_time",
+      "loan_amount",
+      "income",
+      "age",
+      "credit_score",
+      "existing_debt",
+      "employment_years",
+      "default_90d"
+    ],
+    "missing_required_columns": [],
+    "missing_values": {
+      "row_count": 8,
+      "missing_by_column": {
+        "application_id": 0,
+        "user_id": 0,
+        "application_time": 0,
+        "loan_amount": 0,
+        "income": 0,
+        "age": 1,
+        "region": 0,
+        "credit_score": 0,
+        "existing_debt": 0,
+        "employment_years": 0,
+        "default_90d": 1,
+        "post_loan_collection_calls": 0
+      },
+      "missing_rate_by_column": {
+        "application_id": 0.0,
+        "user_id": 0.0,
+        "application_time": 0.0,
+        "loan_amount": 0.0,
+        "income": 0.0,
+        "age": 0.125,
+        "region": 0.0,
+        "credit_score": 0.0,
+        "existing_debt": 0.0,
+        "employment_years": 0.0,
+        "default_90d": 0.125,
+        "post_loan_collection_calls": 0.0
+      },
+      "columns_with_missing": [
+        "age",
+        "default_90d"
+      ],
+      "total_missing": 2
+    },
+    "duplicate_keys": {
+      "key_columns": [
+        "application_id"
+      ],
+      "row_count": 8,
+      "is_unique": false,
+      "duplicate_key_count": 1,
+      "duplicate_row_count": 2,
+      "duplicate_examples": [
+        {
+          "application_id": "a003"
+        }
+      ]
+    },
+    "invalid_age_count": 1,
+    "leakage_columns_present": [
+      "post_loan_collection_calls"
+    ]
+  },
+  "feature_processing": {
+    "numeric_features": [
+      "loan_amount",
+      "income",
+      "age",
+      "credit_score",
+      "existing_debt",
+      "employment_years"
+    ],
+    "categorical_features": [
+      "region"
+    ],
+    "excluded_columns": [
+      "default_90d",
+      "post_loan_collection_calls"
+    ],
+    "time_split_column": "application_time"
+  },
+  "scoring_result": {
+    "method": "rule_based_scorecard",
+    "scored_rows": [
+      {
+        "application_id": "a001",
+        "user_id": "u1",
+        "risk_score": 25.76,
+        "risk_band": "low"
+      },
+      {
+        "application_id": "a002",
+        "user_id": "u2",
+        "risk_score": 60.54,
+        "risk_band": "high"
+      },
+      {
+        "application_id": "a003",
+        "user_id": "u3",
+        "risk_score": 65.42,
+        "risk_band": "high"
+      },
+      {
+        "application_id": "a003",
+        "user_id": "u3",
+        "risk_score": 65.42,
+        "risk_band": "high"
+      },
+      {
+        "application_id": "a004",
+        "user_id": "u4",
+        "risk_score": 60.0,
+        "risk_band": "high"
+      },
+      {
+        "application_id": "a005",
+        "user_id": "u5",
+        "risk_score": 31.54,
+        "risk_band": "low"
+      },
+      {
+        "application_id": "a006",
+        "user_id": "u6",
+        "risk_score": 55.89,
+        "risk_band": "medium"
+      },
+      {
+        "application_id": "a007",
+        "user_id": "u7",
+        "risk_score": 36.73,
+        "risk_band": "low"
+      }
+    ],
+    "risk_band_counts": {
+      "high": 4,
+      "low": 3,
+      "medium": 1
+    }
+  },
+  "business_rule_checks": {
+    "target_not_used_as_feature": true,
+    "leakage_columns_excluded": true,
+    "requires_manual_review_for_high_risk": true
+  },
+  "explanations": [
+    "评分示例使用可复现规则卡，不声明已训练生产模型。",
+    "较高债收比、较低信用分、无稳定就业和异常年龄会提高风险分。"
+  ],
+  "warnings": [
+    "duplicate_application_id",
+    "不能静默 drop duplicates；重复申请会影响坏账率和评分样本权重。",
+    "invalid_age",
+    "target_leakage_post_loan_collection_calls",
+    "high_risk_applications"
+  ],
+  "how_to_do_differently": [
+    "先按 application_time 做时间切分，再拟合编码、标准化或采样规则，避免训练集看到未来信息。",
+    "贷后字段、标签字段和人工催收字段不能进入贷前评分特征。",
+    "重复申请样本应先报告重复比例和业务主键，再由业务规则决定保留首笔、末笔或全部样本。"
+  ],
+  "validation": {
+    "passed": true,
+    "checks": {
+      "required_columns_present": true,
+      "duplicate_key_check_completed": true,
+      "invalid_age_check_completed": true,
+      "leakage_columns_excluded": true,
+      "scoring_rows_match_input": true,
+      "business_rule_checks_present": true
+    }
+  }
+}

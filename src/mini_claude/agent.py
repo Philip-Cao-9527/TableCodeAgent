@@ -953,7 +953,8 @@ IMPORTANT: When your plan is complete, you MUST call exit_plan_mode. Do NOT ask 
             self.current_turns += 1
             budget = self._check_budget()
             if budget["exceeded"]:
-                print_info(f"Budget exceeded: {budget['reason']}")
+                if not self.is_sub_agent:
+                    print_info(f"Budget exceeded: {budget['reason']}")
                 break
 
             # Process tools: early-started ones (from streaming) just await
@@ -964,21 +965,24 @@ IMPORTANT: When your plan is complete, you MUST call exit_plan_mode. Do NOT ask 
                 if context_break or self._aborted:
                     break
                 inp = dict(tu.input) if hasattr(tu.input, 'items') else tu.input
-                print_tool_call(tu.name, inp)
+                if not self.is_sub_agent:
+                    print_tool_call(tu.name, inp)
 
                 # Was this tool already started during streaming?
                 early_task = early_executions.get(tu.id)
                 if early_task:
                     raw = await early_task
                     res = self._persist_large_result(tu.name, raw)
-                    print_tool_result(tu.name, res)
+                    if not self.is_sub_agent:
+                        print_tool_result(tu.name, res)
                     tool_results.append({"type": "tool_result", "tool_use_id": tu.id, "content": res})
                     continue
 
                 # Permission check for tools not started early
                 perm = check_permission(tu.name, inp, self.permission_mode, self._plan_file_path)
                 if perm["action"] == "deny":
-                    print_info(f"Denied: {perm.get('message', '')}")
+                    if not self.is_sub_agent:
+                        print_info(f"Denied: {perm.get('message', '')}")
                     tool_results.append({"type": "tool_result", "tool_use_id": tu.id, "content": f"Action denied: {perm.get('message', '')}"})
                     continue
                 if perm["action"] == "confirm" and perm.get("message") and perm["message"] not in self._confirmed_paths:
@@ -990,7 +994,8 @@ IMPORTANT: When your plan is complete, you MUST call exit_plan_mode. Do NOT ask 
 
                 raw = await self._execute_tool_call(tu.name, inp)
                 res = self._persist_large_result(tu.name, raw)
-                print_tool_result(tu.name, res)
+                if not self.is_sub_agent:
+                    print_tool_result(tu.name, res)
 
                 if self._context_cleared:
                     self._context_cleared = False
@@ -1159,7 +1164,8 @@ IMPORTANT: When your plan is complete, you MUST call exit_plan_mode. Do NOT ask 
             self.current_turns += 1
             budget = self._check_budget()
             if budget["exceeded"]:
-                print_info(f"Budget exceeded: {budget['reason']}")
+                if not self.is_sub_agent:
+                    print_info(f"Budget exceeded: {budget['reason']}")
                 break
 
             # Phase 1: Parse & permission-check (serial)
@@ -1175,11 +1181,13 @@ IMPORTANT: When your plan is complete, you MUST call exit_plan_mode. Do NOT ask 
                 except Exception:
                     inp = {}
 
-                print_tool_call(fn_name, inp)
+                if not self.is_sub_agent:
+                    print_tool_call(fn_name, inp)
 
                 perm = check_permission(fn_name, inp, self.permission_mode, self._plan_file_path)
                 if perm["action"] == "deny":
-                    print_info(f"Denied: {perm.get('message', '')}")
+                    if not self.is_sub_agent:
+                        print_info(f"Denied: {perm.get('message', '')}")
                     oai_checked.append({"tc": tc, "fn": fn_name, "inp": inp, "allowed": False, "result": f"Action denied: {perm.get('message', '')}"})
                     continue
                 if perm["action"] == "confirm" and perm.get("message") and perm["message"] not in self._confirmed_paths:
@@ -1208,7 +1216,8 @@ IMPORTANT: When your plan is complete, you MUST call exit_plan_mode. Do NOT ask 
                     async def _run_oai_safe(ct_item: dict) -> tuple[dict, str]:
                         raw = await self._execute_tool_call(ct_item["fn"], ct_item["inp"])
                         res = self._persist_large_result(ct_item["fn"], raw)
-                        print_tool_result(ct_item["fn"], res)
+                        if not self.is_sub_agent:
+                            print_tool_result(ct_item["fn"], res)
                         return ct_item, res
 
                     results = await asyncio.gather(*[_run_oai_safe(ct) for ct in batch["items"]])
@@ -1221,7 +1230,8 @@ IMPORTANT: When your plan is complete, you MUST call exit_plan_mode. Do NOT ask 
                             continue
                         raw = await self._execute_tool_call(ct["fn"], ct["inp"])
                         res = self._persist_large_result(ct["fn"], raw)
-                        print_tool_result(ct["fn"], res)
+                        if not self.is_sub_agent:
+                            print_tool_result(ct["fn"], res)
 
                         if self._context_cleared:
                             self._context_cleared = False

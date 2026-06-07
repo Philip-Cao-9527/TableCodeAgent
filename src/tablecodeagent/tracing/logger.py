@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 
-TRACE_VERSION = "v0.0.2"
+TRACE_VERSION = "v0.0.3"
 DEFAULT_RESULT_ROOT = Path("benchmarks/results")
 
 
@@ -93,14 +93,22 @@ def result_from_trace(trace: dict[str, Any]) -> dict[str, Any]:
         "skipped": trace.get("skipped", False),
         "llm_tool_call_observed": trace.get("llm_tool_call_observed", False),
         "tool_call_count": trace.get("tool_call_count", 0),
+        "tool_error_count": (trace.get("metrics") or {}).get("tool_error_count", 0),
         "final_answer": trace.get("final_answer"),
         "expected_answer": trace.get("expected_answer"),
         "validation": validation,
-        "passed": validation.get("passed") is True and trace.get("failure_type") is None,
+        "passed": (
+            trace.get("failure_type") is None
+            and (
+                validation.get("passed") is True
+                or (trace.get("metrics") or {}).get("test_pass_rate") == 1.0
+            )
+        ),
         "actual": validation.get("actual"),
         "expected": validation.get("expected"),
         "diff": validation.get("diff"),
         "failure_type": trace.get("failure_type"),
+        "api_error_type": trace.get("api_error_type"),
         "elapsed_ms": trace.get("elapsed_ms", 0),
         "trace_path": trace.get("trace_path"),
         "result_dir": trace.get("result_dir"),
@@ -108,6 +116,9 @@ def result_from_trace(trace: dict[str, Any]) -> dict[str, Any]:
         "generated_code_path": trace.get("generated_code_path"),
         "answer_path": trace.get("answer_path"),
         "code_generation_source": trace.get("code_generation_source"),
+        "schema_check": trace.get("schema_check"),
+        "pytest_exit_code": trace.get("pytest_exit_code"),
+        "pytest_failure_summary": trace.get("pytest_failure_summary"),
     }
     metrics = trace.get("metrics") or {}
     result["metrics"] = metrics
@@ -116,9 +127,11 @@ def result_from_trace(trace: dict[str, Any]) -> dict[str, Any]:
         "test_pass_rate",
         "validation_pass_rate",
         "generated_code_saved",
+        "answer_file_saved",
         "solve_py_runtime_seconds",
         "sandbox_timeout_count",
         "dependency_failure_count",
+        "tool_error_count",
         "row_expansion_detected",
         "warning_recall",
         "expected_warning_coverage",

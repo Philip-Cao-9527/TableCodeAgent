@@ -1,0 +1,292 @@
+{
+  "row_counts": {
+    "total_rows": 8,
+    "duplicate_rows": 2,
+    "unique_rows": 7,
+    "unique_applications": 7
+  },
+  "field_summary": {
+    "application_id": {
+      "dtype": "str",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7
+    },
+    "user_id": {
+      "dtype": "str",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7
+    },
+    "application_time": {
+      "dtype": "str",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7
+    },
+    "loan_amount": {
+      "dtype": "int64",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7,
+      "min": 3000.0,
+      "max": 50000.0,
+      "mean": 21125.0
+    },
+    "income": {
+      "dtype": "int64",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7,
+      "min": 0.0,
+      "max": 85000.0,
+      "mean": 46125.0
+    },
+    "age": {
+      "dtype": "float64",
+      "non_null_count": 7,
+      "null_count": 1,
+      "null_rate": 0.125,
+      "unique_count": 6,
+      "min": 17.0,
+      "max": 45.0,
+      "mean": 32.86
+    },
+    "region": {
+      "dtype": "str",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 4
+    },
+    "credit_score": {
+      "dtype": "int64",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7,
+      "min": 590.0,
+      "max": 720.0,
+      "mean": 648.75
+    },
+    "existing_debt": {
+      "dtype": "int64",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7,
+      "min": 0.0,
+      "max": 42000.0,
+      "mean": 22125.0
+    },
+    "employment_years": {
+      "dtype": "float64",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 7,
+      "min": 0.0,
+      "max": 6.0,
+      "mean": 2.31
+    },
+    "default_90d": {
+      "dtype": "float64",
+      "non_null_count": 7,
+      "null_count": 1,
+      "null_rate": 0.125,
+      "unique_count": 2,
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.57
+    },
+    "post_loan_collection_calls": {
+      "dtype": "int64",
+      "non_null_count": 8,
+      "null_count": 0,
+      "null_rate": 0.0,
+      "unique_count": 5,
+      "min": 0.0,
+      "max": 5.0,
+      "mean": 2.25
+    }
+  },
+  "data_quality": {
+    "duplicate_keys": {
+      "count": 1,
+      "duplicate_application_ids": [
+        "a003"
+      ],
+      "detail": "application_id 重复，重复 ID: ['a003']"
+    },
+    "missing_value_counts": {
+      "application_id": 0,
+      "user_id": 0,
+      "application_time": 0,
+      "loan_amount": 0,
+      "income": 0,
+      "age": 1,
+      "region": 0,
+      "credit_score": 0,
+      "existing_debt": 0,
+      "employment_years": 0,
+      "default_90d": 1,
+      "post_loan_collection_calls": 0
+    },
+    "invalid_age_count": 1,
+    "invalid_age_detail": "年龄字段中存在 < 18 或 > 100 的异常值",
+    "leakage_columns_present": [
+      "post_loan_collection_calls"
+    ],
+    "leakage_warning": "发现贷后泄漏字段: ['post_loan_collection_calls']，这些字段不能在贷前评分中使用"
+  },
+  "feature_processing": {
+    "numeric_features": [
+      "loan_amount",
+      "income",
+      "age",
+      "credit_score",
+      "existing_debt",
+      "employment_years"
+    ],
+    "categorical_features": [
+      "region"
+    ],
+    "excluded_features": {
+      "default_90d": "目标变量（贷后表现），不可用于贷前评分",
+      "post_loan_collection_calls": "贷后催收数据，存在数据泄漏风险，不可用作贷前特征"
+    },
+    "processing_steps": [
+      "1. 读取 CSV，推断数据类型",
+      "2. 检查缺失值：age 缺失 1 条，default_90d 缺失 1 条",
+      "3. 处理重复主键：application_id='a003' 存在完全重复记录",
+      "4. 异常年龄检测：age=17 为异常值（未成年人）",
+      "5. 排除泄漏字段：post_loan_collection_calls 为贷后字段，不参与评分",
+      "6. 对缺失值采用评分时跳过（None-safe 打分函数）",
+      "7. 构造 debt_to_income、loan_to_income 等衍生比率指标用于评分卡",
+      "8. 区域编码为 ordinal 调整项"
+    ],
+    "derived_features": [
+      "debt_to_income_ratio",
+      "loan_to_income_ratio"
+    ]
+  },
+  "scoring_result": {
+    "scoring_method": "可解释规则卡评分（0-100），不依赖机器学习模型",
+    "score_range": "0 (高风险) ~ 100 (低风险)",
+    "excluded_features_note": "未使用 default_90d 和 post_loan_collection_calls",
+    "applications": [
+      {
+        "application_id": "a001",
+        "score": 100,
+        "risk_level": "低风险"
+      },
+      {
+        "application_id": "a002",
+        "score": 50,
+        "risk_level": "中风险"
+      },
+      {
+        "application_id": "a003",
+        "score": 48,
+        "risk_level": "中风险"
+      },
+      {
+        "application_id": "a003",
+        "score": 48,
+        "risk_level": "中风险"
+      },
+      {
+        "application_id": "a004",
+        "score": 35,
+        "risk_level": "高风险"
+      },
+      {
+        "application_id": "a005",
+        "score": 100,
+        "risk_level": "低风险"
+      },
+      {
+        "application_id": "a006",
+        "score": 55,
+        "risk_level": "中风险"
+      },
+      {
+        "application_id": "a007",
+        "score": 88,
+        "risk_level": "低风险"
+      }
+    ],
+    "risk_distribution": {
+      "低风险": 3,
+      "中风险": 4,
+      "高风险": 1
+    }
+  },
+  "business_rule_checks": {
+    "all_rules_passed": false,
+    "rules": [
+      {
+        "rule": "借款人年龄须 >= 18 岁",
+        "passed": false,
+        "failed_ids": [
+          "a004"
+        ],
+        "detail": "发现 1 个未成年申请"
+      },
+      {
+        "rule": "年收入须大于 0",
+        "passed": false,
+        "failed_ids": [
+          "a004"
+        ],
+        "detail": "发现 1 个零收入申请"
+      },
+      {
+        "rule": "信用分须 >= 600（基本门槛）",
+        "passed": false,
+        "failed_ids": [
+          "a003",
+          "a003"
+        ],
+        "detail": "发现 2 个信用分低于 600"
+      },
+      {
+        "rule": "贷款金额不超过年收入的 3 倍",
+        "passed": true,
+        "failed_ids": [],
+        "detail": "全部通过"
+      }
+    ]
+  },
+  "explanations": {
+    "scoring_logic": "评分卡采用 6 个维度加权打分：信用分(30%)、负债收入比(20%)、工作年限(15%)、贷款收入比(15%)、年龄(10%)、区域(10%)。每项根据分档加减分，最终分数截断到 [0,100]。70+ 低风险，45-69 中风险，<45 高风险。",
+    "data_quality_findings": "共 8 条记录，其中 2 条完全重复（application_id=a003），年龄异常 1 条（age=17），缺失值涉及 age(1) 和 default_90d(1) 字段。",
+    "business_rules_summary": "业务规则校验涵盖年龄下限(18岁)、收入正数、信用分门槛(600)、贷款收入比上限(3倍)。"
+  },
+  "warnings": [
+    "数据包含贷后字段 ['post_loan_collection_calls']，请确保评分模型不会泄漏未来信息。",
+    "发现 1 条异常年龄记录，建议核实。",
+    "application_id 存在重复: ['a003']",
+    "存在缺失值的字段: ['age', 'default_90d']"
+  ],
+  "how_to_do_differently": [
+    "1. 使用更细粒度的评分卡分箱（WOE/IV 转换）替代简单分段",
+    "2. 增加更多信用特征（如征信查询次数、历史逾期记录）",
+    "3. 对缺失值使用插补（如中位数填充）而非直接跳过",
+    "4. 对区域特征做 target encoding 或 WOE 编码",
+    "5. 可引入轻量级逻辑回归作为可解释模型基线",
+    "6. 增加时间序列特征（如申请频率、历史借贷行为趋势）"
+  ],
+  "validation": {
+    "schema_valid": true,
+    "required_keys_present": true,
+    "leakage_excluded": true,
+    "scoring_feature_count": 7,
+    "note": "评分未使用 default_90d 或 post_loan_collection_calls，符合约束。"
+  }
+}

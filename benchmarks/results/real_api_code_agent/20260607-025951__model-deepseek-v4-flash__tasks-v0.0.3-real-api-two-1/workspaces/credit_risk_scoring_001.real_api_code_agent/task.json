@@ -1,0 +1,63 @@
+{
+  "id": "credit_risk_scoring_001",
+  "task_type": "credit_risk_scoring",
+  "question": "对信贷申请样本进行风险评分 workflow：读取申请表，检查字段、缺失值、重复主键、异常年龄、贷后泄漏字段，构造最小特征处理说明，输出可解释的规则卡评分和业务规则校验。",
+  "tables": {
+    "applications": "applications.csv"
+  },
+  "scoring_config": {
+    "key_columns": ["application_id"],
+    "target_column": "default_90d",
+    "time_column": "application_time",
+    "required_columns": [
+      "application_id",
+      "user_id",
+      "application_time",
+      "loan_amount",
+      "income",
+      "age",
+      "credit_score",
+      "existing_debt",
+      "employment_years",
+      "default_90d"
+    ],
+    "numeric_features": [
+      "loan_amount",
+      "income",
+      "age",
+      "credit_score",
+      "existing_debt",
+      "employment_years"
+    ],
+    "categorical_features": ["region"],
+    "leakage_columns": ["post_loan_collection_calls"]
+  },
+  "implementation_hints": {
+    "allowed_project_helpers": [
+      "from tablecodeagent.workflows.credit_risk_scoring import build_credit_risk_scoring_report"
+    ],
+    "solve_py_suggestion": "可以在 solve.py 中调用 build_credit_risk_scoring_report(Path(__file__).resolve().parent)，再用 json.dumps(..., ensure_ascii=False, indent=2) 写出 answer.json。",
+    "constraints": [
+      "不要读取 expected.json。",
+      "不要把 default_90d 或 post_loan_collection_calls 用作贷前评分特征。",
+      "data_quality 必须包含 duplicate_keys、invalid_age_count 和 leakage_columns_present。",
+      "answer.json 必须是合法 JSON。"
+    ]
+  },
+  "output_contract": {
+    "validation_mode": "pytest",
+    "answer_json_required_keys": [
+      "row_counts",
+      "field_summary",
+      "data_quality",
+      "feature_processing",
+      "scoring_result",
+      "business_rule_checks",
+      "explanations",
+      "warnings",
+      "how_to_do_differently",
+      "validation"
+    ],
+    "schema_description": "answer.json 顶层必须直接输出这些字段；评分可以使用可复现规则卡，不需要训练生产模型，也不能把 default_90d 或 post_loan_collection_calls 用作贷前评分特征。"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "row_counts": {
+    "users": 10,
+    "campaign_exposure": 10,
+    "rewards": 9,
+    "orders": 9
+  },
+  "join_cardinality": {
+    "exposure_to_rewards": {
+      "left_table": "campaign_exposure",
+      "right_table": "rewards",
+      "keys": [
+        "user_id",
+        "campaign_id",
+        "campaign_window"
+      ],
+      "left_rows": 10,
+      "right_rows": 9,
+      "joined_rows": 11,
+      "cardinality": "one_to_many",
+      "row_expansion_detected": true,
+      "expansion_ratio": 1.1,
+      "note": "rewards 表 user_id=u2 存在重复键(2条补贴记录), 导致 join 后行数膨胀"
+    },
+    "exposure_to_orders": {
+      "left_table": "campaign_exposure",
+      "right_table": "orders",
+      "keys": [
+        "user_id"
+      ],
+      "left_rows": 10,
+      "right_rows": 9,
+      "joined_rows": 11,
+      "cardinality": "one_to_many",
+      "row_expansion_detected": true,
+      "expansion_ratio": 1.1,
+      "note": "orders 表 user_id=u2 存在多条订单, 导致 join 后行数膨胀"
+    },
+    "users_to_exposure": {
+      "left_table": "users",
+      "right_table": "campaign_exposure",
+      "keys": [
+        "user_id"
+      ],
+      "left_rows": 10,
+      "right_rows": 10,
+      "joined_rows": 10,
+      "cardinality": "one_to_one",
+      "row_expansion_detected": false,
+      "expansion_ratio": 1.0,
+      "note": "users 与 exposure 按 user_id 完美 1:1 匹配"
+    }
+  },
+  "group_distribution": {
+    "treatment_count": 8,
+    "control_count": 2,
+    "minority_to_majority_ratio": 0.25,
+    "imbalanced": true,
+    "imbalanced_group": "control",
+    "threshold": 0.5
+  },
+  "smd_summary": {
+    "treatment_count": 8,
+    "control_count": 2,
+    "smd_threshold": 0.1,
+    "by_column": {
+      "historical_orders_30d": {
+        "smd": 5.5074,
+        "treatment_mean": 8.88,
+        "control_mean": 0.5,
+        "unbalanced": 

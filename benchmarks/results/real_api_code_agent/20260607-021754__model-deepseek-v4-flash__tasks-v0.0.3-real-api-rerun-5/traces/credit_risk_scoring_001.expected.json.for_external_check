@@ -1,0 +1,25 @@
+{
+  "expected_duplicate_application_count": 1,
+  "expected_invalid_age_count": 1,
+  "expected_leakage_columns": ["post_loan_collection_calls"],
+  "expected_high_risk_min": 2,
+  "expected_required_warnings": [
+    "duplicate_application_id",
+    "不能静默 drop duplicates",
+    "invalid_age",
+    "target_leakage_post_loan_collection_calls",
+    "high_risk_applications"
+  ],
+  "expected_output_keys": [
+    "row_counts",
+    "field_summary",
+    "data_quality",
+    "feature_processing",
+    "scoring_result",
+    "business_rule_checks",
+    "explanations",
+    "warnings",
+    "how_to_do_differently",
+    "validation"
+  ]
+}
