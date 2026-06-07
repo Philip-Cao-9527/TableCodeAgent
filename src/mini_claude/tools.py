@@ -350,7 +350,12 @@ def _grep_search(inp: dict) -> str:
                 args.append(f"--include={include}")
             args.extend(["--", pattern, path])
             result = subprocess.run(
-                args, capture_output=True, text=True, timeout=10
+                args,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=10,
             )
             if result.returncode == 1:
                 return "No matches found."
@@ -390,7 +395,7 @@ def _grep_python(pattern: str, directory: str, include: str | None) -> str:
             if include_pattern and not fnmatch.fnmatch(name, include_pattern):
                 continue
             try:
-                text = Path(full).read_text(errors="replace")
+                text = Path(full).read_text(encoding="utf-8", errors="replace")
                 for i, line in enumerate(text.split("\n")):
                     if regex.search(line):
                         matches.append(f"{full}:{i+1}:{line}")
@@ -420,6 +425,8 @@ def _run_shell(inp: dict) -> str:
             shell=True,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             timeout=timeout_s,
         )
         output = result.stdout or ""

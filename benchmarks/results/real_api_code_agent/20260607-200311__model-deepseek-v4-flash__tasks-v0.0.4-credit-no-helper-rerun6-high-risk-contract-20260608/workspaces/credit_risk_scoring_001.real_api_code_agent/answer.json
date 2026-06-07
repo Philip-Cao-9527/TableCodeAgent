@@ -1,0 +1,351 @@
+{
+  "row_counts": {
+    "raw_rows": 11,
+    "after_dedup": 10
+  },
+  "field_summary": {
+    "application_id": {
+      "dtype": "str",
+      "total": 11,
+      "non_blank": 11,
+      "blank_count": 0
+    },
+    "user_id": {
+      "dtype": "str",
+      "total": 11,
+      "non_blank": 11,
+      "blank_count": 0
+    },
+    "application_time": {
+      "dtype": "str",
+      "total": 11,
+      "non_blank": 11,
+      "blank_count": 0
+    },
+    "feature_window_start": {
+      "dtype": "str",
+      "total": 11,
+      "non_blank": 11,
+      "blank_count": 0
+    },
+    "feature_cutoff_date": {
+      "dtype": "str",
+      "total": 11,
+      "non_blank": 11,
+      "blank_count": 0
+    },
+    "label_window_start": {
+      "dtype": "str",
+      "total": 11,
+      "non_blank": 11,
+      "blank_count": 0
+    },
+    "label_window_end": {
+      "dtype": "str",
+      "total": 11,
+      "non_blank": 11,
+      "blank_count": 0
+    },
+    "loan_amount": {
+      "dtype": "str",
+      "total": 11,
+      "non_blank": 11,
+      "blank_count": 0
+    },
+    "income": {
+      "dtype": "str",
+      "total": 11,
+      "non_blank": 10,
+      "blank_count": 1
+    },
+    "age": {
+      "dtype": "str",
+      "total": 11,
+      "non_blank": 10,
+      "blank_count": 1
+    },
+    "region": {
+      "dtype": "str",
+      "total": 11,
+      "non_blank": 11,
+      "blank_count": 0
+    },
+    "credit_score": {
+      "dtype": "str",
+      "total": 11,
+      "non_blank": 11,
+      "blank_count": 0
+    },
+    "existing_debt": {
+      "dtype": "str",
+      "total": 11,
+      "non_blank": 11,
+      "blank_count": 0
+    },
+    "employment_years": {
+      "dtype": "str",
+      "total": 11,
+      "non_blank": 11,
+      "blank_count": 0
+    },
+    "delinquency_30d_count": {
+      "dtype": "str",
+      "total": 11,
+      "non_blank": 11,
+      "blank_count": 0
+    },
+    "prior_applications_12m": {
+      "dtype": "str",
+      "total": 11,
+      "non_blank": 11,
+      "blank_count": 0
+    },
+    "device_risk_score": {
+      "dtype": "str",
+      "total": 11,
+      "non_blank": 11,
+      "blank_count": 0
+    },
+    "default_90d": {
+      "dtype": "str",
+      "total": 11,
+      "non_blank": 10,
+      "blank_count": 1
+    },
+    "post_loan_collection_calls": {
+      "dtype": "str",
+      "total": 11,
+      "non_blank": 11,
+      "blank_count": 0
+    },
+    "post_loan_dpd_max": {
+      "dtype": "str",
+      "total": 11,
+      "non_blank": 11,
+      "blank_count": 0
+    }
+  },
+  "data_quality": {
+    "required_columns": [
+      "age",
+      "application_id",
+      "application_time",
+      "credit_score",
+      "default_90d",
+      "delinquency_30d_count",
+      "device_risk_score",
+      "employment_years",
+      "existing_debt",
+      "feature_cutoff_date",
+      "feature_window_start",
+      "income",
+      "label_window_end",
+      "label_window_start",
+      "loan_amount",
+      "prior_applications_12m",
+      "user_id"
+    ],
+    "missing_required_columns": [],
+    "missing_values": {
+      "income": 1,
+      "age": 1,
+      "default_90d": 1
+    },
+    "duplicate_keys": {
+      "key_columns": [
+        "application_id"
+      ],
+      "duplicate_key_count": 1
+    },
+    "duplicate_customers": {
+      "key_columns": [
+        "user_id"
+      ],
+      "duplicate_key_count": 2
+    },
+    "invalid_age_count": 1,
+    "leakage_columns_present": [
+      "post_loan_collection_calls",
+      "post_loan_dpd_max"
+    ],
+    "field_type_issues": [
+      {
+        "column": "loan_amount",
+        "invalid_count": 1,
+        "expected_type": "numeric"
+      },
+      {
+        "column": "default_90d",
+        "invalid_count": 1,
+        "expected_type": "numeric (0/1)"
+      }
+    ]
+  },
+  "feature_processing": {
+    "pre_loan_numeric_features": [
+      "age",
+      "credit_score",
+      "delinquency_30d_count",
+      "device_risk_score",
+      "employment_years",
+      "existing_debt",
+      "income",
+      "loan_amount",
+      "prior_applications_12m"
+    ],
+    "pre_loan_categorical_features": [
+      "region"
+    ],
+    "excluded_columns": [
+      "application_id",
+      "application_time",
+      "default_90d",
+      "feature_cutoff_date",
+      "feature_window_start",
+      "label_window_end",
+      "label_window_start",
+      "post_loan_collection_calls",
+      "post_loan_dpd_max",
+      "user_id"
+    ],
+    "exclusion_reasons": {
+      "application_id": "identifier column, not a predictive feature",
+      "application_time": "time window metadata, not a predictive feature",
+      "default_90d": "target variable, not a feature",
+      "feature_cutoff_date": "time window metadata, not a predictive feature",
+      "feature_window_start": "time window metadata, not a predictive feature",
+      "label_window_end": "time window metadata, not a predictive feature",
+      "label_window_start": "time window metadata, not a predictive feature",
+      "post_loan_collection_calls": "target leakage: post-loan field not available at application time",
+      "post_loan_dpd_max": "target leakage: post-loan field not available at application time",
+      "user_id": "identifier column, not a predictive feature"
+    },
+    "feature_window": {
+      "start_column": "feature_window_start",
+      "cutoff_column": "feature_cutoff_date",
+      "rule": "only use features available on or before feature_cutoff_date"
+    },
+    "label_window": {
+      "start_column": "label_window_start",
+      "end_column": "label_window_end",
+      "target_column": "default_90d",
+      "window_days": 90
+    },
+    "time_split_column": "application_time"
+  },
+  "scoring_result": {
+    "method": "rule_based_weighted_scoring",
+    "scored_rows": [
+      {
+        "application_id": "a001",
+        "user_id": "u1",
+        "risk_score": 0.0,
+        "risk_band": "low"
+      },
+      {
+        "application_id": "a002",
+        "user_id": "u2",
+        "risk_score": 88.0,
+        "risk_band": "high"
+      },
+      {
+        "application_id": "a003",
+        "user_id": "u3",
+        "risk_score": 100.0,
+        "risk_band": "high"
+      },
+      {
+        "application_id": "a004",
+        "user_id": "u4",
+        "risk_score": 52.0,
+        "risk_band": "high"
+      },
+      {
+        "application_id": "a005",
+        "user_id": "u5",
+        "risk_score": 0.0,
+        "risk_band": "low"
+      },
+      {
+        "application_id": "a006",
+        "user_id": "u6",
+        "risk_score": 85.0,
+        "risk_band": "high"
+      },
+      {
+        "application_id": "a007",
+        "user_id": "u7",
+        "risk_score": 18.0,
+        "risk_band": "low"
+      },
+      {
+        "application_id": "a008",
+        "user_id": "u2",
+        "risk_score": 93.0,
+        "risk_band": "high"
+      },
+      {
+        "application_id": "a009",
+        "user_id": "u9",
+        "risk_score": 12.0,
+        "risk_band": "low"
+      },
+      {
+        "application_id": "a010",
+        "user_id": "u10",
+        "risk_score": 100.0,
+        "risk_band": "high"
+      }
+    ],
+    "risk_band_counts": {
+      "low": 4,
+      "medium": 0,
+      "high": 6
+    }
+  },
+  "business_rule_checks": {
+    "target_not_used_as_feature": true,
+    "leakage_columns_excluded": true,
+    "label_window_declared": true,
+    "feature_window_declared": true,
+    "duplicate_application_check_completed": true,
+    "customer_uniqueness_check_completed": true,
+    "field_type_checks_completed": true,
+    "requires_manual_review_for_high_risk": true
+  },
+  "explanations": [
+    "读取 applications.csv 共 11 行，其中 application_id=a003 重复 1 次，去重后 10 笔唯一申请",
+    "检查 17 个必要字段，全部存在",
+    "贷前数值字段 9 个：loan_amount, income, age, credit_score, existing_debt, employment_years, delinquency_30d_count, prior_applications_12m, device_risk_score",
+    "分类型字段 1 个：region",
+    "排除字段包括：标识列 (application_id, user_id)、时间窗口元数据、目标列 default_90d、贷后泄露字段 post_loan_collection_calls 和 post_loan_dpd_max",
+    "缺失值：income 1 行 (a009)、age 1 行 (a007)、default_90d 1 行 (a007)",
+    "字段类型问题：loan_amount 含非数值 'bad_amount' (a007)，default_90d 含空白 (a007)",
+    "年龄异常 1 行：a004 age=17 (低于 18，不计入缺失)",
+    "风险评分使用可复现规则卡：信用评分、设备风险、逾期次数、负债收入比、就业稳定性、重复申请、年龄和字段质量共 8 维加权",
+    "高风险 (>=50分) 6 笔、中风险 (20-49分) 0 笔、低风险 (<20分) 4 笔",
+    "高风险申请 (a002/a003/a004/a006/a008/a010) 需人工复核"
+  ],
+  "warnings": [
+    "[duplicate_application_id] 发现重复申请 application_id=a003，已去重保留首行",
+    "[duplicate_customer_id] 客户 user_id=u2 存在多笔申请 (a002, a008)，需关注客户唯一性",
+    "[不能静默 drop duplicates] 重复申请必须显式检测并告知业务方，不能静默丢弃",
+    "[invalid_age] 申请 a004 年龄 age=17，低于 18 岁准入年龄",
+    "[target_leakage_post_loan_collection_calls] 贷后字段 post_loan_collection_calls 不能作为贷前特征",
+    "[target_leakage_post_loan_dpd_max] 贷后字段 post_loan_dpd_max 不能作为贷前特征",
+    "[field_type_issue] 字段 loan_amount 含非数值 'bad_amount'；default_90d 含空白值",
+    "[high_risk_applications] 高风险申请需人工复核：a002, a003, a004, a006, a008, a010"
+  ],
+  "how_to_do_differently": [
+    "可引入更细粒度的评分卡模型（如逻辑回归或 XGBoost）替代线性加权规则",
+    "可增加外部征信数据补充收入验证和负债评估",
+    "建议对缺失收入和年龄做合理插补（如均值/中位数填充）而非直接标记为缺失",
+    "可增加时间序列特征如申请频率和额度增长趋势"
+  ],
+  "validation": {
+    "total_raw_rows": 11,
+    "total_scored_rows": 10,
+    "high_risk_count": 6,
+    "high_risk_meets_threshold": true
+  }
+}

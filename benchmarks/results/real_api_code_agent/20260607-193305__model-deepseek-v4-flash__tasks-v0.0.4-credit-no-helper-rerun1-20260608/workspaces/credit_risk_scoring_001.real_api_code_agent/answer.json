@@ -1,0 +1,351 @@
+{
+  "row_counts": {
+    "total_rows": 11,
+    "total_applications": 10,
+    "total_customers": 9,
+    "total_columns": 20
+  },
+  "field_summary": {
+    "application_id": {
+      "dtype": "str",
+      "non_null_count": 11,
+      "null_count": 0,
+      "unique_count": 10
+    },
+    "user_id": {
+      "dtype": "str",
+      "non_null_count": 11,
+      "null_count": 0,
+      "unique_count": 9
+    },
+    "application_time": {
+      "dtype": "str",
+      "non_null_count": 11,
+      "null_count": 0,
+      "unique_count": 10
+    },
+    "feature_window_start": {
+      "dtype": "str",
+      "non_null_count": 11,
+      "null_count": 0,
+      "unique_count": 10
+    },
+    "feature_cutoff_date": {
+      "dtype": "str",
+      "non_null_count": 11,
+      "null_count": 0,
+      "unique_count": 10
+    },
+    "label_window_start": {
+      "dtype": "str",
+      "non_null_count": 11,
+      "null_count": 0,
+      "unique_count": 10
+    },
+    "label_window_end": {
+      "dtype": "str",
+      "non_null_count": 11,
+      "null_count": 0,
+      "unique_count": 10
+    },
+    "loan_amount": {
+      "dtype": "str",
+      "non_null_count": 11,
+      "null_count": 0,
+      "unique_count": 10
+    },
+    "income": {
+      "dtype": "float64",
+      "non_null_count": 10,
+      "null_count": 1,
+      "unique_count": 9
+    },
+    "age": {
+      "dtype": "float64",
+      "non_null_count": 10,
+      "null_count": 1,
+      "unique_count": 9
+    },
+    "region": {
+      "dtype": "str",
+      "non_null_count": 11,
+      "null_count": 0,
+      "unique_count": 4
+    },
+    "credit_score": {
+      "dtype": "int64",
+      "non_null_count": 11,
+      "null_count": 0,
+      "unique_count": 10
+    },
+    "existing_debt": {
+      "dtype": "int64",
+      "non_null_count": 11,
+      "null_count": 0,
+      "unique_count": 10
+    },
+    "employment_years": {
+      "dtype": "float64",
+      "non_null_count": 11,
+      "null_count": 0,
+      "unique_count": 10
+    },
+    "delinquency_30d_count": {
+      "dtype": "int64",
+      "non_null_count": 11,
+      "null_count": 0,
+      "unique_count": 4
+    },
+    "prior_applications_12m": {
+      "dtype": "int64",
+      "non_null_count": 11,
+      "null_count": 0,
+      "unique_count": 3
+    },
+    "device_risk_score": {
+      "dtype": "int64",
+      "non_null_count": 11,
+      "null_count": 0,
+      "unique_count": 10
+    },
+    "default_90d": {
+      "dtype": "float64",
+      "non_null_count": 10,
+      "null_count": 1,
+      "unique_count": 2
+    },
+    "post_loan_collection_calls": {
+      "dtype": "int64",
+      "non_null_count": 11,
+      "null_count": 0,
+      "unique_count": 7
+    },
+    "post_loan_dpd_max": {
+      "dtype": "int64",
+      "non_null_count": 11,
+      "null_count": 0,
+      "unique_count": 6
+    }
+  },
+  "data_quality": {
+    "required_columns": [
+      "application_id",
+      "user_id",
+      "application_time",
+      "feature_window_start",
+      "feature_cutoff_date",
+      "label_window_start",
+      "label_window_end",
+      "loan_amount",
+      "income",
+      "age",
+      "credit_score",
+      "existing_debt",
+      "employment_years",
+      "delinquency_30d_count",
+      "prior_applications_12m",
+      "device_risk_score",
+      "default_90d"
+    ],
+    "missing_required_columns": [],
+    "missing_values": {
+      "income": 1,
+      "age": 1,
+      "default_90d": 1
+    },
+    "duplicate_keys": {
+      "key_columns": [
+        "application_id"
+      ],
+      "duplicate_key_count": 1
+    },
+    "duplicate_customers": {
+      "key_columns": [
+        "user_id"
+      ],
+      "duplicate_key_count": 2
+    },
+    "invalid_age_count": 1,
+    "leakage_columns_present": [
+      "post_loan_collection_calls",
+      "post_loan_dpd_max"
+    ],
+    "field_type_issues": [
+      {
+        "column": "loan_amount",
+        "invalid_count": 1,
+        "expected_type": "numeric"
+      }
+    ]
+  },
+  "feature_processing": {
+    "pre_loan_numeric_features": [
+      "loan_amount",
+      "income",
+      "age",
+      "credit_score",
+      "existing_debt",
+      "employment_years",
+      "delinquency_30d_count",
+      "prior_applications_12m",
+      "device_risk_score"
+    ],
+    "pre_loan_categorical_features": [
+      "region"
+    ],
+    "excluded_columns": [
+      "default_90d",
+      "post_loan_collection_calls",
+      "post_loan_dpd_max",
+      "feature_window_start",
+      "feature_cutoff_date",
+      "label_window_start",
+      "label_window_end"
+    ],
+    "exclusion_reasons": {
+      "default_90d": "target / label column; not available at scoring time",
+      "post_loan_collection_calls": "post-loan leakage; not observable pre-loan",
+      "post_loan_dpd_max": "post-loan leakage; not observable pre-loan",
+      "feature_window_start": "feature-window metadata; not a predictive feature",
+      "feature_cutoff_date": "feature-window metadata; not a predictive feature",
+      "label_window_start": "label-window metadata; not a predictive feature",
+      "label_window_end": "label-window metadata; not a predictive feature"
+    },
+    "feature_window": {
+      "start_column": "feature_window_start",
+      "cutoff_column": "feature_cutoff_date",
+      "rule": "only use features available on or before feature_cutoff_date"
+    },
+    "label_window": {
+      "start_column": "label_window_start",
+      "end_column": "label_window_end",
+      "target_column": "default_90d",
+      "window_days": 90
+    },
+    "time_split_column": "application_time"
+  },
+  "scoring_result": {
+    "method": "rule_based_weighted_score",
+    "scored_rows": [
+      {
+        "application_id": "a001",
+        "user_id": "u1",
+        "risk_score": 0.0,
+        "risk_band": "Low"
+      },
+      {
+        "application_id": "a002",
+        "user_id": "u2",
+        "risk_score": 80.0,
+        "risk_band": "High"
+      },
+      {
+        "application_id": "a003",
+        "user_id": "u3",
+        "risk_score": 100.0,
+        "risk_band": "High"
+      },
+      {
+        "application_id": "a003",
+        "user_id": "u3",
+        "risk_score": 100.0,
+        "risk_band": "High"
+      },
+      {
+        "application_id": "a004",
+        "user_id": "u4",
+        "risk_score": 25.0,
+        "risk_band": "Low"
+      },
+      {
+        "application_id": "a005",
+        "user_id": "u5",
+        "risk_score": 5.0,
+        "risk_band": "Low"
+      },
+      {
+        "application_id": "a006",
+        "user_id": "u6",
+        "risk_score": 95.0,
+        "risk_band": "High"
+      },
+      {
+        "application_id": "a007",
+        "user_id": "u7",
+        "risk_score": 25.0,
+        "risk_band": "Low"
+      },
+      {
+        "application_id": "a008",
+        "user_id": "u2",
+        "risk_score": 85.0,
+        "risk_band": "High"
+      },
+      {
+        "application_id": "a009",
+        "user_id": "u9",
+        "risk_score": 10.0,
+        "risk_band": "Low"
+      },
+      {
+        "application_id": "a010",
+        "user_id": "u10",
+        "risk_score": 100.0,
+        "risk_band": "High"
+      }
+    ],
+    "risk_band_counts": {
+      "Low": 5,
+      "High": 6
+    }
+  },
+  "business_rule_checks": {
+    "target_not_used_as_feature": true,
+    "leakage_columns_excluded": true,
+    "label_window_declared": true,
+    "feature_window_declared": true,
+    "duplicate_application_check_completed": true,
+    "customer_uniqueness_check_completed": true,
+    "field_type_checks_completed": true,
+    "requires_manual_review_for_high_risk": true
+  },
+  "explanations": [
+    "Scoring uses only pre-loan features: credit_score, delinquency_30d_count, device_risk_score, existing_debt, income, employment_years, prior_applications_12m.",
+    "Credit-score contribution: <600→30pts, 600–649→20pts, 650–699→10pts, ≥700→0pts.",
+    "Delinquency contribution: 10 pts per 30-day delinquency count.",
+    "Device-risk contribution: >70→25pts, 50–70→15pts, 30–50→5pts, ≤30→0pts.",
+    "Debt-to-income ratio contribution: >0.5→15pts, 0.3–0.5→10pts, <0.3→0pts.",
+    "Employment-years contribution: <1→15pts, 1–3→10pts, 3–5→5pts, ≥5→0pts.",
+    "Prior-applications contribution: 5pts per application in last 12 months.",
+    "Risk bands: <30 → Low, 30–59 → Medium, ≥60 → High.",
+    "Leakage columns (post_loan_collection_calls, post_loan_dpd_max) strictly excluded.",
+    "Target column (default_90d) not used as a predictive feature.",
+    "Feature window defined by feature_window_start → feature_cutoff_date.",
+    "Label window defined by label_window_start → label_window_end (90d)."
+  ],
+  "warnings": [
+    "Duplicate application_id 'a003' detected (2 identical rows).",
+    "Customer u2 has multiple applications (a002, a008); customer u3 also duplicated.",
+    "Missing values: income (1), age (1), default_90d (1).",
+    "Invalid age (17) for application a004 — below minimum 18.",
+    "Non-numeric loan_amount value 'bad_amount' for a007 — field type issue.",
+    "Missing default_90d label for a007 — cannot verify label for this applicant.",
+    "Small sample (11 rows × 2 duplicates); scoring is illustrative only."
+  ],
+  "how_to_do_differently": [
+    "Replace rule-based scoring with a trained model (logistic regression / GBDT) on historical data.",
+    "Implement WOE binning and IV-based feature selection for categorical variables like region.",
+    "Add fraud-detection signals and income-verification flags.",
+    "Perform time-based train/test split using feature_cutoff_date.",
+    "Use k-fold or rolling-window cross-validation for performance estimation.",
+    "Consider multi-period or survival models instead of a fixed 90d window."
+  ],
+  "validation": {
+    "method": "rule_based",
+    "feature_count": 10,
+    "has_duplicates": true,
+    "has_missing_values": true,
+    "leakage_handled": true,
+    "scored_row_count": 11
+  }
+}

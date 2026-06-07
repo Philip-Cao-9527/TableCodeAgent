@@ -5,7 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 export PYTHONPATH="$ROOT_DIR/src${PYTHONPATH:+:$PYTHONPATH}"
 
-ENV_FILE="${1:-configs/api/local/provider_chatanywhere.env}"
+ENV_FILE="${1:-configs/api/local/deepseek.env}"
 TASK_DIR="${2:-benchmarks/tasks/growth_campaign_audit_001}"
 TASK_GROUP="${3:-}"
 

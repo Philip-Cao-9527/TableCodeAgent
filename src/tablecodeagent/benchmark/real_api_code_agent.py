@@ -11,6 +11,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator
 
+from tablecodeagent.benchmark.answer_models import answer_json_schema, validate_answer_json_with_model
 from tablecodeagent.agent_tools import TABLE_TOOL_NAMES
 from tablecodeagent.runtime.dependency import ensure_runtime_dependencies
 from tablecodeagent.runtime.sandbox import run_python_in_sandbox, run_tests_in_sandbox
@@ -25,6 +26,12 @@ from tablecodeagent.validation.answer import validate_answer
 
 
 MODE = "real_api_code_agent"
+BENCHMARK_PROFILE = "no_helper"
+FORBIDDEN_HELPER_MARKERS = (
+    "tablecodeagent.workflows",
+    "build_growth_campaign_audit_report",
+    "build_credit_risk_scoring_report",
+)
 
 
 def read_json(path: Path) -> dict[str, Any]:
@@ -221,10 +228,142 @@ def _extract_answer_value(answer: Any) -> Any:
     return answer
 
 
+def _timeout_exception_types() -> tuple[type[BaseException], ...]:
+    types: list[type[BaseException]] = [asyncio.TimeoutError]
+    try:
+        import openai
+        api_timeout = getattr(openai, "APITimeoutError", None)
+        if isinstance(api_timeout, type):
+            types.append(api_timeout)
+    except Exception:
+        pass
+    try:
+        import httpx
+        timeout_exception = getattr(httpx, "TimeoutException", None)
+        if isinstance(timeout_exception, type):
+            types.append(timeout_exception)
+    except Exception:
+        pass
+    deduped: list[type[BaseException]] = []
+    for item in types:
+        if item not in deduped:
+            deduped.append(item)
+    return tuple(deduped)
+
+
+def _is_api_timeout_error(error: BaseException) -> bool:
+    return isinstance(error, _timeout_exception_types())
+
+
+def _summary_text(text: str | None, *, max_chars: int = 1200) -> str | None:
+    if not text:
+        return None
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    if not lines:
+        return None
+    interesting = [
+        line for line in lines
+        if "Traceback" in line
+        or "Error" in line
+        or "Exception" in line
+        or line.startswith("E       ")
+        or line.startswith("FAILED ")
+    ]
+    summary = "\n".join((interesting or lines)[:8])
+    return summary[:max_chars]
+
+
+def _sandbox_summary(result: dict[str, Any] | None) -> dict[str, Any]:
+    if result is None:
+        return {
+            "exit_code": None,
+            "timeout": None,
+            "failure_type": None,
+            "stderr_summary": None,
+            "stdout_summary": None,
+        }
+    return {
+        "exit_code": result.get("exit_code"),
+        "timeout": result.get("timeout"),
+        "failure_type": result.get("failure_type"),
+        "stderr_summary": _summary_text(result.get("stderr")),
+        "stdout_summary": _summary_text(result.get("stdout")),
+    }
+
+
+def _attach_run_python_summary(trace: dict[str, Any], run_result: dict[str, Any] | None) -> None:
+    summary = _sandbox_summary(run_result)
+    trace["run_python"] = summary
+    trace["run_python_exit_code"] = summary["exit_code"]
+    trace["run_python_stderr_summary"] = summary["stderr_summary"]
+    trace["run_python_stdout_summary"] = summary["stdout_summary"]
+
+
+def _generated_helper_usage_denial(solve_path: Path) -> str | None:
+    try:
+        text = solve_path.read_text(encoding="utf-8", errors="replace")
+    except Exception as error:
+        return f"could not inspect generated solve.py: {type(error).__name__}: {error}"
+    for marker in FORBIDDEN_HELPER_MARKERS:
+        if marker in text:
+            return f"generated solve.py references forbidden helper marker: {marker}"
+    return None
+
+
+def _public_output_contract(task: dict[str, Any]) -> dict[str, Any]:
+    contract = dict(task.get("output_contract") or {})
+    contract.setdefault("validation_mode", "pytest")
+    contract.setdefault("answer_model", task.get("task_type") or task.get("id"))
+    contract.setdefault("allowed_libraries", ["pandas", "numpy", "json", "pathlib", "datetime", "statistics"])
+    schema = answer_json_schema(
+        task_type=task.get("task_type"),
+        task_id=task.get("id"),
+        answer_model=contract.get("answer_model"),
+    )
+    if schema:
+        contract["answer_json_schema"] = schema
+        contract["schema_source"] = "pydantic"
+    return contract
+
+
 def _schema_check_answer_json(answer_path: Path, output_contract: dict[str, Any] | None) -> dict[str, Any]:
     contract = output_contract or {}
-    required_keys = list(contract.get("answer_json_required_keys") or [])
     validation_mode = contract.get("validation_mode")
+    answer_model = contract.get("answer_model")
+    if answer_model:
+        base = {
+            "passed": False,
+            "validation_mode": validation_mode,
+            "schema_source": contract.get("schema_source") or "pydantic",
+            "answer_model": answer_model,
+            "errors": [],
+        }
+        if not answer_path.exists():
+            return {
+                **base,
+                "errors": [{"path": "$", "message": "answer.json must exist", "type": "missing_file"}],
+            }
+        try:
+            answer = read_json(answer_path)
+        except Exception as error:
+            return {
+                **base,
+                "errors": [{"path": "$", "message": f"{type(error).__name__}: {error}", "type": "json_parse_error"}],
+            }
+        result = validate_answer_json_with_model(
+            answer,
+            task_type=contract.get("task_type"),
+            task_id=contract.get("task_id"),
+            answer_model=answer_model,
+        )
+        return {
+            **base,
+            "passed": result["passed"],
+            "model": result.get("model"),
+            "errors": result.get("errors", []),
+            "actual_keys": sorted(answer.keys()) if isinstance(answer, dict) else [],
+        }
+    required_keys = list(contract.get("answer_json_required_keys") or [])
     if not required_keys:
         return {
             "passed": None,
@@ -232,6 +371,7 @@ def _schema_check_answer_json(answer_path: Path, output_contract: dict[str, Any]
             "required_keys": [],
             "missing_keys": [],
             "actual_keys": [],
+            "errors": [],
         }
     if not answer_path.exists():
         return {
@@ -240,6 +380,7 @@ def _schema_check_answer_json(answer_path: Path, output_contract: dict[str, Any]
             "required_keys": required_keys,
             "missing_keys": required_keys,
             "actual_keys": [],
+            "errors": [{"path": "$", "message": "answer.json must exist", "type": "missing_file"}],
         }
     try:
         answer = read_json(answer_path)
@@ -251,6 +392,7 @@ def _schema_check_answer_json(answer_path: Path, output_contract: dict[str, Any]
             "missing_keys": required_keys,
             "actual_keys": [],
             "error": f"{type(error).__name__}: {error}",
+            "errors": [{"path": "$", "message": f"{type(error).__name__}: {error}", "type": "json_parse_error"}],
         }
     actual_keys = sorted(answer.keys()) if isinstance(answer, dict) else []
     missing_keys = [key for key in required_keys if key not in actual_keys]
@@ -260,6 +402,10 @@ def _schema_check_answer_json(answer_path: Path, output_contract: dict[str, Any]
         "required_keys": required_keys,
         "missing_keys": missing_keys,
         "actual_keys": actual_keys,
+        "errors": [
+            {"path": f"$.{key}", "message": "required field missing", "type": "missing"}
+            for key in missing_keys
+        ],
     }
 
 
@@ -310,26 +456,27 @@ def _validate_answer_json(
 def _task_prompt(task_dir: Path) -> str:
     task = read_json(task_dir / "task.json")
     files = sorted(path.name for path in task_dir.iterdir() if path.is_file() and path.name != "expected.json")
-    output_contract = task.get("output_contract") or {}
+    output_contract = _public_output_contract(task)
     contract_text = json.dumps(output_contract, ensure_ascii=False, indent=2) if output_contract else "{}"
-    implementation_hints = task.get("implementation_hints") or {}
-    hints_text = json.dumps(implementation_hints, ensure_ascii=False, indent=2) if implementation_hints else "{}"
+    allowed_libraries = ", ".join(output_contract.get("allowed_libraries") or [])
     return (
         "你正在参加 TableCodeAgent 的真实 API 代码生成 benchmark。\n"
+        f"benchmark_profile: {BENCHMARK_PROFILE}\n"
+        "helper_hints_exposed: false\n"
         f"当前 benchmark workspace 绝对路径: {task_dir.resolve()}\n"
         "请根据当前 benchmark workspace 中的任务文件生成一个可执行的 solve.py，并通过工具把 solve.py 写入该 workspace。\n"
         "要求：\n"
         "1. 只能读取 task.json 和数据文件；不要读取 expected.json，也不要假设 expected.json 存在。\n"
         "2. solve.py 运行后必须在当前目录写出 answer.json。\n"
         "3. answer.json 必须满足 task.json 中公开的 output_contract；如果 output_contract 为空，也要输出清晰的结构化结果。\n"
-        "4. 优先使用 pandas 等成熟库处理表格。\n"
+        f"4. 允许使用的通用库包括：{allowed_libraries}；优先使用 pandas/numpy 处理表格。\n"
         "5. 不要写入 API key、.env 或 configs/api/local 路径。\n"
-        "6. 如果需要解释，请在写完 solve.py 后简短说明。\n\n"
+        "6. 禁止 import 或调用项目 workflow helper，例如 tablecodeagent.workflows 或 build_*_report；本 benchmark 测试你基于 task、数据和公开 schema 自主生成 solve.py 的能力。\n"
+        "7. 如果需要解释，请在写完 solve.py 后简短说明。\n\n"
         f"任务 id: {task.get('id')}\n"
         f"任务问题: {task.get('question')}\n"
         f"可用文件: {files}\n"
         f"公开输出契约 output_contract:\n{contract_text}\n"
-        f"公开实现提示 implementation_hints:\n{hints_text}\n"
         "重要：不要读取或写入 workspace 外的文件；不要在仓库根目录写 solve.py 或 answer.json。\n"
     )
 
@@ -353,6 +500,8 @@ async def run_real_api_code_agent(
         api_called=False,
     )
     trace["benchmark_category"] = "real_api_code_agent"
+    trace["benchmark_profile"] = BENCHMARK_PROFILE
+    trace["helper_hints_exposed"] = False
     trace["result_dir"] = str(result_dir)
     trace["code_generation_source"] = "llm_generated"
     trace["expected_answer"] = None
@@ -367,8 +516,12 @@ async def run_real_api_code_agent(
         "dependency_failure_count": 0,
         "tool_error_count": 0,
     }
-    trace["output_contract"] = task.get("output_contract") or {}
+    trace["output_contract"] = _public_output_contract(task)
     trace["schema_check"] = None
+    trace["run_python"] = _sandbox_summary(None)
+    trace["run_python_exit_code"] = None
+    trace["run_python_stderr_summary"] = None
+    trace["run_python_stdout_summary"] = None
 
     if not env_file.exists():
         trace["skipped"] = True
@@ -454,14 +607,30 @@ async def run_real_api_code_agent(
             trace["validation"] = {"passed": False, "actual": None, "expected": "solve.py generated", "diff": None}
             return _finish(result_dir, trace, started)
 
+        helper_denial = _generated_helper_usage_denial(solve_path)
+        if helper_denial:
+            trace["failure_type"] = "helper_usage_forbidden"
+            trace["helper_usage_denial"] = helper_denial
+            trace["validation"] = {"passed": False, "actual": helper_denial, "expected": "no project workflow helper usage", "diff": None}
+            return _finish(result_dir, trace, started)
+
         project_python = str((Path.cwd() / "src").resolve())
-        sandbox_env = {"PYTHONPATH": project_python}
+        sandbox_env = {
+            "PYTHONPATH": project_python,
+            "PYTHONIOENCODING": "utf-8",
+            "PYTHONUTF8": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "OMP_NUM_THREADS": "1",
+            "MKL_NUM_THREADS": "1",
+            "NUMEXPR_NUM_THREADS": "1",
+        }
         run_result = run_python_in_sandbox(
             "solve.py",
             workspace_dir=workspace,
             max_output_chars=40000,
             env=sandbox_env,
         )
+        _attach_run_python_summary(trace, run_result)
         schema_check = _schema_check_answer_json(answer_path, trace["output_contract"])
         expected_path = _restore_expected_for_external_check(expected_hidden, workspace)
         test_path = workspace / "tests" / "test_solution.py"
@@ -500,6 +669,10 @@ async def run_real_api_code_agent(
             trace["failure_type"] = "sandbox_timeout"
         elif run_result["exit_code"] != 0:
             trace["failure_type"] = "code_execution_failed"
+            if test_result is not None and test_result.get("exit_code") == 0:
+                trace["code_execution_failure_detail"] = "pytest_passed_but_run_python_failed"
+            else:
+                trace["code_execution_failure_detail"] = "run_python_failed"
         elif test_result is not None and test_result["timeout"]:
             trace["failure_type"] = "sandbox_timeout"
         elif schema_check.get("passed") is False:
@@ -510,7 +683,7 @@ async def run_real_api_code_agent(
             trace["failure_type"] = "validation_failed"
     except Exception as error:
         if trace.get("failure_type") is None:
-            trace["failure_type"] = "real_api_code_agent_error"
+            trace["failure_type"] = "api_timeout" if _is_api_timeout_error(error) else "real_api_code_agent_error"
         trace["validation"] = {"passed": False, "actual": None, "expected": "real_api_code_agent completed", "diff": None}
         trace["error"] = f"{type(error).__name__}: {error}"
         trace["api_error_type"] = type(error).__name__ if trace.get("api_called") else None

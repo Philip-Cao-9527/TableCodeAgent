@@ -59,3 +59,28 @@ def test_sandbox_runs_fixed_solve_py_and_pytest(tmp_path: Path) -> None:
     assert run_result["exit_code"] == 0, run_result
     assert test_result["exit_code"] == 0, test_result
     assert answer["join_cardinality"]["row_expansion_detected"] is True
+
+
+def test_sandbox_uses_utf8_for_unicode_stdout(tmp_path: Path) -> None:
+    workspace = tmp_path / "unicode_solve"
+    workspace.mkdir()
+    solve_path = workspace / "solve.py"
+    solve_path.write_text(
+        textwrap.dedent(
+            """
+            from __future__ import annotations
+
+            print("✅ answer saved")
+            """
+        ).strip() + "\n",
+        encoding="utf-8",
+    )
+
+    run_result = run_python_in_sandbox(
+        "solve.py",
+        workspace_dir=workspace,
+        timeout_seconds=30,
+    )
+
+    assert run_result["exit_code"] == 0, run_result
+    assert "✅ answer saved" in run_result["stdout"]

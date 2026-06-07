@@ -1,8 +1,17 @@
 from __future__ import annotations
 
+import asyncio
 import json
+from pathlib import Path
 
-from tablecodeagent.benchmark.real_api_code_agent import _schema_check_answer_json, _validate_answer_json
+from tablecodeagent.benchmark.answer_models import validate_answer_json_with_model
+from tablecodeagent.benchmark.real_api_code_agent import (
+    _is_api_timeout_error,
+    _public_output_contract,
+    _schema_check_answer_json,
+    _validate_answer_json,
+)
+from tablecodeagent.tracing.logger import result_from_trace
 
 
 def test_schema_check_reports_missing_required_keys(tmp_path):
@@ -17,6 +26,101 @@ def test_schema_check_reports_missing_required_keys(tmp_path):
 
     assert result["passed"] is False
     assert result["missing_keys"] == ["row_counts", "warnings"]
+    assert result["errors"]
+
+
+def test_pydantic_schema_check_reports_nested_errors(tmp_path):
+    task = json.loads(Path("benchmarks/tasks/credit_risk_scoring_001/task.json").read_text(encoding="utf-8"))
+    contract = _public_output_contract(task)
+    answer_path = tmp_path / "answer.json"
+    answer_path.write_text(json.dumps({"row_counts": {"applications": 1}}), encoding="utf-8")
+
+    result = _schema_check_answer_json(answer_path, contract)
+
+    assert result["passed"] is False
+    assert result["schema_source"] == "pydantic"
+    assert result["answer_model"] == "credit_risk_scoring"
+    assert any(error["path"].startswith("$.data_quality") for error in result["errors"])
+
+
+def test_no_helper_task_contracts_do_not_expose_project_helpers():
+    task_paths = [
+        Path("benchmarks/tasks/growth_campaign_audit_001/task.json"),
+        Path("benchmarks/tasks/credit_risk_scoring_001/task.json"),
+    ]
+    forbidden = ("implementation_hints", "allowed_project_helpers", "solve_py_suggestion", "build_", "tablecodeagent.workflows")
+
+    for task_path in task_paths:
+        text = task_path.read_text(encoding="utf-8")
+        assert not any(marker in text for marker in forbidden), task_path
+        task = json.loads(text)
+        contract = _public_output_contract(task)
+        assert contract["schema_source"] == "pydantic"
+        assert "answer_json_schema" in contract
+        assert contract["allowed_libraries"]
+
+
+def test_credit_task_contract_requires_warning_tags_and_lowercase_risk_bands():
+    task = json.loads(Path("benchmarks/tasks/credit_risk_scoring_001/task.json").read_text(encoding="utf-8"))
+    contract = _public_output_contract(task)
+
+    assert contract["risk_band_allowed_values"] == ["low", "medium", "high"]
+    assert contract["risk_band_counts_required_keys"] == ["low", "medium", "high"]
+    assert "at least 4" in contract["risk_band_business_rule"]
+    assert "unique application rows" in contract["duplicate_count_semantics"]["duplicate_customers.duplicate_key_count"]
+    assert "missing or blank age" in contract["invalid_age_count_semantics"]
+    assert "default_90d" in contract["field_type_issue_semantics"]
+    assert "duplicate_application_id" in contract["required_warning_tags"]
+    assert "high_risk_applications" in contract["required_warning_tags"]
+
+    answer = {
+        "row_counts": {"total_rows": 1},
+        "field_summary": {},
+        "data_quality": {
+            "required_columns": [],
+            "missing_required_columns": [],
+            "missing_values": {},
+            "duplicate_keys": {"key_columns": ["application_id"], "duplicate_key_count": 0},
+            "duplicate_customers": {"key_columns": ["user_id"], "duplicate_key_count": 0},
+            "invalid_age_count": 0,
+            "leakage_columns_present": [],
+            "field_type_issues": [],
+        },
+        "feature_processing": {
+            "pre_loan_numeric_features": [],
+            "pre_loan_categorical_features": [],
+            "excluded_columns": [],
+            "exclusion_reasons": {},
+            "feature_window": {},
+            "label_window": {},
+            "time_split_column": "application_time",
+        },
+        "scoring_result": {
+            "method": "demo",
+            "scored_rows": [{"application_id": "a1", "user_id": "u1", "risk_score": 1.0, "risk_band": "High"}],
+            "risk_band_counts": {"Low": 0, "Medium": 0, "High": 1},
+        },
+        "business_rule_checks": {
+            "target_not_used_as_feature": True,
+            "leakage_columns_excluded": True,
+            "label_window_declared": True,
+            "feature_window_declared": True,
+            "duplicate_application_check_completed": True,
+            "customer_uniqueness_check_completed": True,
+            "field_type_checks_completed": True,
+            "requires_manual_review_for_high_risk": True,
+        },
+        "explanations": [],
+        "warnings": [],
+        "how_to_do_differently": [],
+        "validation": {},
+    }
+
+    result = validate_answer_json_with_model(answer, answer_model="credit_risk_scoring")
+
+    assert result["passed"] is False
+    assert any("$.scoring_result.scored_rows[0].risk_band" == error["path"] for error in result["errors"])
+    assert any("$.scoring_result.risk_band_counts.low" == error["path"] for error in result["errors"])
 
 
 def test_pytest_validation_mode_does_not_mark_answer_existence_as_passed(tmp_path):
@@ -33,3 +137,36 @@ def test_pytest_validation_mode_does_not_mark_answer_existence_as_passed(tmp_pat
 
     assert result["passed"] is None
     assert result["expected"] == "pytest is authoritative for this task"
+
+
+def test_api_timeout_detection_includes_asyncio_timeout():
+    assert _is_api_timeout_error(asyncio.TimeoutError())
+
+
+def test_result_from_trace_exposes_run_python_summary():
+    result = result_from_trace({
+        "task_id": "demo",
+        "mode": "real_api_code_agent",
+        "provider": "deepseek",
+        "model_name": "demo-model",
+        "api_called": True,
+        "skipped": False,
+        "benchmark_profile": "no_helper",
+        "helper_hints_exposed": False,
+        "validation": {"passed": None},
+        "failure_type": "code_execution_failed",
+        "run_python": {
+            "exit_code": 1,
+            "stderr_summary": "UnicodeEncodeError",
+            "stdout_summary": "answer.json saved",
+        },
+        "run_python_exit_code": 1,
+        "run_python_stderr_summary": "UnicodeEncodeError",
+        "run_python_stdout_summary": "answer.json saved",
+    })
+
+    assert result["benchmark_profile"] == "no_helper"
+    assert result["helper_hints_exposed"] is False
+    assert result["run_python"]["exit_code"] == 1
+    assert result["run_python_exit_code"] == 1
+    assert result["run_python_stderr_summary"] == "UnicodeEncodeError"

@@ -15,7 +15,7 @@ from tablecodeagent.benchmark.real_api_code_agent import (
 from tablecodeagent.tracing.logger import make_result_dir
 
 
-DEFAULT_ENV_FILE = Path("configs/api/local/provider_chatanywhere.env")
+DEFAULT_ENV_FILE = Path("configs/api/local/deepseek.env")
 
 
 def _resolve_api_config(env_file: Path) -> tuple[str | None, str | None, str | None]:

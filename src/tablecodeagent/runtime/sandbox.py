@@ -26,6 +26,12 @@ DEFAULT_ENV_ALLOWLIST = {
     "TEMP",
     "TMP",
     "PYTEST_DISABLE_PLUGIN_AUTOLOAD",
+    "PYTHONIOENCODING",
+    "PYTHONUTF8",
+    "OPENBLAS_NUM_THREADS",
+    "OMP_NUM_THREADS",
+    "MKL_NUM_THREADS",
+    "NUMEXPR_NUM_THREADS",
     "LANG",
     "LC_ALL",
     "TMPDIR",
@@ -70,6 +76,14 @@ def _truncate(text: str, max_chars: int) -> tuple[str, bool]:
     )
 
 
+def _coerce_subprocess_text(value: str | bytes | None) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, bytes):
+        return value.decode("utf-8", errors="replace")
+    return value
+
+
 def _is_forbidden_path(path: Path) -> bool:
     normalized = str(path).replace("\\", "/")
     home = str(Path.home()).replace("\\", "/")
@@ -88,6 +102,8 @@ def _resolve_workspace(workspace_dir: str | Path) -> Path:
 
 def _safe_env(extra_env: dict[str, str] | None = None) -> dict[str, str]:
     env = {key: value for key, value in os.environ.items() if key in DEFAULT_ENV_ALLOWLIST}
+    env.setdefault("PYTHONIOENCODING", "utf-8")
+    env.setdefault("PYTHONUTF8", "1")
     if extra_env:
         for key, value in extra_env.items():
             if key in DEFAULT_ENV_ALLOWLIST or key.startswith("TABLECODEAGENT_"):
@@ -156,6 +172,8 @@ def run_python_in_sandbox(
             shell=False,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             timeout=timeout_seconds,
             env=_safe_env(env),
         )
@@ -174,8 +192,8 @@ def run_python_in_sandbox(
             "failure_type": None if result.returncode == 0 else "sandbox_process_failed",
         }
     except subprocess.TimeoutExpired as error:
-        stdout = error.stdout if isinstance(error.stdout, str) else ""
-        stderr = error.stderr if isinstance(error.stderr, str) else ""
+        stdout = _coerce_subprocess_text(error.stdout)
+        stderr = _coerce_subprocess_text(error.stderr)
         stdout, stdout_truncated = _truncate(stdout, max_output_chars)
         stderr, stderr_truncated = _truncate(stderr, max_output_chars)
         return {
@@ -222,6 +240,8 @@ def run_tests_in_sandbox(
             shell=False,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             timeout=timeout_seconds,
             env=_safe_env(test_env),
         )
@@ -240,8 +260,8 @@ def run_tests_in_sandbox(
             "failure_type": None if result.returncode == 0 else "sandbox_tests_failed",
         }
     except subprocess.TimeoutExpired as error:
-        stdout = error.stdout if isinstance(error.stdout, str) else ""
-        stderr = error.stderr if isinstance(error.stderr, str) else ""
+        stdout = _coerce_subprocess_text(error.stdout)
+        stderr = _coerce_subprocess_text(error.stderr)
         stdout, stdout_truncated = _truncate(stdout, max_output_chars)
         stderr, stderr_truncated = _truncate(stderr, max_output_chars)
         return {

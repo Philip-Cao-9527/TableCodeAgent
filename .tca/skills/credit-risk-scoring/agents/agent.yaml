@@ -1,0 +1,22 @@
+name: credit-risk-scoring
+display_name: 信贷风控样本处理
+short_description: 审核和实现信贷风控 benchmark/workflow，不暴露 helper，不声明生产模型。
+default_prompt: >
+  请按 TableCodeAgent 信贷风控样本处理规范执行：先检查贷前/贷后字段隔离、
+  时间窗与标签窗口、重复申请、客户唯一性、缺失/异常/字段类型，再输出风险分层、
+  业务规则校验、warnings 和 validation。真实 LLM Agent benchmark 必须采用 no-helper
+  口径，不得公开 workflow helper 或 expected.json。
+requires_real_api: false
+evidence_fields:
+  - benchmark_profile
+  - helper_hints_exposed
+  - schema_check.errors
+  - generated_code_path
+  - answer_path
+  - run_python.exit_code
+  - pytest_exit_code
+  - failure_type
+boundaries:
+  - 不是生产风控模型
+  - 不声明 SOTA、SFT、RL、RAG 或 Memory 增强
+  - 不替代真实授信审批、监管合规或上线监控

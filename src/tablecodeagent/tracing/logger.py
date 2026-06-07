@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 
-TRACE_VERSION = "v0.0.3"
+TRACE_VERSION = "v0.0.4"
 DEFAULT_RESULT_ROOT = Path("benchmarks/results")
 
 
@@ -91,6 +91,8 @@ def result_from_trace(trace: dict[str, Any]) -> dict[str, Any]:
         "model_name": trace.get("model_name"),
         "api_called": trace.get("api_called", False),
         "skipped": trace.get("skipped", False),
+        "benchmark_profile": trace.get("benchmark_profile"),
+        "helper_hints_exposed": trace.get("helper_hints_exposed"),
         "llm_tool_call_observed": trace.get("llm_tool_call_observed", False),
         "tool_call_count": trace.get("tool_call_count", 0),
         "tool_error_count": (trace.get("metrics") or {}).get("tool_error_count", 0),
@@ -117,6 +119,10 @@ def result_from_trace(trace: dict[str, Any]) -> dict[str, Any]:
         "answer_path": trace.get("answer_path"),
         "code_generation_source": trace.get("code_generation_source"),
         "schema_check": trace.get("schema_check"),
+        "run_python": trace.get("run_python"),
+        "run_python_exit_code": trace.get("run_python_exit_code"),
+        "run_python_stderr_summary": trace.get("run_python_stderr_summary"),
+        "run_python_stdout_summary": trace.get("run_python_stdout_summary"),
         "pytest_exit_code": trace.get("pytest_exit_code"),
         "pytest_failure_summary": trace.get("pytest_failure_summary"),
     }

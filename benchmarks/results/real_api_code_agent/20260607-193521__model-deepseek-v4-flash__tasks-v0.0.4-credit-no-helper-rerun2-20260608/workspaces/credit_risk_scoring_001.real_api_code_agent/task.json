@@ -1,0 +1,62 @@
+{
+  "id": "credit_risk_scoring_001",
+  "task_type": "credit_risk_scoring",
+  "question": "对信贷申请样本进行 no-helper 风险评分 workflow：读取申请表，检查贷前/贷后字段隔离、时间窗与标签窗口、重复申请和客户唯一性、缺失/异常/字段类型、特征排除原因、风险分层和业务规则校验，输出符合公开 schema 的 answer.json。",
+  "tables": {
+    "applications": "applications.csv"
+  },
+  "scoring_config": {
+    "key_columns": ["application_id"],
+    "target_column": "default_90d",
+    "time_column": "application_time",
+    "required_columns": [
+      "application_id",
+      "user_id",
+      "application_time",
+      "feature_window_start",
+      "feature_cutoff_date",
+      "label_window_start",
+      "label_window_end",
+      "loan_amount",
+      "income",
+      "age",
+      "credit_score",
+      "existing_debt",
+      "employment_years",
+      "delinquency_30d_count",
+      "prior_applications_12m",
+      "device_risk_score",
+      "default_90d"
+    ],
+    "feature_window": {
+      "start_column": "feature_window_start",
+      "cutoff_column": "feature_cutoff_date",
+      "rule": "only use features available on or before feature_cutoff_date"
+    },
+    "label_window": {
+      "start_column": "label_window_start",
+      "end_column": "label_window_end",
+      "target_column": "default_90d",
+      "window_days": 90
+    },
+    "numeric_features": [
+      "loan_amount",
+      "income",
+      "age",
+      "credit_score",
+      "existing_debt",
+      "employment_years",
+      "delinquency_30d_count",
+      "prior_applications_12m",
+      "device_risk_score"
+    ],
+    "categorical_features": ["region"],
+    "leakage_columns": ["post_loan_collection_calls", "post_loan_dpd_max"]
+  },
+  "output_contract": {
+    "validation_mode": "pytest",
+    "answer_model": "credit_risk_scoring",
+    "allowed_libraries": ["pandas", "numpy", "json", "pathlib", "datetime", "statistics"],
+    "schema_description": "answer.json 必须符合 runner 注入的 Pydantic JSON Schema。评分可以使用可复现规则卡或轻量规则，不需要训练生产模型；default_90d、post_loan_collection_calls、post_loan_dpd_max 等标签/贷后字段不能作为贷前评分特征。"
+  }
+}

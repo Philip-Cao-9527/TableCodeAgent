@@ -26,29 +26,10 @@
     "order_time_column": "order_time",
     "campaign_window_column": "campaign_window"
   },
-  "implementation_hints": {
-    "allowed_project_helpers": [
-      "from tablecodeagent.workflows.growth_campaign_audit import build_growth_campaign_audit_report"
-    ],
-    "solve_py_suggestion": "可以在 solve.py 中调用 build_growth_campaign_audit_report(Path(__file__).resolve().parent)，再用 json.dumps(..., ensure_ascii=False, indent=2) 写出 answer.json。",
-    "constraints": [
-      "不要读取 expected.json。",
-      "不要把结果包在 audit_results 下。",
-      "answer.json 必须是合法 JSON。"
-    ]
-  },
   "output_contract": {
     "validation_mode": "pytest",
-    "answer_json_required_keys": [
-      "row_counts",
-      "join_cardinality",
-      "group_distribution",
-      "smd_summary",
-      "outlier_summary",
-      "time_window_alignment",
-      "warnings",
-      "how_to_do_differently"
-    ],
-    "schema_description": "answer.json 顶层必须直接输出这些字段；不要把审计结果整体包在 audit_results 下面。warnings 应包含可检索的风险标签和中文业务提示。"
+    "answer_model": "growth_campaign_audit",
+    "allowed_libraries": ["pandas", "numpy", "json", "pathlib", "datetime", "statistics"],
+    "schema_description": "answer.json 必须符合 runner 注入的 Pydantic JSON Schema；不要把审计结果整体包在 audit_results 下面。warnings 应包含可检索的风险标签和中文业务提示。"
   }
 }

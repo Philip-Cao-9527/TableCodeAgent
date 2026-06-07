@@ -1,0 +1,4 @@
+interface:
+  display_name: "TableCodeAgent 开发 Prompt"
+  short_description: "生成可直接执行的 TableCodeAgent 中文项目化开发 prompt"
+  default_prompt: "使用 $tablecodeagent-dev-prompt 为当前 TableCodeAgent 任务生成一份可直接交给 Codex/Agent 执行的中文 prompt。"
