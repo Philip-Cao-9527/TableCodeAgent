@@ -1,0 +1,1007 @@
+{
+  "summary": {
+    "reference_date": "2026-05-31",
+    "base_currency": "USD",
+    "invoice_row_count": 10,
+    "unique_invoice_count": 9,
+    "duplicate_invoice_count": 1,
+    "payment_row_count": 11,
+    "duplicate_payment_count": 1,
+    "total_invoice_amount_by_currency": {
+      "USD": 5850.0,
+      "EUR": 1200.0
+    },
+    "applied_payment_amount_by_currency": {
+      "USD": 2700.0,
+      "EUR": 0.0
+    },
+    "approved_adjustment_amount_by_currency": {
+      "USD": 0.0,
+      "EUR": 0.0
+    },
+    "open_invoice_amount_by_currency": {
+      "USD": 3150.0,
+      "EUR": 1200.0
+    },
+    "unapplied_cash_amount_by_currency": {
+      "USD": 1700.0
+    },
+    "disputed_open_amount_by_currency": {
+      "USD": 500.0,
+      "EUR": 1200.0
+    },
+    "expected_credit_loss_by_currency": {
+      "USD": 232.75,
+      "EUR": 0.0
+    }
+  },
+  "customer_risk": [
+    {
+      "customer_id": "C002",
+      "customer_name": "Bright Retail",
+      "status": "active",
+      "risk_band": "high",
+      "open_amount_by_currency": {
+        "USD": 1200.0
+      },
+      "overdue_amount_by_currency": {
+        "USD": 450.0
+      },
+      "disputed_open_amount_by_currency": {
+        "USD": 250.0
+      },
+      "risk_amount_excluding_disputed_by_currency": {
+        "USD": 950.0
+      },
+      "expected_credit_loss_by_currency": {
+        "USD": 27.75
+      },
+      "max_days_overdue": 77,
+      "action_tags": [
+        "collect_31_90",
+        "resolve_dispute",
+        "apply_unapplied_cash",
+        "review_credit_hold"
+      ],
+      "rationale": [
+        "Customer has invoices 31-90 days overdue",
+        "Customer has open disputed amount",
+        "Customer has unapplied cash",
+        "Customer open exposure exceeds credit limit"
+      ]
+    },
+    {
+      "customer_id": "C003",
+      "customer_name": "Canal Medical",
+      "status": "on_hold",
+      "risk_band": "high",
+      "open_amount_by_currency": {
+        "EUR": 1200.0
+      },
+      "overdue_amount_by_currency": {
+        "EUR": 1200.0
+      },
+      "disputed_open_amount_by_currency": {
+        "EUR": 1200.0
+      },
+      "risk_amount_excluding_disputed_by_currency": {
+        "EUR": 0.0
+      },
+      "expected_credit_loss_by_currency": {
+        "EUR": 0.0
+      },
+      "max_days_overdue": 110,
+      "action_tags": [
+        "collect_90_plus",
+        "resolve_dispute",
+        "apply_unapplied_cash",
+        "review_customer_status"
+      ],
+      "rationale": [
+        "Customer has invoices 90+ days overdue",
+        "Customer has open disputed amount",
+        "Customer has unapplied cash",
+        "Customer status is 'on_hold' with open receivables"
+      ]
+    },
+    {
+      "customer_id": "C001",
+      "customer_name": "Apex Components",
+      "status": "active",
+      "risk_band": "high",
+      "open_amount_by_currency": {
+        "USD": 800.0
+      },
+      "overdue_amount_by_currency": {
+        "USD": 800.0
+      },
+      "disputed_open_amount_by_currency": {},
+      "risk_amount_excluding_disputed_by_currency": {
+        "USD": 800.0
+      },
+      "expected_credit_loss_by_currency": {
+        "USD": 115.0
+      },
+      "max_days_overdue": 120,
+      "action_tags": [
+        "collect_90_plus",
+        "collect_31_90",
+        "review_adjustment"
+      ],
+      "rationale": [
+        "Customer has invoices 90+ days overdue",
+        "Customer has invoices 31-90 days overdue",
+        "Customer has pending write-off adjustments"
+      ]
+    },
+    {
+      "customer_id": "C004",
+      "customer_name": "Delta Logistics",
+      "status": "active",
+      "risk_band": "medium",
+      "open_amount_by_currency": {
+        "USD": 1150.0
+      },
+      "overdue_amount_by_currency": {
+        "USD": 250.0
+      },
+      "disputed_open_amount_by_currency": {
+        "USD": 250.0
+      },
+      "risk_amount_excluding_disputed_by_currency": {
+        "USD": 900.0
+      },
+      "expected_credit_loss_by_currency": {
+        "USD": 90.0
+      },
+      "max_days_overdue": 47,
+      "action_tags": [
+        "collect_31_90",
+        "resolve_dispute",
+        "fix_missing_due_date",
+        "apply_unapplied_cash",
+        "investigate_chargeback"
+      ],
+      "rationale": [
+        "Customer has invoices 31-90 days overdue",
+        "Customer has open disputed amount",
+        "Customer has invoices with missing due dates",
+        "Customer has unapplied cash",
+        "Customer has approved chargeback adjustments"
+      ]
+    },
+    {
+      "customer_id": "C005",
+      "customer_name": "Echo Foods",
+      "status": "inactive",
+      "risk_band": "low",
+      "open_amount_by_currency": {},
+      "overdue_amount_by_currency": {},
+      "disputed_open_amount_by_currency": {},
+      "risk_amount_excluding_disputed_by_currency": {},
+      "expected_credit_loss_by_currency": {},
+      "max_days_overdue": null,
+      "action_tags": [],
+      "rationale": []
+    }
+  ],
+  "invoice_reconciliation": [
+    {
+      "invoice_id": "INV-1001",
+      "customer_id": "C001",
+      "currency": "USD",
+      "invoice_amount": 1000.0,
+      "approved_adjustment_amount": 0.0,
+      "adjusted_invoice_amount": 1000.0,
+      "applied_amount": 1000.0,
+      "open_amount": 0.0,
+      "overpayment_amount": 200.0,
+      "disputed_open_amount": 0.0,
+      "expected_credit_loss": 0.0,
+      "due_date": "2026-03-31",
+      "days_overdue": 61,
+      "aging_bucket": "61-90",
+      "status": "overpaid",
+      "exception_tags": [
+        "overpayment"
+      ]
+    },
+    {
+      "invoice_id": "INV-1002",
+      "customer_id": "C001",
+      "currency": "USD",
+      "invoice_amount": 500.0,
+      "approved_adjustment_amount": 0.0,
+      "adjusted_invoice_amount": 500.0,
+      "applied_amount": 0.0,
+      "open_amount": 500.0,
+      "overpayment_amount": 0.0,
+      "disputed_open_amount": 0.0,
+      "expected_credit_loss": 10.0,
+      "due_date": "2026-05-15",
+      "days_overdue": 16,
+      "aging_bucket": "0-30",
+      "status": "open",
+      "exception_tags": []
+    },
+    {
+      "invoice_id": "INV-1003",
+      "customer_id": "C002",
+      "currency": "USD",
+      "invoice_amount": 2000.0,
+      "approved_adjustment_amount": -50.0,
+      "adjusted_invoice_amount": 1950.0,
+      "applied_amount": 1500.0,
+      "open_amount": 450.0,
+      "overpayment_amount": 0.0,
+      "disputed_open_amount": 250.0,
+      "expected_credit_loss": 24.0,
+      "due_date": "2026-03-15",
+      "days_overdue": 77,
+      "aging_bucket": "61-90",
+      "status": "open",
+      "exception_tags": [
+        "partial_payment",
+        "disputed_invoice",
+        "term_mismatch"
+      ]
+    },
+    {
+      "invoice_id": "INV-1004",
+      "customer_id": "C002",
+      "currency": "USD",
+      "invoice_amount": 750.0,
+      "approved_adjustment_amount": 0.0,
+      "adjusted_invoice_amount": 750.0,
+      "applied_amount": 0.0,
+      "open_amount": 750.0,
+      "overpayment_amount": 0.0,
+      "disputed_open_amount": 0.0,
+      "expected_credit_loss": 3.75,
+      "due_date": "2026-06-15",
+      "days_overdue": -15,
+      "aging_bucket": "not_due",
+      "status": "open",
+      "exception_tags": []
+    },
+    {
+      "invoice_id": "INV-1005",
+      "customer_id": "C003",
+      "currency": "EUR",
+      "invoice_amount": 1200.0,
+      "approved_adjustment_amount": 0.0,
+      "adjusted_invoice_amount": 1200.0,
+      "applied_amount": 0.0,
+      "open_amount": 1200.0,
+      "overpayment_amount": 0.0,
+      "disputed_open_amount": 1200.0,
+      "expected_credit_loss": 0.0,
+      "due_date": "2026-02-10",
+      "days_overdue": 110,
+      "aging_bucket": "90+",
+      "status": "open",
+      "exception_tags": [
+        "disputed_invoice"
+      ]
+    },
+    {
+      "invoice_id": "INV-1006",
+      "customer_id": "C004",
+      "currency": "USD",
+      "invoice_amount": 900.0,
+      "approved_adjustment_amount": 0.0,
+      "adjusted_invoice_amount": 900.0,
+      "applied_amount": 0.0,
+      "open_amount": 900.0,
+      "overpayment_amount": 0.0,
+      "disputed_open_amount": 0.0,
+      "expected_credit_loss": 90.0,
+      "due_date": "nan",
+      "days_overdue": null,
+      "aging_bucket": "missing_due_date",
+      "status": "open",
+      "exception_tags": [
+        "missing_due_date"
+      ]
+    },
+    {
+      "invoice_id": "INV-1007",
+      "customer_id": "C005",
+      "currency": "USD",
+      "invoice_amount": -100.0,
+      "approved_adjustment_amount": 0.0,
+      "adjusted_invoice_amount": 0.0,
+      "applied_amount": 0.0,
+      "open_amount": 0.0,
+      "overpayment_amount": 0.0,
+      "disputed_open_amount": 0.0,
+      "expected_credit_loss": 0.0,
+      "due_date": "2026-06-20",
+      "days_overdue": -20,
+      "aging_bucket": "not_due",
+      "status": "excluded",
+      "exception_tags": [
+        "negative_invoice_amount"
+      ]
+    },
+    {
+      "invoice_id": "INV-1008",
+      "customer_id": "C004",
+      "currency": "USD",
+      "invoice_amount": 300.0,
+      "approved_adjustment_amount": 50.0,
+      "adjusted_invoice_amount": 350.0,
+      "applied_amount": 100.0,
+      "open_amount": 250.0,
+      "overpayment_amount": 0.0,
+      "disputed_open_amount": 250.0,
+      "expected_credit_loss": 0.0,
+      "due_date": "2026-04-14",
+      "days_overdue": 47,
+      "aging_bucket": "31-60",
+      "status": "open",
+      "exception_tags": [
+        "partial_payment",
+        "disputed_invoice",
+        "term_mismatch"
+      ]
+    },
+    {
+      "invoice_id": "INV-1009",
+      "customer_id": "C001",
+      "currency": "USD",
+      "invoice_amount": 400.0,
+      "approved_adjustment_amount": 0.0,
+      "adjusted_invoice_amount": 400.0,
+      "applied_amount": 100.0,
+      "open_amount": 300.0,
+      "overpayment_amount": 0.0,
+      "disputed_open_amount": 0.0,
+      "expected_credit_loss": 105.0,
+      "due_date": "2026-01-31",
+      "days_overdue": 120,
+      "aging_bucket": "90+",
+      "status": "open",
+      "exception_tags": [
+        "partial_payment"
+      ]
+    }
+  ],
+  "aging_buckets": [
+    {
+      "currency": "EUR",
+      "bucket": "90+",
+      "invoice_count": 1,
+      "open_amount": 1200.0,
+      "risk_amount_excluding_disputed": 0.0,
+      "expected_credit_loss": 0.0
+    },
+    {
+      "currency": "USD",
+      "bucket": "not_due",
+      "invoice_count": 1,
+      "open_amount": 750.0,
+      "risk_amount_excluding_disputed": 750.0,
+      "expected_credit_loss": 3.75
+    },
+    {
+      "currency": "USD",
+      "bucket": "0-30",
+      "invoice_count": 1,
+      "open_amount": 500.0,
+      "risk_amount_excluding_disputed": 500.0,
+      "expected_credit_loss": 10.0
+    },
+    {
+      "currency": "USD",
+      "bucket": "31-60",
+      "invoice_count": 1,
+      "open_amount": 250.0,
+      "risk_amount_excluding_disputed": 0.0,
+      "expected_credit_loss": 0.0
+    },
+    {
+      "currency": "USD",
+      "bucket": "61-90",
+      "invoice_count": 2,
+      "open_amount": 450.0,
+      "risk_amount_excluding_disputed": 200.0,
+      "expected_credit_loss": 24.0
+    },
+    {
+      "currency": "USD",
+      "bucket": "90+",
+      "invoice_count": 1,
+      "open_amount": 300.0,
+      "risk_amount_excluding_disputed": 300.0,
+      "expected_credit_loss": 105.0
+    },
+    {
+      "currency": "USD",
+      "bucket": "missing_due_date",
+      "invoice_count": 1,
+      "open_amount": 900.0,
+      "risk_amount_excluding_disputed": 900.0,
+      "expected_credit_loss": 90.0
+    }
+  ],
+  "exceptions": [
+    {
+      "exception_type": "duplicate_invoice",
+      "severity": "warning",
+      "count": 1,
+      "amount_by_currency": {},
+      "related_ids": [
+        "INV-1002"
+      ],
+      "description": "Duplicate invoice_id rows found: INV-1002"
+    },
+    {
+      "exception_type": "duplicate_payment",
+      "severity": "warning",
+      "count": 1,
+      "amount_by_currency": {},
+      "related_ids": [
+        "PAY-003"
+      ],
+      "description": "Duplicate payment_id rows found: PAY-003"
+    },
+    {
+      "exception_type": "partial_payment",
+      "severity": "info",
+      "count": 3,
+      "amount_by_currency": {
+        "USD": 1000.0
+      },
+      "related_ids": [
+        "INV-1003",
+        "INV-1008",
+        "INV-1009"
+      ],
+      "description": "Invoices with partial payments: 3"
+    },
+    {
+      "exception_type": "overpayment",
+      "severity": "info",
+      "count": 1,
+      "amount_by_currency": {
+        "USD": 200.0
+      },
+      "related_ids": [
+        "INV-1001"
+      ],
+      "description": "Overpaid invoices: 1"
+    },
+    {
+      "exception_type": "approved_credit_memo",
+      "severity": "info",
+      "count": 1,
+      "amount_by_currency": {
+        "USD": 50.0
+      },
+      "related_ids": [
+        "ADJ-001"
+      ],
+      "description": "Approved credit memo / write-off adjustments applied: 1"
+    },
+    {
+      "exception_type": "pending_write_off",
+      "severity": "warning",
+      "count": 1,
+      "amount_by_currency": {
+        "USD": 25.0
+      },
+      "related_ids": [
+        "ADJ-002"
+      ],
+      "description": "Pending write-off adjustments (not reducing AR): 1"
+    },
+    {
+      "exception_type": "chargeback",
+      "severity": "warning",
+      "count": 1,
+      "amount_by_currency": {
+        "USD": 50.0
+      },
+      "related_ids": [
+        "ADJ-003"
+      ],
+      "description": "Approved chargeback adjustments increasing AR: 1"
+    },
+    {
+      "exception_type": "unapplied_cash",
+      "severity": "warning",
+      "count": 4,
+      "amount_by_currency": {
+        "USD": 1700.0
+      },
+      "related_ids": [
+        "PAY-004",
+        "PAY-005",
+        "PAY-006"
+      ],
+      "description": "Unapplied cash from unmatched/currency-mismatch/overpayments: 4"
+    },
+    {
+      "exception_type": "currency_mismatch",
+      "severity": "warning",
+      "count": 1,
+      "amount_by_currency": {
+        "USD": 1000.0
+      },
+      "related_ids": [
+        "PAY-005"
+      ],
+      "description": "Payments with currency mismatch to invoice: 1"
+    },
+    {
+      "exception_type": "negative_invoice_amount",
+      "severity": "critical",
+      "count": 1,
+      "amount_by_currency": {
+        "USD": 100.0
+      },
+      "related_ids": [
+        "INV-1007"
+      ],
+      "description": "Invoices with negative amounts excluded from AR: 1"
+    },
+    {
+      "exception_type": "missing_due_date",
+      "severity": "warning",
+      "count": 1,
+      "amount_by_currency": {
+        "USD": 900.0
+      },
+      "related_ids": [
+        "INV-1006"
+      ],
+      "description": "Invoices missing due dates: 1"
+    },
+    {
+      "exception_type": "disputed_invoice",
+      "severity": "warning",
+      "count": 3,
+      "amount_by_currency": {
+        "USD": 500.0,
+        "EUR": 1200.0
+      },
+      "related_ids": [
+        "INV-1003",
+        "INV-1005",
+        "INV-1008"
+      ],
+      "description": "Invoices with open disputes: 3"
+    },
+    {
+      "exception_type": "inactive_or_on_hold_customer",
+      "severity": "critical",
+      "count": 1,
+      "amount_by_currency": {
+        "EUR": 1200.0
+      },
+      "related_ids": [
+        "C003"
+      ],
+      "description": "Customers with inactive/on-hold status carrying open AR: 1"
+    },
+    {
+      "exception_type": "future_dated_payment",
+      "severity": "warning",
+      "count": 1,
+      "amount_by_currency": {
+        "USD": 100.0
+      },
+      "related_ids": [
+        "PAY-009"
+      ],
+      "description": "Future-dated payments not applied: 1"
+    },
+    {
+      "exception_type": "non_posted_payment",
+      "severity": "warning",
+      "count": 1,
+      "amount_by_currency": {
+        "USD": 50.0
+      },
+      "related_ids": [
+        "PAY-010"
+      ],
+      "description": "Non-posted (voided/reversed) payments: 1"
+    },
+    {
+      "exception_type": "unmatched_adjustment",
+      "severity": "warning",
+      "count": 1,
+      "amount_by_currency": {
+        "USD": 40.0
+      },
+      "related_ids": [
+        "ADJ-004"
+      ],
+      "description": "Adjustments with no matching invoice: 1"
+    },
+    {
+      "exception_type": "over_credit_limit",
+      "severity": "critical",
+      "count": 1,
+      "amount_by_currency": {
+        "USD": 1200.0
+      },
+      "related_ids": [
+        "C002"
+      ],
+      "description": "Customers exceeding credit limit: 1"
+    },
+    {
+      "exception_type": "term_mismatch",
+      "severity": "info",
+      "count": 2,
+      "amount_by_currency": {
+        "USD": 700.0
+      },
+      "related_ids": [
+        "INV-1003",
+        "INV-1008"
+      ],
+      "description": "Invoices with due date not matching credit terms: 2"
+    }
+  ],
+  "recommended_actions": [
+    {
+      "customer_id": "C001",
+      "priority": "high",
+      "action_type": "collect_overdue",
+      "invoice_ids": [
+        "INV-1001",
+        "INV-1002",
+        "INV-1009"
+      ],
+      "details": "Action: collect_90_plus for customer C001 (Apex Components)"
+    },
+    {
+      "customer_id": "C001",
+      "priority": "medium",
+      "action_type": "collect_overdue",
+      "invoice_ids": [
+        "INV-1001",
+        "INV-1002",
+        "INV-1009"
+      ],
+      "details": "Action: collect_31_90 for customer C001 (Apex Components)"
+    },
+    {
+      "customer_id": "C001",
+      "priority": "medium",
+      "action_type": "review_adjustment",
+      "invoice_ids": [
+        "INV-1001",
+        "INV-1002",
+        "INV-1009"
+      ],
+      "details": "Action: review_adjustment for customer C001 (Apex Components)"
+    },
+    {
+      "customer_id": "C002",
+      "priority": "medium",
+      "action_type": "collect_overdue",
+      "invoice_ids": [
+        "INV-1003",
+        "INV-1004"
+      ],
+      "details": "Action: collect_31_90 for customer C002 (Bright Retail)"
+    },
+    {
+      "customer_id": "C002",
+      "priority": "medium",
+      "action_type": "resolve_dispute",
+      "invoice_ids": [
+        "INV-1003",
+        "INV-1004"
+      ],
+      "details": "Action: resolve_dispute for customer C002 (Bright Retail)"
+    },
+    {
+      "customer_id": "C002",
+      "priority": "low",
+      "action_type": "apply_unapplied_cash",
+      "invoice_ids": [
+        "INV-1003",
+        "INV-1004"
+      ],
+      "details": "Action: apply_unapplied_cash for customer C002 (Bright Retail)"
+    },
+    {
+      "customer_id": "C002",
+      "priority": "high",
+      "action_type": "review_credit_hold",
+      "invoice_ids": [
+        "INV-1003",
+        "INV-1004"
+      ],
+      "details": "Action: review_credit_hold for customer C002 (Bright Retail)"
+    },
+    {
+      "customer_id": "C003",
+      "priority": "high",
+      "action_type": "collect_overdue",
+      "invoice_ids": [
+        "INV-1005"
+      ],
+      "details": "Action: collect_90_plus for customer C003 (Canal Medical)"
+    },
+    {
+      "customer_id": "C003",
+      "priority": "medium",
+      "action_type": "resolve_dispute",
+      "invoice_ids": [
+        "INV-1005"
+      ],
+      "details": "Action: resolve_dispute for customer C003 (Canal Medical)"
+    },
+    {
+      "customer_id": "C003",
+      "priority": "low",
+      "action_type": "apply_unapplied_cash",
+      "invoice_ids": [
+        "INV-1005"
+      ],
+      "details": "Action: apply_unapplied_cash for customer C003 (Canal Medical)"
+    },
+    {
+      "customer_id": "C003",
+      "priority": "high",
+      "action_type": "review_customer_status",
+      "invoice_ids": [
+        "INV-1005"
+      ],
+      "details": "Action: review_customer_status for customer C003 (Canal Medical)"
+    },
+    {
+      "customer_id": "C004",
+      "priority": "medium",
+      "action_type": "collect_overdue",
+      "invoice_ids": [
+        "INV-1006",
+        "INV-1008"
+      ],
+      "details": "Action: collect_31_90 for customer C004 (Delta Logistics)"
+    },
+    {
+      "customer_id": "C004",
+      "priority": "medium",
+      "action_type": "resolve_dispute",
+      "invoice_ids": [
+        "INV-1006",
+        "INV-1008"
+      ],
+      "details": "Action: resolve_dispute for customer C004 (Delta Logistics)"
+    },
+    {
+      "customer_id": "C004",
+      "priority": "low",
+      "action_type": "fix_data_quality",
+      "invoice_ids": [
+        "INV-1006",
+        "INV-1008"
+      ],
+      "details": "Action: fix_missing_due_date for customer C004 (Delta Logistics)"
+    },
+    {
+      "customer_id": "C004",
+      "priority": "low",
+      "action_type": "apply_unapplied_cash",
+      "invoice_ids": [
+        "INV-1006",
+        "INV-1008"
+      ],
+      "details": "Action: apply_unapplied_cash for customer C004 (Delta Logistics)"
+    },
+    {
+      "customer_id": "C004",
+      "priority": "high",
+      "action_type": "investigate_chargeback",
+      "invoice_ids": [
+        "INV-1006",
+        "INV-1008"
+      ],
+      "details": "Action: investigate_chargeback for customer C004 (Delta Logistics)"
+    },
+    {
+      "customer_id": "C001",
+      "priority": "medium",
+      "action_type": "investigate_payment",
+      "invoice_ids": [
+        "INV-1001",
+        "INV-1002",
+        "INV-1009"
+      ],
+      "details": "Future-dated payment PAY-009 needs investigation for customer C001"
+    }
+  ],
+  "data_quality": {
+    "required_columns": {
+      "invoices": [
+        "invoice_id",
+        "customer_id",
+        "invoice_date",
+        "due_date",
+        "invoice_amount",
+        "currency",
+        "status",
+        "po_number",
+        "delivery_status",
+        "billing_hold_flag"
+      ],
+      "payments": [
+        "payment_id",
+        "customer_id",
+        "invoice_id",
+        "payment_date",
+        "gl_date",
+        "payment_amount",
+        "currency",
+        "status",
+        "bank_deposit_id",
+        "remittance_reference"
+      ],
+      "customers": [
+        "customer_id",
+        "customer_name",
+        "segment",
+        "status",
+        "credit_terms_days",
+        "credit_limit",
+        "default_currency",
+        "collector_owner"
+      ],
+      "disputes": [
+        "dispute_id",
+        "invoice_id",
+        "customer_id",
+        "opened_date",
+        "dispute_amount",
+        "currency",
+        "reason",
+        "status"
+      ],
+      "adjustments": [
+        "adjustment_id",
+        "invoice_id",
+        "customer_id",
+        "adjustment_type",
+        "adjustment_date",
+        "amount",
+        "currency",
+        "status",
+        "reason"
+      ],
+      "policy": [
+        "policy_id",
+        "reference_date",
+        "base_currency",
+        "amount_precision",
+        "loss_rate_not_due",
+        "loss_rate_0_30",
+        "loss_rate_31_60",
+        "loss_rate_61_90",
+        "loss_rate_90_plus",
+        "loss_rate_missing_due_date",
+        "write_off_approval_threshold",
+        "dispute_risk_rule",
+        "aging_bucket_rule"
+      ]
+    },
+    "missing_required_columns": {
+      "invoices": [],
+      "payments": [],
+      "customers": [],
+      "disputes": [],
+      "adjustments": [],
+      "policy": []
+    },
+    "duplicate_invoice_ids": [
+      "INV-1002"
+    ],
+    "duplicate_payment_ids": [
+      "PAY-003"
+    ],
+    "invalid_invoice_ids": [
+      "INV-1007"
+    ],
+    "unmatched_payment_ids": [
+      "PAY-004",
+      "PAY-006"
+    ],
+    "currency_mismatch_payment_ids": [
+      "PAY-005"
+    ],
+    "missing_due_date_invoice_ids": [
+      "INV-1006"
+    ],
+    "future_dated_payment_ids": [
+      "PAY-009"
+    ],
+    "non_posted_payment_ids": [
+      "PAY-010"
+    ],
+    "unmatched_adjustment_ids": [
+      "ADJ-004"
+    ],
+    "term_mismatch_invoice_ids": [
+      "INV-1003",
+      "INV-1008"
+    ],
+    "missing_po_invoice_ids": [],
+    "over_credit_limit_customer_ids": [
+      "C002"
+    ]
+  },
+  "audit_notes": [
+    {
+      "step": "load_policy",
+      "evidence": "reference_date=2026-05-31, base_currency=USD"
+    },
+    {
+      "step": "deduplicate_invoices",
+      "evidence": "kept 9 unique, 1 duplicates"
+    },
+    {
+      "step": "exclude_negative_invoices",
+      "evidence": "excluded 1 negative-amount invoices"
+    },
+    {
+      "step": "deduplicate_payments",
+      "evidence": "kept 10 unique payments, 1 duplicates"
+    },
+    {
+      "step": "filter_payments_cutoff",
+      "evidence": "1 future-dated, 1 non-posted excluded"
+    },
+    {
+      "step": "match_payments",
+      "evidence": "5 payments applied, 3 unapplied"
+    },
+    {
+      "step": "apply_adjustments",
+      "evidence": "1 credit_memo/write_off, 1 chargeback, 1 pending_write_off, 1 unmatched"
+    },
+    {
+      "step": "process_disputes",
+      "evidence": "3 invoices with open disputes"
+    },
+    {
+      "step": "compute_aging",
+      "evidence": "aged 8 invoices by 2026-05-31"
+    },
+    {
+      "step": "compute_ecl",
+      "evidence": "loss rates applied: {'not_due': Decimal('0.005'), '0-30': Decimal('0.02'), '31-60': Decimal('0.05'), '61-90': Decimal('0.12'), '90+': Decimal('0.35'), 'missing_due_date': Decimal('0.10')}"
+    },
+    {
+      "step": "assess_credit_limits",
+      "evidence": "1 customers over limit"
+    },
+    {
+      "step": "check_terms",
+      "evidence": "2 term mismatches, 0 missing PO"
+    }
+  ],
+  "validation": {
+    "balance_check": {
+      "USD": {
+        "total_invoice_plus_adjustments": 5850.0,
+        "total_applied_plus_open": 5850.0,
+        "difference": 0.0
+      },
+      "EUR": {
+        "total_invoice_plus_adjustments": 1200.0,
+        "total_applied_plus_open": 1200.0,
+        "difference": 0.0
+      }
+    },
+    "exceptions_count": 18,
+    "actions_count": 17,
+    "customers_evaluated": 5
+  }
+}

@@ -1,0 +1,4 @@
+dispute_id,invoice_id,customer_id,opened_date,dispute_amount,currency,reason,status
+DSP-001,INV-1008,C004,2026-04-20,300.00,USD,service_issue,open
+DSP-002,INV-1003,C002,2026-04-01,250.00,USD,pricing,open
+DSP-003,INV-1005,C003,2026-02-15,1200.00,EUR,currency_mismatch,open

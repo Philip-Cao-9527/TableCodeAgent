@@ -1,0 +1,1172 @@
+{
+  "trace_version": "v0.0.4",
+  "task_id": "finance_operations_001",
+  "mode": "real_api_code_agent",
+  "provider": "deepseek",
+  "model_name": "deepseek-v4-flash",
+  "api_called": true,
+  "skipped": false,
+  "llm_tool_call_observed": true,
+  "tool_call_count": 15,
+  "tool_calls": [
+    {
+      "name": "read_file",
+      "arguments": {
+        "file_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent\\task.json"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "   1 | {\n   2 |   \"id\": \"finance_operations_001\",\n   3 |   \"task_type\": \"finance_operations\",\n   4 |   \"question\": \"对 B2B 应收账款与现金回款运营数据执行 no-helper 财务运营 workflow：读取 invoices、payments、customers、disputes、adjustments、policy 多表，完成发票与回款匹配、账龄分桶、未核销金额、争议款、部分付款、超额付款、重复付款、币种或金额异常、贷项通知单、pending write-off、chargeback、future-dated receipt、客户信用额度和预期信用损失口径识别，并输出客户级回款风险、运营动作建议和可审计 answer.json。\",\n   5 |   \"tables\": {\n   6 |     \"invoices\": \"invoices.csv\",\n   7 |     \"payments\": \"payments.csv\",\n   8 |     \"custom"
+      },
+      "elapsed_ms": 2
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent\\invoices.csv",
+        "preview_rows": 50
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 10
+      },
+      "elapsed_ms": 20
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent\\payments.csv",
+        "preview_rows": 50
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 11
+      },
+      "elapsed_ms": 9
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent\\customers.csv",
+        "preview_rows": 50
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 5
+      },
+      "elapsed_ms": 7
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent\\disputes.csv",
+        "preview_rows": 50
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 3
+      },
+      "elapsed_ms": 7
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent\\adjustments.csv",
+        "preview_rows": 50
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 4
+      },
+      "elapsed_ms": 8
+    },
+    {
+      "name": "load_table",
+      "arguments": {
+        "csv_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent\\policy.csv",
+        "preview_rows": 20
+      },
+      "result_summary": {
+        "ok": true,
+        "row_count": 1
+      },
+      "elapsed_ms": 10
+    },
+    {
+      "name": "write_file",
+      "arguments": {
+        "file_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent\\solve.py",
+        "content": "\"\"\"\nsolve.py — finance_operations_001 No-Helper Workflow\nReads CSV tables, processes AR reconciliation, aging, ECL,\ncustomer risk, exceptions, actions, and writes answer.json.\n\"\"\"\nimport json\nimport math\nfrom pathlib import Path\nfrom datetime import date, datetime\nfrom decimal import Decimal, ROUND_HALF_UP\nfrom collections import defaultdict\n\nimport pandas as pd\nimport numpy as np\n\nHERE = Path(__file__).resolve().parent\n\n\n# ── helpers ──────────────────────────────────────────────────────────────\ndef r2(v: Decimal | float | str) -> float:\n    \"\"\"Round to 2 decimal places as a native float.\"\"\"\n    return float(Decimal(str(v)).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP))\n\n\ndef parse_date(val: str) -> date | None:\n    if not val or pd.isna(val):\n        return None\n    try:\n        return datetime.strptime(str(val).strip(), \"%Y-%m-%d\").date()\n    except (ValueError, TypeError):\n        return None\n\n\ndef bucket_name(days_overdue: int | None) -> str:\n    if days_overdue is None:\n        return \"missing_due_date\"\n    if days_overdue <= 0:\n        return \"not_due\"\n    if days_overdue <= 30:\n        return \"0-30\"\n    if days_overdue <= 60:\n        return \"31-60\"\n    if days_overdue <= 90:\n        return \"61-90\"\n    return \"90+\"\n\n\ndef sum_cur(d: list[dict]) -> dict[str, float]:\n    \"\"\"Sum amount_by_currency dicts.\"\"\"\n    out: dict[str, float] = {}\n    for item in d:\n        for ccy, val in item.items():\n            out[ccy] = r2(out.get(ccy, 0) + val)\n    return out\n\n\nBUCKET_ORDER = {\"not_due\": 0, \"0-30\": 1, \"31-60\": 2, \"61-90\": 3, \"90+\": 4, \"missing_due_date\": 5}\n\nLOSS_RATE_KEYS = {\n    \"not_due\": \"loss_rate_not_due\",\n    \"0-30\": \"loss_rate_0_30\",\n    \"31-60\": \"loss_rate_31_60\",\n    \"61-90\": \"loss_rate_61_90\",\n    \"90+\": \"loss_rate_90_plus\",\n    \"missing_due_date\": \"loss_rate_missing_due_date\",\n}\n\n\n# ── load data ────────────────────────────────────────────────────────────\ninvoices_raw = pd.read_csv(HERE / \"invoices.csv\", dtype=str)\npayments_raw = pd.read_csv(HERE / \"payments.csv\", dtype=str)\ncustomers_raw = pd.read_csv(HERE / \"customers.csv\", dtype=str)\ndisputes_raw = pd.read_csv(HERE / \"disputes.csv\", dtype=str)\nadjustments_raw = pd.read_csv(HERE / \"adjustments.csv\", dtype=str)\npolicy_row = pd.read_csv(HERE / \"policy.csv\", dtype=str).iloc[0]\n\nREFERENCE_DATE = parse_date(policy_row[\"reference_date\"])\nBASE_CCY = str(policy_row[\"base_currency\"])\nLOSS_RATES = {bkt: Decimal(str(policy_row[key])) for bkt, key in LOSS_RATE_KEYS.items()}\n\n# ── required columns check ──────────────────────────────────────────────\nREQUIRED_COLS = {\n    \"invoices\": [\"invoice_id\", \"customer_id\", \"invoice_date\", \"due_date\", \"invoice_amount\", \"currency\", \"status\", \"po_number\", \"delivery_status\", \"billing_hold_flag\"],\n    \"payments\": [\"payment_id\", \"customer_id\", \"invoice_id\", \"payment_date\", \"gl_date\", \"payment_amount\", \"currency\", \"status\", \"bank_deposit_id\", \"remittance_reference\"],\n    \"customers\": [\"customer_id\", \"customer_name\", \"segment\", \"status\", \"credit_terms_days\", \"credit_limit\", \"default_currency\", \"collector_owner\"],\n    \"disputes\": [\"dispute_id\", \"invoice_id\", \"customer_id\", \"opened_date\", \"dispute_amount\", \"currency\", \"reason\", \"status\"],\n    \"adjustments\": [\"adjustment_id\", \"invoice_id\", \"customer_id\", \"adjustment_type\", \"adjustment_date\", \"amount\", \"currency\", \"status\", \"reason\"],\n    \"policy\": [\"policy_id\", \"reference_date\", \"base_currency\", \"amount_precision\", \"loss_rate_not_due\", \"loss_rate_0_30\", \"loss_rate_31_60\", \"loss_rate_61_90\", \"loss_rate_90_plus\", \"loss_rate_missing_due_date\", \"write_off_approval_threshold\", \"dispute_risk_rule\", \"aging_bucket_rule\"],\n}\nmissing_req: dict[str, list[str]] = {}\nfor tbl, cols in REQUIRED_COLS.items():\n    df_map = {\n        \"invoices\": invoices_raw, \"payments\": payments_raw, \"customers\": customers_raw,\n        \"disputes\": disputes_raw, \"adjustments\": adjustments_raw, \"policy\": pd.DataFrame([policy_row]),\n    }\n    present = set(df_map[tbl].columns)\n    missing_req[tbl] = [c for c in cols if c not in present]\n\n# ── customer index ──────────────────────────────────────────────────────\ncustomers: dict[str, dict] = {}\nfor _, r in customers_raw.iterrows():\n    cid = str(r[\"customer_id\"])\n    customers[cid] = {\n        \"customer_id\": cid,\n        \"customer_name\": str(r.get(\"customer_name\", \"\")),\n        \"segment\": str(r.get(\"segment\", \"\")),\n        \"status\": str(r.get(\"status\", \"\")),\n        \"credit_terms_days\": int(float(str(r.get(\"credit_terms_days\", 0)))),\n        \"credit_limit\": Decimal(str(r.get(\"credit_limit\", \"0\"))),\n        \"default_currency\": str(r.get(\"default_currency\", BASE_CCY)),\n        \"collector_owner\": str(r.get(\"collector_owner\", \"\")),\n    }\n\n# ── invoices: dedup, negative exclusion ─────────────────────────────────\ninvoice_rows = invoices_raw.to_dict(\"records\")\nseen_inv: set[str] = set()\ndeduped_invoices: list[dict] = []\ndup_inv_ids: list[str] = []\nneg_inv_ids: list[str] = []\n\nfor row in invoice_rows:\n    iid = str(row[\"invoice_id\"])\n    if iid in seen_inv:\n        dup_inv_ids.append(iid)\n        continue\n    seen_inv.add(iid)\n    amt = Decimal(str(row.get(\"invoice_amount\", \"0\")))\n    if amt < 0:\n        neg_inv_ids.append(iid)\n        row[\"_excluded\"] = True\n    else:\n        row[\"_excluded\"] = False\n    deduped_invoices.append(row)\n\ninv_index: dict[str, dict] = {str(r[\"invoice_id\"]): r for r in deduped_invoices}\n\n# ── payments: dedup, filter posted/dated, classify ─────────────────────\npayment_rows = payments_raw.to_dict(\"records\")\nseen_pay: set[str] = set()\ndeduped_payments: list[dict] = []\ndup_pay_ids: list[str] = []\n\nfor row in payment_rows:\n    pid = str(row[\"payment_id\"])\n    if pid in seen_pay:\n        dup_pay_ids.append(pid)\n        continue\n    seen_pay.add(pid)\n    deduped_payments.append(row)\n\nfuture_pay_ids: list[str] = []\nnon_posted_pay_ids: list[str] = []\ncurrency_mismatch_pay_ids: list[str] = []\nunmatched_pay_ids: list[str] = []\napplied_payments: list[dict] = []   # payments that get applied to invoices\nunapplied_payments: list[dict] = []  # cash that cannot be applied\n\nfor row in deduped_payments:\n    pid = str(row[\"payment_id\"])\n    status = str(row.get(\"status\", \"\"))\n    pay_date = parse_date(str(row.get(\"payment_date\", \"\")))\n    gl_date = parse_date(str(row.get(\"gl_date\", \"\")))\n    pay_ccy = str(row.get(\"currency\", \"\"))\n    inv_id = str(row.get(\"invoice_id\", \"\")).strip()\n    pay_amt = Decimal(str(row.get(\"payment_amount\", \"0\")))\n\n    # non-posted\n    if status != \"posted\":\n        non_posted_pay_ids.append(pid)\n        row[\"_applied\"] = False\n        row[\"_reason\"] = \"non_posted\"\n        continue\n\n    # future-dated (payment_date or gl_date after reference)\n    if (pay_date and pay_date > REFERENCE_DATE) or (gl_date and gl_date > REFERENCE_DATE):\n        future_pay_ids.append(pid)\n        row[\"_applied\"] = False\n        row[\"_reason\"] = \"future_dated\"\n        continue\n\n    # Try to match to an invoice\n    if not inv_id or inv_id not in inv_index or inv_index[inv_id].get(\"_excluded\", False):\n        unmatched_pay_ids.append(pid)\n        unapplied_payments.append(row)\n        row[\"_applied\"] = False\n        row[\"_reason\"] = \"no_valid_invoice\"\n        continue\n\n    inv_row = inv_index[inv_id]\n    inv_ccy = str(inv_row[\"currency\"])\n    if pay_ccy != inv_ccy:\n        currency_mismatch_pay_ids.append(pid)\n        unapplied_payments.append(row)\n        row[\"_applied\"] = False\n        row[\"_reason\"] = \"currency_mismatch\"\n        continue\n\n    # Valid posted, on-time, matching invoice\n    row[\"_applied\"] = True\n    applied_payments.append(row)\n\n# ── adjustments ─────────────────────────────────────────────────────────\nadj_rows = adjustments_raw.to_dict(\"records\")\napproved_credit_memo_adjs: list[dict] = []\napproved_chargeback_adjs: list[dict] = []\npending_writeoff_adjs: list[dict] = []\nunmatched_adj_ids: list[str] = []\n\nfor row in adj_rows:\n    aid = str(row[\"adjustment_id\"])\n    inv_id = str(row.get(\"invoice_id\", \"\")).strip()\n    adj_type = str(row.get(\"adjustment_type\", \"\"))\n    adj_status = str(row.get(\"status\", \"\"))\n    adj_amt = Decimal(str(row.get(\"amount\", \"0\")))\n\n    if inv_id not in inv_index or inv_index[inv_id].get(\"_excluded\", False):\n        unmatched_adj_ids.append(aid)\n        row[\"_applied\"] = False\n        continue\n\n    row[\"_applied\"] = True\n    if adj_status == \"approved\":\n        if adj_type == \"credit_memo\":\n            approved_credit_memo_adjs.append(row)\n        elif adj_type == \"write_off\":\n            # approved write_off reduces\n            approved_credit_memo_adjs.append(row)  # treat same as credit_memo for balance\n        elif adj_type == \"chargeback\":\n            approved_chargeback_adjs.append(row)\n        else:\n            row[\"_applied\"] = False\n            unmatched_adj_ids.append(aid)\n    elif adj_status == \"pending\" and adj_type == \"write_off\":\n        pending_writeoff_adjs.append(row)\n    else:\n        unmatched_adj_ids.append(aid)\n        row[\"_applied\"] = False\n\n# ── disputes ────────────────────────────────────────────────────────────\ndisputes_by_invoice: dict[str, list[dict]] = defaultdict(list)\nfor _, r in disputes_raw.iterrows():\n    inv_id = str(r[\"invoice_id\"])\n    if str(r.get(\"status\", \"\")).strip().lower() == \"open\":\n        disputes_by_invoice[inv_id].append(r)\n\n# ── build invoice reconciliation ────────────────────────────────────────\ninv_rec: list[dict] = []\ntotal_inv_amt: dict[str, Decimal] = defaultdict(Decimal)\ntotal_applied: dict[str, Decimal] = defaultdict(Decimal)\ntotal_adj_approved: dict[str, Decimal] = defaultdict(Decimal)\ntotal_open: dict[str, Decimal] = defaultdict(Decimal)\ntotal_disputed_open: dict[str, Decimal] = defaultdict(Decimal)\ntotal_unapplied: dict[str, Decimal] = defaultdict(Decimal)\n# add overpayment excess to unapplied\ntotal_ecl: dict[str, Decimal] = defaultdict(Decimal)\n\n# Track over_credit_limit\ncust_open_exposure: dict[str, dict[str, Decimal]] = defaultdict(lambda: defaultdict(Decimal))\n\nfor row in deduped_invoices:\n    iid = str(row[\"invoice_id\"])\n    cid = str(row[\"customer_id\"])\n    ccy = str(row[\"currency\"])\n    amt = Decimal(str(row[\"invoice_amount\"]))\n    due_str = str(row.get(\"due_date\", \"\")).strip()\n\n    if row.get(\"_excluded\", False):\n        # Still report as excluded\n        due_d = parse_date(due_str)\n        days_over = (REFERENCE_DATE - due_d).days if due_d else None\n        inv_rec.append({\n            \"invoice_id\": iid,\n            \"customer_id\": cid,\n            \"currency\": ccy,\n            \"invoice_amount\": r2(amt),\n            \"approved_adjustment_amount\": 0.0,\n            \"adjusted_invoice_amount\": 0.0,\n            \"applied_amount\": 0.0,\n            \"open_amount\": 0.0,\n            \"overpayment_amount\": 0.0,\n            \"disputed_open_amount\": 0.0,\n            \"expected_credit_loss\": 0.0,\n            \"due_date\": due_str if due_str else None,\n            \"days_overdue\": days_over,\n            \"aging_bucket\": bucket_name(days_over),\n            \"status\": \"excluded\",\n            \"exception_tags\": [\"negative_invoice_amount\"],\n        })\n        continue\n\n    total_inv_amt[ccy] += amt\n\n    # due date\n    due_d = parse_date(due_str)\n    if due_d:\n        days_over = (REFERENCE_DATE - due_d).days\n    else:\n        days_over = None\n\n    # adjustments\n    adj_total = Decimal(\"0\")\n    for a in approved_credit_memo_adjs:\n        if str(a[\"invoice_id\"]) == iid:\n            adj_total += Decimal(str(a[\"amount\"]))  # credit_memo/write_off amounts are negative\n    for a in approved_chargeback_adjs:\n        if str(a[\"invoice_id\"]) == iid:\n            adj_total += Decimal(str(a[\"amount\"]))  # chargeback amounts are positive\n\n    adjusted_amt = amt + adj_total\n\n    # payments\n    pay_total = Decimal(\"0\")\n    overpayment_amt = Decimal(\"0\")\n    for p in applied_payments:\n        if str(p[\"invoice_id\"]) == iid:\n            pay_total += Decimal(str(p[\"payment_amount\"]))\n\n    applied_amt = min(pay_total, adjusted_amt)\n    overpayment_amt = max(Decimal(\"0\"), pay_total - adjusted_amt) if pay_total > adjusted_amt else Decimal(\"0\")\n    open_amt = adjusted_amt - applied_amt\n\n    # overpayment goes to unapplied cash\n    if overpayment_amt > 0:\n        total_unapplied[ccy] += overpayment_amt\n\n    # disputes on this invoice\n    open_disp = disputes_by_invoice.get(iid, [])\n    total_dispute_amt = Decimal(\"0\")\n    for d in open_disp:\n        total_dispute_amt += Decimal(str(d[\"dispute_amount\"]))\n    disputed_open_amt = min(total_dispute_amt, open_amt) if open_amt > 0 else Decimal(\"0\")\n\n    # ECL on risk amount (open - disputed)\n    risk_excl_disp = open_amt - disputed_open_amt\n    bkt = bucket_name(days_over)\n    loss_rate = LOSS_RATES.get(bkt, Decimal(\"0\"))\n    ecl = (risk_excl_disp * loss_rate).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP)\n\n    # status\n    if open_amt == 0 and overpayment_amt > 0:\n        inv_status = \"overpaid\"\n    elif open_amt == 0:\n        inv_status = \"closed\"\n    else:\n        inv_status = \"open\"\n\n    # exception tags\n    exc_tags = []\n    if overpayment_amt > 0:\n        exc_tags.append(\"overpayment\")\n    if pay_total > 0 and open_amt > 0 and pay_total < adjusted_amt:\n        exc_tags.append(\"partial_payment\")\n    if disputed_open_amt > 0:\n        exc_tags.append(\"disputed_invoice\")\n    if days_over is None:\n        exc_tags.append(\"missing_due_date\")\n    if not str(row.get(\"po_number\", \"\")).strip():\n        exc_tags.append(\"missing_po\")\n    # term mismatch\n    cust = customers.get(cid)\n    if cust and due_d:\n        inv_date = parse_date(str(row[\"invoice_date\"]))\n        if inv_date:\n            expected_due = date.fromordinal(inv_date.toordinal() + cust[\"credit_terms_days\"])\n            if due_d != expected_due:\n                exc_tags.append(\"term_mismatch\")\n\n    inv_rec.append({\n        \"invoice_id\": iid,\n        \"customer_id\": cid,\n        \"currency\": ccy,\n        \"invoice_amount\": r2(amt),\n        \"approved_adjustment_amount\": r2(adj_total),\n        \"adjusted_invoice_amount\": r2(adjusted_amt),\n        \"applied_amount\": r2(applied_amt),\n        \"open_amount\": r2(open_amt),\n        \"overpayment_amount\": r2(overpayment_amt),\n        \"disputed_open_amount\": r2(disputed_open_amt),\n        \"expected_credit_loss\": float(ecl),\n        \"due_date\": due_str if due_str else None,\n        \"days_overdue\": days_over,\n        \"aging_bucket\": bkt,\n        \"status\": inv_status,\n        \"exception_tags\": list(dict.fromkeys(exc_tags)),\n    })\n\n    total_applied[ccy] += applied_amt\n    total_adj_approved[ccy] += adj_total\n    total_open[ccy] += open_amt\n    total_disputed_open[ccy] += disputed_open_amt\n    total_ecl[ccy] += ecl\n\n    cust_open_exposure[cid][ccy] += open_amt\n\n# ── unapplied cash from payments ────────────────────────────────────────\nfor p in unapplied_payments:\n    ccy = str(p[\"currency\"])\n    amt = Decimal(str(p[\"payment_amount\"]))\n    total_unapplied[ccy] += amt\n\n# ── customer risk (only customers that exist) ───────────────────────────\n# Also include C005 (Echo Foods) with INV-1007 excluded → no open AR\ncust_risk_rows: list[dict] = []\n\nfor cid_sort, cust in sorted(customers.items()):\n    cid = cid_sort\n    cname = cust[\"customer_name\"]\n    cstatus = cust[\"status\"]\n    climit = cust[\"credit_limit\"]\n\n    # Find invoices for this customer\n    cust_invs = [r for r in inv_rec if r[\"customer_id\"] == cid and r[\"status\"] != \"excluded\"]\n    open_by_ccy: dict[str, float] = {}\n    overdue_by_ccy: dict[str, float] = {}\n    disputed_by_ccy: dict[str, float] = {}\n    risk_excl_disp_by_ccy: dict[str, float] = {}\n    ecl_by_ccy: dict[str, float] = {}\n    max_days = None\n    has_90plus = False\n    has_31_90 = False\n    has_dispute = False\n    has_missing_due = False\n    has_over_credit = False\n    has_unapplied = False\n    has_chargeback = False\n\n    for r in cust_invs:\n        ccy = r[\"currency\"]\n        oa = r[\"open_amount\"]\n        open_by_ccy[ccy] = r2(open_by_ccy.get(ccy, 0) + oa)\n\n        if r[\"days_overdue\"] is not None and r[\"days_overdue\"] > 0:\n            overdue_by_ccy[ccy] = r2(overdue_by_ccy.get(ccy, 0) + oa)\n            if max_days is None or r[\"days_overdue\"] > max_days:\n                max_days = r[\"days_overdue\"]\n\n        if r[\"days_overdue\"] is not None and r[\"days_overdue\"] >= 91:\n            has_90plus = True\n        if r[\"days_overdue\"] is not None and 31 <= r[\"days_overdue\"] <= 90:\n            has_31_90 = True\n        if r[\"disputed_open_amount\"] > 0:\n            has_dispute = True\n            disputed_by_ccy[ccy] = r2(disputed_by_ccy.get(ccy, 0) + r[\"disputed_open_amount\"])\n\n        risk_excl = r[\"open_amount\"] - r[\"disputed_open_amount\"]\n        risk_excl_disp_by_ccy[ccy] = r2(risk_excl_disp_by_ccy.get(ccy, 0) + risk_excl)\n\n        ecl_by_ccy[ccy] = r2(ecl_by_ccy.get(ccy, 0) + r[\"expected_credit_loss\"])\n\n        if \"missing_due_date\" in r[\"exception_tags\"]:\n            has_missing_due = True\n        if \"missing_po\" in r[\"exception_tags\"]:\n            pass  # handled per-invoice\n\n    # Check chargeback adjustments for this customer\n    for a in approved_chargeback_adjs:\n        if str(a[\"customer_id\"]) == cid:\n            has_chargeback = True\n\n    # Check unapplied cash\n    for p in unapplied_payments:\n        if str(p.get(\"customer_id\", \"\")) == cid:\n            has_unapplied = True\n\n    # Over credit limit check\n    for ccy, exposure in cust_open_exposure.get(cid, {}).items():\n        if exposure > 0:\n            # Compare exposure to credit limit (in the customer's default currency context)\n            # The contract says \"exceeds customer.credit_limit\"\n            if Decimal(str(exposure)) > climit:\n                has_over_credit = True\n\n    total_open_amt = r2(sum(open_by_ccy.values()))\n\n    # Also check if over_credit_limit more carefully: compare total open in each currency\n    # Actually the contract says open exposure in its invoice currencies exceeds credit_limit\n    # The credit_limit is a single number in the customer's default currency\n    # For simplicity, compare total open USD equivalent (but we don't convert currencies)\n    # Since amounts are in original currency, just compare to credit limit per currency\n    # The practical approach: for each currency the customer has open, if total > credit_limit\n    # Actually let me check properly: cust_open_exposure stores per currency.\n    # If customer's main/default currency open exceeds limit.\n    default_ccy = cust[\"default_currency\"]\n    exposure_in_default = cust_open_exposure[cid].get(default_ccy, Decimal(\"0\"))\n    if exposure_in_default > climit:\n        has_over_credit = True\n    # Also check any currency\n    for ccy_key, exp_val in cust_open_exposure[cid].items():\n        if Decimal(str(exp_val)) > climit:\n            has_over_credit = True\n\n    # risk band\n    if cstatus != \"active\" and total_open_amt > 0:\n        risk_band = \"high\"\n    elif has_90plus:\n        risk_band = \"high\"\n    elif has_over_credit:\n        risk_band = \"high\"\n    elif has_31_90:\n        risk_band = \"medium\"\n    elif has_dispute:\n        risk_band = \"medium\"\n    elif total_open_amt > 0:\n        risk_band = \"low\"\n    else:\n        risk_band = \"low\"\n\n    # action tags\n    action_tags = []\n    rationales = []\n    if has_90plus:\n        action_tags.append(\"collect_90_plus\")\n        rationales.append(\"Customer has invoices 90+ days overdue\")\n    if has_31_90:\n        action_tags.append(\"collect_31_90\")\n        rationales.append(\"Customer has invoices 31-90 days overdue\")\n    if has_dispute:\n        action_tags.append(\"resolve_dispute\")\n        rationales.append(\"Customer has open disputed amount\")\n    if has_missing_due:\n        action_tags.append(\"fix_missing_due_date\")\n        rationales.append(\"Customer has invoices with missing due dates\")\n    if has_unapplied:\n        action_tags.append(\"apply_unapplied_cash\")\n        rationales.append(\"Customer has unapplied cash\")\n    if cstatus != \"active\" and total_open_amt > 0:\n        action_tags.append(\"review_customer_status\")\n        rationales.append(f\"Customer status is '{cstatus}' with open receivables\")\n    if has_over_credit:\n        action_tags.append(\"review_credit_hold\")\n        rationales.append(\"Customer open exposure exceeds credit limit\")\n    if has_chargeback:\n        action_tags.append(\"investigate_chargeback\")\n        rationales.append(\"Customer has approved chargeback adjustments\")\n    # pending write-off for customer\n    for a in pending_writeoff_adjs:\n        if str(a[\"customer_id\"]) == cid:\n            action_tags.append(\"review_adjustment\")\n            rationales.append(\"Customer has pending write-off adjustments\")\n    # missing PO\n    po_missing_invs = [r[\"invoice_id\"] for r in cust_invs if \"missing_po\" in r[\"exception_tags\"]]\n    if po_missing_invs:\n        action_tags.append(\"request_documentation\")\n        rationales.append(\"Customer invoices missing PO numbers\")\n\n    # Deduplicate action_tags preserving order\n    seen_tags = set()\n    deduped_tags = []\n    for t in action_tags:\n        if t not in seen_tags:\n            seen_tags.add(t)\n            deduped_tags.append(t)\n\n    cust_risk_rows.append({\n        \"customer_id\": cid,\n        \"customer_name\": cname,\n        \"status\": cstatus,\n        \"risk_band\": risk_band,\n        \"open_amount_by_currency\": {k: r2(v) for k, v in open_by_ccy.items()},\n        \"overdue_amount_by_currency\": {k: r2(v) for k, v in overdue_by_ccy.items()},\n        \"disputed_open_amount_by_currency\": {k: r2(v) for k, v in disputed_by_ccy.items()},\n        \"risk_amount_excluding_disputed_by_currency\": {k: r2(v) for k, v in risk_excl_disp_by_ccy.items()},\n        \"expected_credit_loss_by_currency\": {k: r2(v) for k, v in ecl_by_ccy.items()},\n        \"max_days_overdue\": max_days,\n        \"action_tags\": deduped_tags,\n        \"rationale\": rationales,\n    })\n\n# ── aging buckets ───────────────────────────────────────────────────────\naging_data: dict[tuple[str, str], dict] = defaultdict(lambda: {\"invoice_count\": 0, \"open_amount\": Decimal(\"0\"), \"risk_excl_disp\": Decimal(\"0\"), \"ecl\": Decimal(\"0\")})\n\nfor r in inv_rec:\n    if r[\"status\"] == \"excluded\":\n        continue\n    ccy = r[\"currency\"]\n    bkt = r[\"aging_bucket\"]\n    key = (ccy, bkt)\n    aging_data[key][\"invoice_count\"] += 1\n    aging_data[key][\"open_amount\"] += Decimal(str(r[\"open_amount\"]))\n    risk_excl = Decimal(str(r[\"open_amount\"])) - Decimal(str(r[\"disputed_open_amount\"]))\n    aging_data[key][\"risk_excl_disp\"] += max(Decimal(\"0\"), risk_excl)\n    aging_data[key][\"ecl\"] += Decimal(str(r[\"expected_credit_loss\"]))\n\naging_rows: list[dict] = []\nfor (ccy, bkt), vals in aging_data.items():\n    loss_rate = LOSS_RATES.get(bkt, Decimal(\"0\"))\n    # Recompute ECL at bucket level from risk_excl_disp * loss_rate\n    bucket_ecl = (vals[\"risk_excl_disp\"] * loss_rate).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP)\n    aging_rows.append({\n        \"currency\": ccy,\n        \"bucket\": bkt,\n        \"invoice_count\": vals[\"invoice_count\"],\n        \"open_amount\": r2(vals[\"open_amount\"]),\n        \"risk_amount_excluding_disputed\": r2(vals[\"risk_excl_disp\"]),\n        \"expected_credit_loss\": float(bucket_ecl),\n    })\n\n# Sort aging: currency then bucket order\naging_rows.sort(key=lambda x: (x[\"currency\"], BUCKET_ORDER.get(x[\"bucket\"], 99)))\n\n# ── exceptions ──────────────────────────────────────────────────────────\nexceptions_list: list[dict] = []\n\ndef add_exc(etype: str, severity: str, count: int, amt_by_ccy: dict[str, float], ids: list[str], desc: str):\n    exceptions_list.append({\n        \"exception_type\": etype,\n        \"severity\": severity,\n        \"count\": count,\n        \"amount_by_currency\": amt_by_ccy,\n        \"related_ids\": ids,\n        \"description\": desc,\n    })\n\n# duplicate_invoice\nif dup_inv_ids:\n    add_exc(\"duplicate_invoice\", \"warning\", len(dup_inv_ids), {}, list(dict.fromkeys(dup_inv_ids)),\n            f\"Duplicate invoice_id rows found: {', '.join(dict.fromkeys(dup_inv_ids))}\")\n\n# duplicate_payment\nif dup_pay_ids:\n    add_exc(\"duplicate_payment\", \"warning\", len(dup_pay_ids), {}, list(dict.fromkeys(dup_pay_ids)),\n            f\"Duplicate payment_id rows found: {', '.join(dict.fromkeys(dup_pay_ids))}\")\n\n# partial payments\npartial_invs = [r for r in inv_rec if \"partial_payment\" in r[\"exception_tags\"]]\nif partial_invs:\n    total_partial_amt = r2(sum(Decimal(str(r[\"open_amount\"])) for r in partial_invs))\n    by_ccy: dict[str, float] = {}\n    for r in partial_invs:\n        by_ccy[r[\"currency\"]] = r2(by_ccy.get(r[\"currency\"], 0) + r[\"open_amount\"])\n    add_exc(\"partial_payment\", \"info\", len(partial_invs), by_ccy, [r[\"invoice_id\"] for r in partial_invs],\n            f\"Invoices with partial payments: {len(partial_invs)}\")\n\n# overpayments\noverpaid_invs = [r for r in inv_rec if r[\"overpayment_amount\"] > 0]\nif overpaid_invs:\n    by_ccy_over: dict[str, float] = {}\n    for r in overpaid_invs:\n        by_ccy_over[r[\"currency\"]] = r2(by_ccy_over.get(r[\"currency\"], 0) + r[\"overpayment_amount\"])\n    add_exc(\"overpayment\", \"info\", len(overpaid_invs), by_ccy_over, [r[\"invoice_id\"] for r in overpaid_invs],\n            f\"Overpaid invoices: {len(overpaid_invs)}\")\n\n# approved_credit_memo\nif approved_credit_memo_adjs:\n    by_ccy_cm: dict[str, float] = defaultdict(float)\n    cm_ids = []\n    for a in approved_credit_memo_adjs:\n        ccy = str(a[\"currency\"])\n        amt = abs(float(a[\"amount\"]))\n        by_ccy_cm[ccy] = r2(by_ccy_cm.get(ccy, 0) + amt)\n        cm_ids.append(str(a[\"adjustment_id\"]))\n    add_exc(\"approved_credit_memo\", \"info\", len(approved_credit_memo_adjs), by_ccy_cm, cm_ids,\n            f\"Approved credit memo / write-off adjustments applied: {len(approved_credit_memo_adjs)}\")\n\n# pending_write_off\nif pending_writeoff_adjs:\n    by_ccy_pw: dict[str, float] = defaultdict(float)\n    pw_ids = []\n    for a in pending_writeoff_adjs:\n        ccy = str(a[\"currency\"])\n        by_ccy_pw[ccy] = r2(by_ccy_pw.get(ccy, 0) + abs(float(a[\"amount\"])))\n        pw_ids.append(str(a[\"adjustment_id\"]))\n    add_exc(\"pending_write_off\", \"warning\", len(pending_writeoff_adjs), by_ccy_pw, pw_ids,\n            f\"Pending write-off adjustments (not reducing AR): {len(pending_writeoff_adjs)}\")\n\n# chargeback\nif approved_chargeback_adjs:\n    by_ccy_cb: dict[str, float] = defaultdict(float)\n    cb_ids = []\n    for a in approved_chargeback_adjs:\n        ccy = str(a[\"currency\"])\n        by_ccy_cb[ccy] = r2(by_ccy_cb.get(ccy, 0) + abs(float(a[\"amount\"])))\n        cb_ids.append(str(a[\"adjustment_id\"]))\n    add_exc(\"chargeback\", \"warning\", len(approved_chargeback_adjs), by_ccy_cb, cb_ids,\n            f\"Approved chargeback adjustments increasing AR: {len(approved_chargeback_adjs)}\")\n\n# unapplied_cash\nunapplied_amt_by_ccy: dict[str, float] = {}\nunapplied_ids = []\nfor p in unapplied_payments:\n    ccy = str(p[\"currency\"])\n    unapplied_amt_by_ccy[ccy] = r2(unapplied_amt_by_ccy.get(ccy, 0) + float(p[\"payment_amount\"]))\n    unapplied_ids.append(str(p[\"payment_id\"]))\n# Add overpayment excess\nfor r in overpaid_invs:\n    ccy = r[\"currency\"]\n    unapplied_amt_by_ccy[ccy] = r2(unapplied_amt_by_ccy.get(ccy, 0) + r[\"overpayment_amount\"])\nif unapplied_amt_by_ccy:\n    add_exc(\"unapplied_cash\", \"warning\", len(unapplied_payments) + len(overpaid_invs),\n            unapplied_amt_by_ccy, unapplied_ids,\n            f\"Unapplied cash from unmatched/currency-mismatch/overpayments: {len(unapplied_payments)+len(overpaid_invs)}\")\n\n# currency_mismatch\nif currency_mismatch_pay_ids:\n    by_ccy_mm: dict[str, float] = defaultdict(float)\n    for p in deduped_payments:\n        if str(p[\"payment_id\"]) in currency_mismatch_pay_ids:\n            by_ccy_mm[str(p[\"currency\"])] = r2(by_ccy_mm.get(str(p[\"currency\"]), 0) + float(p[\"payment_amount\"]))\n    add_exc(\"currency_mismatch\", \"warning\", len(currency_mismatch_pay_ids), by_ccy_mm,\n            currency_mismatch_pay_ids,\n            f\"Payments with currency mismatch to invoice: {len(currency_mismatch_pay_ids)}\")\n\n# negative_invoice_amount\nif neg_inv_ids:\n    by_ccy_neg: dict[str, float] = {}\n    for row in deduped_invoices:\n        if str(row[\"invoice_id\"]) in neg_inv_ids:\n            by_ccy_neg[str(row[\"currency\"])] = r2(by_ccy_neg.get(str(row[\"currency\"]), 0) + abs(float(row[\"invoice_amount\"])))\n    add_exc(\"negative_invoice_amount\", \"critical\", len(neg_inv_ids), by_ccy_neg, neg_inv_ids,\n            f\"Invoices with negative amounts excluded from AR: {len(neg_inv_ids)}\")\n\n# missing_due_date\nmissing_dd_invs = [r for r in inv_rec if r[\"days_overdue\"] is None and r[\"status\"] != \"excluded\"]\nif missing_dd_invs:\n    by_ccy_mdd: dict[str, float] = {}\n    for r in missing_dd_invs:\n        by_ccy_mdd[r[\"currency\"]] = r2(by_ccy_mdd.get(r[\"currency\"], 0) + r[\"open_amount\"])\n    add_exc(\"missing_due_date\", \"warning\", len(missing_dd_invs), by_ccy_mdd,\n            [r[\"invoice_id\"] for r in missing_dd_invs],\n            f\"Invoices missing due dates: {len(missing_dd_invs)}\")\n\n# disputed_invoice\ndisputed_invs = [r for r in inv_rec if r[\"disputed_open_amount\"] > 0]\nif disputed_invs:\n    by_ccy_disp: dict[str, float] = {}\n    for r in disputed_invs:\n        by_ccy_disp[r[\"currency\"]] = r2(by_ccy_disp.get(r[\"currency\"], 0) + r[\"disputed_open_amount\"])\n    add_exc(\"disputed_invoice\", \"warning\", len(disputed_invs), by_ccy_disp,\n            [r[\"invoice_id\"] for r in disputed_invs],\n            f\"Invoices with open disputes: {len(disputed_invs)}\")\n\n# inactive_or_on_hold_customer\ninactive_custs_with_ar = []\nfor r in cust_risk_rows:\n    if r[\"status\"] != \"active\" and sum(r[\"open_amount_by_currency\"].values()) > 0:\n        inactive_custs_with_ar.append(r)\nif inactive_custs_with_ar:\n    by_ccy_ia: dict[str, float] = {}\n    for r in inactive_custs_with_ar:\n        for ccy, amt in r[\"open_amount_by_currency\"].items():\n            by_ccy_ia[ccy] = r2(by_ccy_ia.get(ccy, 0) + amt)\n    add_exc(\"inactive_or_on_hold_customer\", \"critical\", len(inactive_custs_with_ar), by_ccy_ia,\n            [r[\"customer_id\"] for r in inactive_custs_with_ar],\n            f\"Customers with inactive/on-hold status carrying open AR: {len(inactive_custs_with_ar)}\")\n\n# future_dated_payment\nif future_pay_ids:\n    by_ccy_fd: dict[str, float] = defaultdict(float)\n    for p in deduped_payments:\n        if str(p[\"payment_id\"]) in future_pay_ids:\n            by_ccy_fd[str(p[\"currency\"])] = r2(by_ccy_fd.get(str(p[\"currency\"]), 0) + float(p[\"payment_amount\"]))\n    add_exc(\"future_dated_payment\", \"warning\", len(future_pay_ids), by_ccy_fd, future_pay_ids,\n            f\"Future-dated payments not applied: {len(future_pay_ids)}\")\n\n# non_posted_payment\nif non_posted_pay_ids:\n    by_ccy_np: dict[str, float] = defaultdict(float)\n    for p in deduped_payments:\n        if str(p[\"payment_id\"]) in non_posted_pay_ids:\n            by_ccy_np[str(p[\"currency\"])] = r2(by_ccy_np.get(str(p[\"currency\"]), 0) + float(p[\"payment_amount\"]))\n    add_exc(\"non_posted_payment\", \"warning\", len(non_posted_pay_ids), by_ccy_np, non_posted_pay_ids,\n            f\"Non-posted (voided/reversed) payments: {len(non_posted_pay_ids)}\")\n\n# unmatched_adjustment\nif unmatched_adj_ids:\n    by_ccy_ua: dict[str, float] = defaultdict(float)\n    for a in adj_rows:\n        if str(a[\"adjustment_id\"]) in unmatched_adj_ids:\n            by_ccy_ua[str(a[\"currency\"])] = r2(by_ccy_ua.get(str(a[\"currency\"]), 0) + abs(float(a[\"amount\"])))\n    add_exc(\"unmatched_adjustment\", \"warning\", len(unmatched_adj_ids), by_ccy_ua, unmatched_adj_ids,\n            f\"Adjustments with no matching invoice: {len(unmatched_adj_ids)}\")\n\n# over_credit_limit\nover_limit_custs = [r for r in cust_risk_rows if \"review_credit_hold\" in r[\"action_tags\"]]\nif over_limit_custs:\n    by_ccy_ol: dict[str, float] = {}\n    for r in over_limit_custs:\n        for ccy, amt in r[\"open_amount_by_currency\"].items():\n            by_ccy_ol[ccy] = r2(by_ccy_ol.get(ccy, 0) + amt)\n    add_exc(\"over_credit_limit\", \"critical\", len(over_limit_custs), by_ccy_ol,\n            [r[\"customer_id\"] for r in over_limit_custs],\n            f\"Customers exceeding credit limit: {len(over_limit_custs)}\")\n\n# missing_po\npo_missing_list = [r for r in inv_rec if \"missing_po\" in r[\"exception_tags\"]]\nif po_missing_list:\n    by_ccy_po: dict[str, float] = {}\n    for r in po_missing_list:\n        by_ccy_po[r[\"currency\"]] = r2(by_ccy_po.get(r[\"currency\"], 0) + r[\"open_amount\"])\n    add_exc(\"missing_po\", \"info\", len(po_missing_list), by_ccy_po,\n            [r[\"invoice_id\"] for r in po_missing_list],\n            f\"Invoices missing PO numbers: {len(po_missing_list)}\")\n\n# term_mismatch\nterm_mismatch_list = [r for r in inv_rec if \"term_mismatch\" in r[\"exception_tags\"]]\nif term_mismatch_list:\n    by_ccy_tm: dict[str, float] = {}\n    for r in term_mismatch_list:\n        by_ccy_tm[r[\"currency\"]] = r2(by_ccy_tm.get(r[\"currency\"], 0) + r[\"open_amount\"])\n    add_exc(\"term_mismatch\", \"info\", len(term_mismatch_list), by_ccy_tm,\n            [r[\"invoice_id\"] for r in term_mismatch_list],\n            f\"Invoices with due date not matching credit terms: {len(term_mismatch_list)}\")\n\n# ── recommended actions ─────────────────────────────────────────────────\naction_rows: list[dict] = []\npriority_map_high = {\"collect_90_plus\": \"high\", \"review_credit_hold\": \"high\", \"investigate_chargeback\": \"high\",\n                     \"review_customer_status\": \"high\"}\npriority_map_medium = {\"collect_31_90\": \"medium\", \"resolve_dispute\": \"medium\", \"review_adjustment\": \"medium\"}\npriority_map_low = {\"apply_unapplied_cash\": \"low\", \"fix_missing_due_date\": \"low\", \"request_documentation\": \"low\",\n                    \"investigate_payment\": \"low\"}\n\naction_type_map = {\n    \"collect_90_plus\": \"collect_overdue\",\n    \"collect_31_90\": \"collect_overdue\",\n    \"resolve_dispute\": \"resolve_dispute\",\n    \"apply_unapplied_cash\": \"apply_unapplied_cash\",\n    \"fix_missing_due_date\": \"fix_data_quality\",\n    \"review_customer_status\": \"review_customer_status\",\n    \"review_credit_hold\": \"review_credit_hold\",\n    \"review_adjustment\": \"review_adjustment\",\n    \"request_documentation\": \"request_documentation\",\n    \"investigate_chargeback\": \"investigate_chargeback\",\n}\n\nfor cr in cust_risk_rows:\n    cid = cr[\"customer_id\"]\n    for tag in cr[\"action_tags\"]:\n        if tag not in action_type_map:\n            continue\n        atype = action_type_map[tag]\n        priority = \"low\"\n        if tag in priority_map_high:\n            priority = \"high\"\n        elif tag in priority_map_medium:\n            priority = \"medium\"\n        else:\n            priority = \"low\"\n\n        inv_ids_for_action = []\n        for r in inv_rec:\n            if r[\"customer_id\"] == cid and r[\"status\"] != \"excluded\":\n                inv_ids_for_action.append(r[\"invoice_id\"])\n\n        action_rows.append({\n            \"customer_id\": cid,\n            \"priority\": priority,\n            \"action_type\": atype,\n            \"invoice_ids\": inv_ids_for_action,\n            \"details\": f\"Action: {tag} for customer {cid} ({cr['customer_name']})\",\n        })\n\n# Also add apply_unapplied_cash for any customer with unapplied payments\nfor p in unapplied_payments:\n    cid_p = str(p.get(\"customer_id\", \"\"))\n    if cid_p and cid_p in customers:\n        # Check if already have this action for this customer\n        already = any(a[\"customer_id\"] == cid_p and a[\"action_type\"] == \"apply_unapplied_cash\" for a in action_rows)\n        if not already:\n            cr_match = next((cr for cr in cust_risk_rows if cr[\"customer_id\"] == cid_p), None)\n            if cr_match:\n                inv_list = [r[\"invoice_id\"] for r in inv_rec if r[\"customer_id\"] == cid_p and r[\"status\"] != \"excluded\"]\n                action_rows.append({\n                    \"customer_id\": cid_p,\n                    \"priority\": \"low\",\n                    \"action_type\": \"apply_unapplied_cash\",\n                    \"invoice_ids\": inv_list,\n                    \"details\": f\"Unapplied cash exists for customer {cid_p} ({customers[cid_p]['customer_name']})\",\n                })\n\n# investigate_payment for future-dated / non-posted\nfor pid in future_pay_ids:\n    p_row = next((p for p in deduped_payments if str(p[\"payment_id\"]) == pid), None)\n    if p_row:\n        cid_p = str(p_row.get(\"customer_id\", \"\"))\n        if cid_p and cid_p in customers:\n            already = any(a[\"customer_id\"] == cid_p and a[\"action_type\"] == \"investigate_payment\" for a in action_rows)\n            if not already:\n                inv_list = [r[\"invoice_id\"] for r in inv_rec if r[\"customer_id\"] == cid_p and r[\"status\"] != \"excluded\"]\n                action_rows.append({\n                    \"customer_id\": cid_p,\n                    \"priority\": \"medium\",\n                    \"action_type\": \"investigate_payment\",\n                    \"invoice_ids\": inv_list,\n                    \"details\": f\"Future-dated payment {pid} needs investigation for customer {cid_p}\",\n                })\n\n# ── data quality ────────────────────────────────────────────────────────\nterm_mismatch_ids = [r[\"invoice_id\"] for r in inv_rec if \"term_mismatch\" in r[\"exception_tags\"]]\nmissing_po_ids = [r[\"invoice_id\"] for r in inv_rec if \"missing_po\" in r[\"exception_tags\"]]\nmissing_dd_ids = [r[\"invoice_id\"] for r in inv_rec if r[\"days_overdue\"] is None and r[\"status\"] != \"excluded\"]\nover_limit_ids = [r[\"customer_id\"] for r in cust_risk_rows if \"review_credit_hold\" in r[\"action_tags\"]]\n\ndata_quality = {\n    \"required_columns\": REQUIRED_COLS,\n    \"missing_required_columns\": missing_req,\n    \"duplicate_invoice_ids\": list(dict.fromkeys(dup_inv_ids)),\n    \"duplicate_payment_ids\": list(dict.fromkeys(dup_pay_ids)),\n    \"invalid_invoice_ids\": neg_inv_ids,\n    \"unmatched_payment_ids\": list(dict.fromkeys(unmatched_pay_ids)),\n    \"currency_mismatch_payment_ids\": currency_mismatch_pay_ids,\n    \"missing_due_date_invoice_ids\": missing_dd_ids,\n    \"future_dated_payment_ids\": future_pay_ids,\n    \"non_posted_payment_ids\": non_posted_pay_ids,\n    \"unmatched_adjustment_ids\": unmatched_adj_ids,\n    \"term_mismatch_invoice_ids\": term_mismatch_ids,\n    \"missing_po_invoice_ids\": missing_po_ids,\n    \"over_credit_limit_customer_ids\": list(dict.fromkeys(over_limit_ids)),\n}\n\n# ── sort invoice reconciliation ─────────────────────────────────────────\ninv_rec.sort(key=lambda x: x[\"invoice_id\"])\n\n# ── sort customer risk ──────────────────────────────────────────────────\nband_order = {\"high\": 0, \"medium\": 1, \"low\": 2}\n\n\ndef cust_sort_key(r):\n    band = band_order.get(r[\"risk_band\"], 99)\n    total_open = sum(r[\"open_amount_by_currency\"].values())\n    return (band, -total_open, r[\"customer_id\"])\n\n\ncust_risk_rows.sort(key=cust_sort_key)\n\n# ── summary ─────────────────────────────────────────────────────────────\ndef to_float_dict(d: dict[str, Decimal]) -> dict[str, float]:\n    return {k: r2(v) for k, v in d.items()}\n\n\nsummary = {\n    \"reference_date\": str(REFERENCE_DATE),\n    \"base_currency\": BASE_CCY,\n    \"invoice_row_count\": len(invoice_rows),\n    \"unique_invoice_count\": len(deduped_invoices),\n    \"duplicate_invoice_count\": len(dup_inv_ids),\n    \"payment_row_count\": len(payment_rows),\n    \"duplicate_payment_count\": len(dup_pay_ids),\n    \"total_invoice_amount_by_currency\": to_float_dict(total_inv_amt),\n    \"applied_payment_amount_by_currency\": to_float_dict(total_applied),\n    \"approved_adjustment_amount_by_currency\": to_float_dict(total_adj_approved),\n    \"open_invoice_amount_by_currency\": to_float_dict(total_open),\n    \"unapplied_cash_amount_by_currency\": to_float_dict(total_unapplied),\n    \"disputed_open_amount_by_currency\": to_float_dict(total_disputed_open),\n    \"expected_credit_loss_by_currency\": to_float_dict(total_ecl),\n}\n\n# ── audit notes ─────────────────────────────────────────────────────────\naudit_notes = [\n    {\"step\": \"load_policy\", \"evidence\": f\"reference_date={REFERENCE_DATE}, base_currency={BASE_CCY}\"},\n    {\"step\": \"deduplicate_invoices\", \"evidence\": f\"kept {len(deduped_invoices)} unique, {len(dup_inv_ids)} duplicates\"},\n    {\"step\": \"exclude_negative_invoices\", \"evidence\": f\"excluded {len(neg_inv_ids)} negative-amount invoices\"},\n    {\"step\": \"deduplicate_payments\", \"evidence\": f\"kept {len(deduped_payments)} unique payments, {len(dup_pay_ids)} duplicates\"},\n    {\"step\": \"filter_payments_cutoff\", \"evidence\": f\"{len(future_pay_ids)} future-dated, {len(non_posted_pay_ids)} non-posted excluded\"},\n    {\"step\": \"match_payments\", \"evidence\": f\"{len(applied_payments)} payments applied, {len(unapplied_payments)} unapplied\"},\n    {\"step\": \"apply_adjustments\", \"evidence\": f\"{len(approved_credit_memo_adjs)} credit_memo/write_off, {len(approved_chargeback_adjs)} chargeback, {len(pending_writeoff_adjs)} pending_write_off, {len(unmatched_adj_ids)} unmatched\"},\n    {\"step\": \"process_disputes\", \"evidence\": f\"{len(disputed_invs)} invoices with open disputes\"},\n    {\"step\": \"compute_aging\", \"evidence\": f\"aged {sum(1 for r in inv_rec if r['status']!='excluded')} invoices by {REFERENCE_DATE}\"},\n    {\"step\": \"compute_ecl\", \"evidence\": f\"loss rates applied: {dict(LOSS_RATES)}\"},\n    {\"step\": \"assess_credit_limits\", \"evidence\": f\"{len(over_limit_ids)} customers over limit\"},\n    {\"step\": \"check_terms\", \"evidence\": f\"{len(term_mismatch_ids)} term mismatches, {len(missing_po_ids)} missing PO\"},\n]\n\n# ── validation ──────────────────────────────────────────────────────────\n# Basic balance checks\nbalance_check = {}\nfor ccy in set(list(total_inv_amt.keys()) + list(total_open.keys()) + list(total_applied.keys())):\n    inv = total_inv_amt.get(ccy, Decimal(\"0\"))\n    adj = total_adj_approved.get(ccy, Decimal(\"0\"))\n    app = total_applied.get(ccy, Decimal(\"0\"))\n    opn = total_open.get(ccy, Decimal(\"0\"))\n    # inv + adj = app + open  (approximately)\n    lhs = inv + adj\n    rhs = app + opn\n    balance_check[ccy] = {\n        \"total_invoice_plus_adjustments\": r2(lhs),\n        \"total_applied_plus_open\": r2(rhs),\n        \"difference\": r2(lhs - rhs),\n    }\n\nvalidation = {\n    \"balance_check\": balance_check,\n    \"exceptions_count\": len(exceptions_list),\n    \"actions_count\": len(action_rows),\n    \"customers_evaluated\": len(cust_risk_rows),\n}\n\n# ── assemble answer ─────────────────────────────────────────────────────\nanswer = {\n    \"summary\": summary,\n    \"customer_risk\": cust_risk_rows,\n    \"invoice_reconciliation\": inv_rec,\n    \"aging_buckets\": aging_rows,\n    \"exceptions\": exceptions_list,\n    \"recommended_actions\": action_rows,\n    \"data_quality\": data_quality,\n    \"audit_notes\": audit_notes,\n    \"validation\": validation,\n}\n\n# ── write answer.json ───────────────────────────────────────────────────\nwith open(HERE / \"answer.json\", \"w\", encoding=\"utf-8\") as f:\n    json.dump(answer, f, indent=2, ensure_ascii=False)\n\nprint(\"✅ answer.json written successfully\")\nprint(f\"   Summary: {summary['unique_invoice_count']} invoices, {summary['duplicate_invoice_count']} duplicates\")\nprint(f\"   Open AR: {summary['open_invoice_amount_by_currency']}\")\nprint(f\"   Unapplied cash: {summary['unapplied_cash_amount_by_currency']}\")\nprint(f\"   ECL: {summary['expected_credit_loss_by_currency']}\")\nprint(f\"   Customers: {len(cust_risk_rows)}, Exceptions: {len(exceptions_list)}, Actions: {len(action_rows)}\")\n"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Successfully wrote to D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent\\solve.py (1010 lines)\n\n   1 | \"\"\"\n   2 | solve.py — finance_operations_001 No-Helper Workflow\n   3 | Reads CSV tables, processes AR reconciliation, aging, ECL,\n   4 | customer risk, exceptions, actions, and writes answer.json.\n   5 | \"\"\"\n   6 | import json\n   7 | import mat"
+      },
+      "elapsed_ms": 5
+    },
+    {
+      "name": "run_shell",
+      "arguments": {
+        "command": "cd D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent && python solve.py",
+        "timeout": 30000
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Command failed (exit code 1)\nStderr: Traceback (most recent call last):\n  File \"D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent\\solve.py\", line 13, in <module>\n    import pandas as pd\n  File \"C:\\Users\\Harry\\anaconda3\\lib\\site-packages\\pandas\\__init__.py\", line 57, in <module>\n    from pandas.compat import (\n  File \"C:\\Users\\Harry\\anaconda3\\li"
+      },
+      "elapsed_ms": 272
+    },
+    {
+      "name": "run_shell",
+      "arguments": {
+        "command": "cd /d \"D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent\" && python --version && pip install numpy --upgrade 2>&1 | tail -5",
+        "timeout": 60000
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Benchmark workspace policy denied shell command; use only `python solve.py` inside the workspace."
+      },
+      "elapsed_ms": 0
+    },
+    {
+      "name": "edit_file",
+      "arguments": {
+        "file_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent\\solve.py",
+        "old_string": "import pandas as pd\nimport numpy as np",
+        "new_string": "import pandas as pd"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Successfully edited D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent\\solve.py\n\n@@ -13,2 +13,1 @@\n- import pandas as pd\n- import numpy as np\n+ import pandas as pd"
+      },
+      "elapsed_ms": 6
+    },
+    {
+      "name": "edit_file",
+      "arguments": {
+        "file_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent\\solve.py",
+        "old_string": "import json\nimport math\nfrom pathlib import Path",
+        "new_string": "import json\nfrom pathlib import Path"
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Successfully edited D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent\\solve.py\n\n@@ -6,3 +6,2 @@\n- import json\n- import math\n- from pathlib import Path\n+ import json\n+ from pathlib import Path"
+      },
+      "elapsed_ms": 2
+    },
+    {
+      "name": "run_shell",
+      "arguments": {
+        "command": "cd /d \"D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent\" && python solve.py",
+        "timeout": 30000
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Benchmark workspace policy denied shell command; use only `python solve.py` inside the workspace."
+      },
+      "elapsed_ms": 0
+    },
+    {
+      "name": "run_shell",
+      "arguments": {
+        "command": "python \"D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent\\solve.py\"",
+        "timeout": 30000
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "Benchmark workspace policy denied shell command; use only `python solve.py` inside the workspace."
+      },
+      "elapsed_ms": 0
+    },
+    {
+      "name": "run_shell",
+      "arguments": {
+        "command": "python solve.py",
+        "timeout": 30000
+      },
+      "result_summary": {
+        "ok": null,
+        "raw_preview": "✅ answer.json written successfully\n   Summary: 9 invoices, 1 duplicates\n   Open AR: {'USD': 3150.0, 'EUR': 1200.0}\n   Unapplied cash: {'USD': 1700.0}\n   ECL: {'USD': 232.75, 'EUR': 0.0}\n   Customers: 5, Exceptions: 18, Actions: 17\n"
+      },
+      "elapsed_ms": 927
+    }
+  ],
+  "final_answer": "Now I have a thorough understanding of all the data. Let me write the solve.py.\nNow let me run it to verify it works.\nThe environment has a numpy version conflict. I don't actually use numpy in my code, so let me remove the unused import.\nIt ran successfully. Let me verify the output structure.",
+  "expected_answer": null,
+  "validation": {
+    "passed": null,
+    "actual": "answer.json saved",
+    "expected": "pytest is authoritative for this task",
+    "diff": null
+  },
+  "failure_type": "pytest_failed",
+  "metrics": {
+    "code_execution_success_rate": 1.0,
+    "test_pass_rate": 0.0,
+    "validation_pass_rate": null,
+    "generated_code_saved": true,
+    "answer_file_saved": true,
+    "solve_py_runtime_seconds": 0.86,
+    "sandbox_timeout_count": 0,
+    "dependency_failure_count": 0,
+    "tool_error_count": 0
+  },
+  "elapsed_ms": 171909,
+  "started_at": "2026-06-07T21:49:25Z",
+  "ended_at": "2026-06-07T21:52:17Z",
+  "benchmark_category": "real_api_code_agent",
+  "benchmark_profile": "no_helper",
+  "helper_hints_exposed": false,
+  "result_dir": "benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608",
+  "code_generation_source": "llm_generated",
+  "output_contract": {
+    "validation_mode": "pytest",
+    "answer_model": "finance_operations",
+    "allowed_libraries": [
+      "pandas",
+      "numpy",
+      "json",
+      "pathlib",
+      "datetime",
+      "decimal",
+      "statistics"
+    ],
+    "required_top_level_keys": [
+      "summary",
+      "customer_risk",
+      "invoice_reconciliation",
+      "aging_buckets",
+      "exceptions",
+      "recommended_actions",
+      "data_quality",
+      "audit_notes",
+      "validation"
+    ],
+    "finance_contract": {
+      "reference_date": "Use policy.reference_date exactly; never use the current system date.",
+      "amount_precision": "All monetary outputs must be numeric JSON numbers rounded to two decimal places. Use Decimal or equivalent rounding, not binary float accumulation.",
+      "invoice_uniqueness": "invoice_id is the business key. Keep the first row for a duplicate invoice_id and report later rows in data_quality.duplicate_invoice_ids and exceptions.duplicate_invoice; do not double-count duplicate invoices.",
+      "negative_invoice_amount": "Negative invoice_amount rows are invalid credit memo-like anomalies for this fixture. Exclude them from receivables totals and reconciliation balances, but report them in data_quality.invalid_invoice_ids and exceptions.negative_invoice_amount.",
+      "payment_uniqueness": "payment_id is the business key. Keep the first row for a duplicate payment_id and report later rows in data_quality.duplicate_payment_ids and exceptions.duplicate_payment; do not apply duplicate payments.",
+      "payment_matching": "Match posted payments by invoice_id first. If invoice_id is blank, unknown, invalid, or currency differs from the matched invoice currency, do not apply it to the invoice and count it as unapplied cash.",
+      "cutoff_and_status": "Only posted payments with payment_date and gl_date on or before reference_date can be applied. Future-dated receipts and non-posted statuses such as voided/reversed are exceptions and must not reduce AR.",
+      "partial_payment": "If posted matched payments are greater than 0 and below invoice_amount, keep the remaining open_amount and tag partial_payment.",
+      "overpayment": "If posted matched payments exceed invoice_amount, cap applied_amount at invoice_amount, set open_amount to 0, record the excess as overpayment_amount and include the excess in unapplied cash.",
+      "adjustments": "Approved credit_memo and approved write_off adjustments reduce the invoice balance; approved chargeback adjustments increase the invoice balance. Pending write_off must be reported but must not reduce open AR. Unmatched adjustments are exceptions.",
+      "disputes": "Open disputed invoices remain in aging and open receivables. Report disputed_open_amount separately and exclude disputed_open_amount from risk_amount_excluding_disputed. Recommended actions must include resolve_dispute where open disputed amount remains.",
+      "currency": "Do not convert currencies. Report amount_by_currency dictionaries. A payment currency mismatch is an exception and becomes unapplied cash in the payment currency.",
+      "aging_boundaries": "0-30 includes 0 and 30 days overdue; 31-60 includes 31 and 60; 61-90 includes 61 and 90; 90+ starts at 91. Future due invoices are not_due. Missing due dates go to missing_due_date.",
+      "expected_credit_loss": "Use the provision-matrix loss rates in policy.csv. Apply each bucket rate to risk_amount_excluding_disputed, not to disputed open amount. Report expected_credit_loss by aging bucket, invoice, customer and summary currency.",
+      "credit_limit": "If customer open exposure in its invoice currencies exceeds customer.credit_limit, report over_credit_limit and include a review_credit_hold action.",
+      "terms_and_documentation": "Compare due_date with invoice_date plus customer.credit_terms_days when due_date is present. Missing PO numbers and term mismatches are data-quality exceptions and must not be hidden as generic validation failures.",
+      "customer_status": "Customers whose status is not active and carry open receivables must receive review_customer_status action and inactive_or_on_hold_customer exception.",
+      "sorting": "Sort invoice_reconciliation by invoice_id. Sort customer_risk by risk_band high, medium, low, then descending total open amount, then customer_id. Sort aging_buckets by currency then bucket order not_due, 0-30, 31-60, 61-90, 90+, missing_due_date."
+    },
+    "required_exception_types": [
+      "duplicate_invoice",
+      "duplicate_payment",
+      "partial_payment",
+      "overpayment",
+      "approved_credit_memo",
+      "pending_write_off",
+      "chargeback",
+      "unapplied_cash",
+      "currency_mismatch",
+      "negative_invoice_amount",
+      "missing_due_date",
+      "disputed_invoice",
+      "inactive_or_on_hold_customer",
+      "future_dated_payment",
+      "non_posted_payment",
+      "unmatched_adjustment",
+      "over_credit_limit",
+      "missing_po",
+      "term_mismatch"
+    ],
+    "required_action_tags": [
+      "collect_90_plus",
+      "collect_31_90",
+      "resolve_dispute",
+      "fix_missing_due_date",
+      "apply_unapplied_cash",
+      "review_customer_status",
+      "review_credit_hold",
+      "review_adjustment",
+      "request_documentation",
+      "investigate_chargeback"
+    ],
+    "schema_description": "answer.json 必须符合 runner 注入的 Pydantic JSON Schema。所有枚举必须小写或按 schema 精确值输出，例如 risk_band 只能是 low/medium/high，aging_bucket 只能是 not_due、0-30、31-60、61-90、90+、missing_due_date，exception_type 必须使用 required_exception_types 中的精确小写值。真实 benchmark 禁止读取 expected.json，禁止 import 项目内部 workflow 或调用任何项目内解题 helper。",
+    "answer_json_schema": {
+      "$defs": {
+        "FinanceAgingBucketRow": {
+          "additionalProperties": true,
+          "properties": {
+            "currency": {
+              "title": "Currency",
+              "type": "string"
+            },
+            "bucket": {
+              "enum": [
+                "not_due",
+                "0-30",
+                "31-60",
+                "61-90",
+                "90+",
+                "missing_due_date"
+              ],
+              "title": "Bucket",
+              "type": "string"
+            },
+            "invoice_count": {
+              "title": "Invoice Count",
+              "type": "integer"
+            },
+            "open_amount": {
+              "title": "Open Amount",
+              "type": "number"
+            },
+            "risk_amount_excluding_disputed": {
+              "title": "Risk Amount Excluding Disputed",
+              "type": "number"
+            },
+            "expected_credit_loss": {
+              "title": "Expected Credit Loss",
+              "type": "number"
+            }
+          },
+          "required": [
+            "currency",
+            "bucket",
+            "invoice_count",
+            "open_amount",
+            "risk_amount_excluding_disputed",
+            "expected_credit_loss"
+          ],
+          "title": "FinanceAgingBucketRow",
+          "type": "object"
+        },
+        "FinanceAuditNote": {
+          "additionalProperties": true,
+          "properties": {
+            "step": {
+              "title": "Step",
+              "type": "string"
+            },
+            "evidence": {
+              "title": "Evidence",
+              "type": "string"
+            }
+          },
+          "required": [
+            "step",
+            "evidence"
+          ],
+          "title": "FinanceAuditNote",
+          "type": "object"
+        },
+        "FinanceCustomerRiskRow": {
+          "additionalProperties": true,
+          "properties": {
+            "customer_id": {
+              "title": "Customer Id",
+              "type": "string"
+            },
+            "customer_name": {
+              "title": "Customer Name",
+              "type": "string"
+            },
+            "status": {
+              "title": "Status",
+              "type": "string"
+            },
+            "risk_band": {
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ],
+              "title": "Risk Band",
+              "type": "string"
+            },
+            "open_amount_by_currency": {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "title": "Open Amount By Currency",
+              "type": "object"
+            },
+            "overdue_amount_by_currency": {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "title": "Overdue Amount By Currency",
+              "type": "object"
+            },
+            "disputed_open_amount_by_currency": {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "title": "Disputed Open Amount By Currency",
+              "type": "object"
+            },
+            "risk_amount_excluding_disputed_by_currency": {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "title": "Risk Amount Excluding Disputed By Currency",
+              "type": "object"
+            },
+            "expected_credit_loss_by_currency": {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "title": "Expected Credit Loss By Currency",
+              "type": "object"
+            },
+            "max_days_overdue": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Max Days Overdue"
+            },
+            "action_tags": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Action Tags",
+              "type": "array"
+            },
+            "rationale": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Rationale",
+              "type": "array"
+            }
+          },
+          "required": [
+            "customer_id",
+            "customer_name",
+            "status",
+            "risk_band",
+            "open_amount_by_currency",
+            "overdue_amount_by_currency",
+            "disputed_open_amount_by_currency",
+            "risk_amount_excluding_disputed_by_currency",
+            "expected_credit_loss_by_currency",
+            "max_days_overdue",
+            "action_tags",
+            "rationale"
+          ],
+          "title": "FinanceCustomerRiskRow",
+          "type": "object"
+        },
+        "FinanceDataQuality": {
+          "additionalProperties": true,
+          "properties": {
+            "required_columns": {
+              "additionalProperties": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "title": "Required Columns",
+              "type": "object"
+            },
+            "missing_required_columns": {
+              "additionalProperties": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "title": "Missing Required Columns",
+              "type": "object"
+            },
+            "duplicate_invoice_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Duplicate Invoice Ids",
+              "type": "array"
+            },
+            "duplicate_payment_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Duplicate Payment Ids",
+              "type": "array"
+            },
+            "invalid_invoice_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Invalid Invoice Ids",
+              "type": "array"
+            },
+            "unmatched_payment_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Unmatched Payment Ids",
+              "type": "array"
+            },
+            "currency_mismatch_payment_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Currency Mismatch Payment Ids",
+              "type": "array"
+            },
+            "missing_due_date_invoice_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Missing Due Date Invoice Ids",
+              "type": "array"
+            },
+            "future_dated_payment_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Future Dated Payment Ids",
+              "type": "array"
+            },
+            "non_posted_payment_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Non Posted Payment Ids",
+              "type": "array"
+            },
+            "unmatched_adjustment_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Unmatched Adjustment Ids",
+              "type": "array"
+            },
+            "term_mismatch_invoice_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Term Mismatch Invoice Ids",
+              "type": "array"
+            },
+            "missing_po_invoice_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Missing Po Invoice Ids",
+              "type": "array"
+            },
+            "over_credit_limit_customer_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Over Credit Limit Customer Ids",
+              "type": "array"
+            }
+          },
+          "required": [
+            "required_columns",
+            "missing_required_columns",
+            "duplicate_invoice_ids",
+            "duplicate_payment_ids",
+            "invalid_invoice_ids",
+            "unmatched_payment_ids",
+            "currency_mismatch_payment_ids",
+            "missing_due_date_invoice_ids",
+            "future_dated_payment_ids",
+            "non_posted_payment_ids",
+            "unmatched_adjustment_ids",
+            "term_mismatch_invoice_ids",
+            "missing_po_invoice_ids",
+            "over_credit_limit_customer_ids"
+          ],
+          "title": "FinanceDataQuality",
+          "type": "object"
+        },
+        "FinanceExceptionRow": {
+          "additionalProperties": true,
+          "properties": {
+            "exception_type": {
+              "enum": [
+                "duplicate_invoice",
+                "duplicate_payment",
+                "partial_payment",
+                "overpayment",
+                "approved_credit_memo",
+                "pending_write_off",
+                "chargeback",
+                "unapplied_cash",
+                "currency_mismatch",
+                "negative_invoice_amount",
+                "missing_due_date",
+                "disputed_invoice",
+                "inactive_or_on_hold_customer",
+                "future_dated_payment",
+                "non_posted_payment",
+                "unmatched_adjustment",
+                "over_credit_limit",
+                "missing_po",
+                "term_mismatch"
+              ],
+              "title": "Exception Type",
+              "type": "string"
+            },
+            "severity": {
+              "enum": [
+                "info",
+                "warning",
+                "critical"
+              ],
+              "title": "Severity",
+              "type": "string"
+            },
+            "count": {
+              "title": "Count",
+              "type": "integer"
+            },
+            "amount_by_currency": {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "title": "Amount By Currency",
+              "type": "object"
+            },
+            "related_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Related Ids",
+              "type": "array"
+            },
+            "description": {
+              "title": "Description",
+              "type": "string"
+            }
+          },
+          "required": [
+            "exception_type",
+            "severity",
+            "count",
+            "amount_by_currency",
+            "related_ids",
+            "description"
+          ],
+          "title": "FinanceExceptionRow",
+          "type": "object"
+        },
+        "FinanceInvoiceReconciliationRow": {
+          "additionalProperties": true,
+          "properties": {
+            "invoice_id": {
+              "title": "Invoice Id",
+              "type": "string"
+            },
+            "customer_id": {
+              "title": "Customer Id",
+              "type": "string"
+            },
+            "currency": {
+              "title": "Currency",
+              "type": "string"
+            },
+            "invoice_amount": {
+              "title": "Invoice Amount",
+              "type": "number"
+            },
+            "approved_adjustment_amount": {
+              "title": "Approved Adjustment Amount",
+              "type": "number"
+            },
+            "adjusted_invoice_amount": {
+              "title": "Adjusted Invoice Amount",
+              "type": "number"
+            },
+            "applied_amount": {
+              "title": "Applied Amount",
+              "type": "number"
+            },
+            "open_amount": {
+              "title": "Open Amount",
+              "type": "number"
+            },
+            "overpayment_amount": {
+              "title": "Overpayment Amount",
+              "type": "number"
+            },
+            "disputed_open_amount": {
+              "title": "Disputed Open Amount",
+              "type": "number"
+            },
+            "expected_credit_loss": {
+              "title": "Expected Credit Loss",
+              "type": "number"
+            },
+            "due_date": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Due Date"
+            },
+            "days_overdue": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Days Overdue"
+            },
+            "aging_bucket": {
+              "enum": [
+                "not_due",
+                "0-30",
+                "31-60",
+                "61-90",
+                "90+",
+                "missing_due_date"
+              ],
+              "title": "Aging Bucket",
+              "type": "string"
+            },
+            "status": {
+              "enum": [
+                "open",
+                "closed",
+                "overpaid",
+                "excluded"
+              ],
+              "title": "Status",
+              "type": "string"
+            },
+            "exception_tags": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Exception Tags",
+              "type": "array"
+            }
+          },
+          "required": [
+            "invoice_id",
+            "customer_id",
+            "currency",
+            "invoice_amount",
+            "approved_adjustment_amount",
+            "adjusted_invoice_amount",
+            "applied_amount",
+            "open_amount",
+            "overpayment_amount",
+            "disputed_open_amount",
+            "expected_credit_loss",
+            "due_date",
+            "days_overdue",
+            "aging_bucket",
+            "status",
+            "exception_tags"
+          ],
+          "title": "FinanceInvoiceReconciliationRow",
+          "type": "object"
+        },
+        "FinanceRecommendedAction": {
+          "additionalProperties": true,
+          "properties": {
+            "customer_id": {
+              "title": "Customer Id",
+              "type": "string"
+            },
+            "priority": {
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ],
+              "title": "Priority",
+              "type": "string"
+            },
+            "action_type": {
+              "enum": [
+                "collect_overdue",
+                "resolve_dispute",
+                "apply_unapplied_cash",
+                "fix_data_quality",
+                "review_customer_status",
+                "investigate_payment",
+                "review_credit_hold",
+                "review_adjustment",
+                "request_documentation",
+                "investigate_chargeback"
+              ],
+              "title": "Action Type",
+              "type": "string"
+            },
+            "invoice_ids": {
+              "items": {
+                "type": "string"
+              },
+              "title": "Invoice Ids",
+              "type": "array"
+            },
+            "details": {
+              "title": "Details",
+              "type": "string"
+            }
+          },
+          "required": [
+            "customer_id",
+            "priority",
+            "action_type",
+            "invoice_ids",
+            "details"
+          ],
+          "title": "FinanceRecommendedAction",
+          "type": "object"
+        },
+        "FinanceSummary": {
+          "additionalProperties": true,
+          "properties": {
+            "reference_date": {
+              "title": "Reference Date",
+              "type": "string"
+            },
+            "base_currency": {
+              "title": "Base Currency",
+              "type": "string"
+            },
+            "invoice_row_count": {
+              "title": "Invoice Row Count",
+              "type": "integer"
+            },
+            "unique_invoice_count": {
+              "title": "Unique Invoice Count",
+              "type": "integer"
+            },
+            "duplicate_invoice_count": {
+              "title": "Duplicate Invoice Count",
+              "type": "integer"
+            },
+            "payment_row_count": {
+              "title": "Payment Row Count",
+              "type": "integer"
+            },
+            "duplicate_payment_count": {
+              "title": "Duplicate Payment Count",
+              "type": "integer"
+            },
+            "total_invoice_amount_by_currency": {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "title": "Total Invoice Amount By Currency",
+              "type": "object"
+            },
+            "applied_payment_amount_by_currency": {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "title": "Applied Payment Amount By Currency",
+              "type": "object"
+            },
+            "approved_adjustment_amount_by_currency": {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "title": "Approved Adjustment Amount By Currency",
+              "type": "object"
+            },
+            "open_invoice_amount_by_currency": {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "title": "Open Invoice Amount By Currency",
+              "type": "object"
+            },
+            "unapplied_cash_amount_by_currency": {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "title": "Unapplied Cash Amount By Currency",
+              "type": "object"
+            },
+            "disputed_open_amount_by_currency": {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "title": "Disputed Open Amount By Currency",
+              "type": "object"
+            },
+            "expected_credit_loss_by_currency": {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "title": "Expected Credit Loss By Currency",
+              "type": "object"
+            }
+          },
+          "required": [
+            "reference_date",
+            "base_currency",
+            "invoice_row_count",
+            "unique_invoice_count",
+            "duplicate_invoice_count",
+            "payment_row_count",
+            "duplicate_payment_count",
+            "total_invoice_amount_by_currency",
+            "applied_payment_amount_by_currency",
+            "approved_adjustment_amount_by_currency",
+            "open_invoice_amount_by_currency",
+            "unapplied_cash_amount_by_currency",
+            "disputed_open_amount_by_currency",
+            "expected_credit_loss_by_currency"
+          ],
+          "title": "FinanceSummary",
+          "type": "object"
+        }
+      },
+      "additionalProperties": true,
+      "properties": {
+        "summary": {
+          "$ref": "#/$defs/FinanceSummary"
+        },
+        "customer_risk": {
+          "items": {
+            "$ref": "#/$defs/FinanceCustomerRiskRow"
+          },
+          "title": "Customer Risk",
+          "type": "array"
+        },
+        "invoice_reconciliation": {
+          "items": {
+            "$ref": "#/$defs/FinanceInvoiceReconciliationRow"
+          },
+          "title": "Invoice Reconciliation",
+          "type": "array"
+        },
+        "aging_buckets": {
+          "items": {
+            "$ref": "#/$defs/FinanceAgingBucketRow"
+          },
+          "title": "Aging Buckets",
+          "type": "array"
+        },
+        "exceptions": {
+          "items": {
+            "$ref": "#/$defs/FinanceExceptionRow"
+          },
+          "title": "Exceptions",
+          "type": "array"
+        },
+        "recommended_actions": {
+          "items": {
+            "$ref": "#/$defs/FinanceRecommendedAction"
+          },
+          "title": "Recommended Actions",
+          "type": "array"
+        },
+        "data_quality": {
+          "$ref": "#/$defs/FinanceDataQuality"
+        },
+        "audit_notes": {
+          "items": {
+            "$ref": "#/$defs/FinanceAuditNote"
+          },
+          "title": "Audit Notes",
+          "type": "array"
+        },
+        "validation": {
+          "additionalProperties": true,
+          "title": "Validation",
+          "type": "object"
+        }
+      },
+      "required": [
+        "summary",
+        "customer_risk",
+        "invoice_reconciliation",
+        "aging_buckets",
+        "exceptions",
+        "recommended_actions",
+        "data_quality",
+        "audit_notes",
+        "validation"
+      ],
+      "title": "FinanceOperationsAnswer",
+      "type": "object"
+    },
+    "schema_source": "pydantic"
+  },
+  "schema_check": {
+    "passed": true,
+    "validation_mode": "pytest",
+    "schema_source": "pydantic",
+    "answer_model": "finance_operations",
+    "errors": [],
+    "model": "FinanceOperationsAnswer",
+    "actual_keys": [
+      "aging_buckets",
+      "audit_notes",
+      "customer_risk",
+      "data_quality",
+      "exceptions",
+      "invoice_reconciliation",
+      "recommended_actions",
+      "summary",
+      "validation"
+    ]
+  },
+  "run_python": {
+    "exit_code": 0,
+    "timeout": false,
+    "failure_type": null,
+    "stderr_summary": null,
+    "stdout_summary": "Customers: 5, Exceptions: 18, Actions: 17"
+  },
+  "run_python_exit_code": 0,
+  "run_python_stderr_summary": null,
+  "run_python_stdout_summary": "Customers: 5, Exceptions: 18, Actions: 17",
+  "dependency_check": {
+    "ok": true,
+    "checks": [
+      {
+        "package": "pandas",
+        "import_name": "pandas",
+        "required_for": "pandas_backend",
+        "installed": true,
+        "version": "3.0.3"
+      },
+      {
+        "package": "numpy",
+        "import_name": "numpy",
+        "required_for": "array_backend",
+        "installed": true,
+        "version": "2.4.6"
+      },
+      {
+        "package": "openpyxl",
+        "import_name": "openpyxl",
+        "required_for": "xlsx_backend",
+        "installed": true,
+        "version": "3.1.5"
+      },
+      {
+        "package": "pytest",
+        "import_name": "pytest",
+        "required_for": "sandbox_test_runner",
+        "installed": true,
+        "version": "9.0.3"
+      },
+      {
+        "package": "openai",
+        "import_name": "openai",
+        "required_for": "real_api_code_agent",
+        "installed": true,
+        "version": "2.40.0"
+      },
+      {
+        "package": "anthropic",
+        "import_name": "anthropic",
+        "required_for": "real_api_code_agent",
+        "installed": true,
+        "version": "0.105.2"
+      },
+      {
+        "package": "rich",
+        "import_name": "rich",
+        "required_for": "real_api_code_agent_ui",
+        "installed": true,
+        "version": "15.0.0"
+      }
+    ],
+    "missing": [],
+    "failure_type": null,
+    "auto_install": true,
+    "install_logs": []
+  },
+  "workspace_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent",
+  "generated_code_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent\\solve.py",
+  "answer_path": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent\\answer.json",
+  "token_usage": {
+    "input": 364385,
+    "output": 21981
+  },
+  "sandbox_results": {
+    "run_python": {
+      "command": [
+        "D:\\桌面\\TableCodeAgent\\.venv\\Scripts\\python.exe",
+        "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent\\solve.py"
+      ],
+      "cwd": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent",
+      "exit_code": 0,
+      "stdout": "✅ answer.json written successfully\n   Summary: 9 invoices, 1 duplicates\n   Open AR: {'USD': 3150.0, 'EUR': 1200.0}\n   Unapplied cash: {'USD': 1700.0}\n   ECL: {'USD': 232.75, 'EUR': 0.0}\n   Customers: 5, Exceptions: 18, Actions: 17\n",
+      "stderr": "",
+      "timeout": false,
+      "duration_seconds": 0.86,
+      "output_truncated": false,
+      "sandbox_policy": {
+        "isolation": "process-level light sandbox",
+        "containerized": false,
+        "shell": false,
+        "env_policy": "allowlist",
+        "sensitive_paths_blocked": [
+          ".env",
+          "configs/api/local",
+          ".ssh",
+          ".aws",
+          ".config"
+        ],
+        "note": "This is not Docker, Firecracker, or gVisor strong isolation."
+      },
+      "failure_type": null
+    },
+    "run_tests": {
+      "command": [
+        "D:\\桌面\\TableCodeAgent\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "tests/test_solution.py",
+        "-q"
+      ],
+      "cwd": "D:\\桌面\\TableCodeAgent\\benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\workspaces\\finance_operations_001.real_api_code_agent",
+      "exit_code": 1,
+      "stdout": "F                                                                        [100%]\n================================== FAILURES ===================================\n________ test_finance_operations_answer_contract_and_business_findings ________\n\n    def test_finance_operations_answer_contract_and_business_findings() -> None:\n        answer = _load_answer()\n        expected = _load_expected()\n    \n        assert set(expected[\"expected_top_level_keys\"]).issubset(answer), sorted(set(expected[\"expected_top_level_keys\"]) - set(answer))\n    \n        summary = answer[\"summary\"]\n        assert summary[\"reference_date\"] == \"2026-05-31\"\n        assert summary[\"base_currency\"] == \"USD\"\n        assert summary[\"duplicate_invoice_count\"] == expected[\"expected_duplicate_invoice_count\"]\n        assert summary[\"duplicate_payment_count\"] == expected[\"expected_duplicate_payment_count\"]\n        _amounts_close(summary[\"open_invoice_amount_by_currency\"], expected[\"expected_open_amount_by_currency\"])\n        _amounts_close(summary[\"unapplied_cash_amount_by_currency\"], expected[\"expected_unapplied_cash_by_currency\"])\n        _amounts_close(summary[\"disputed_open_amount_by_currency\"], expected[\"expected_disputed_open_amount_by_currency\"])\n        _amounts_close(summary[\"expected_credit_loss_by_currency\"], expected[\"expected_credit_loss_by_currency\"])\n    \n        data_quality = answer[\"data_quality\"]\n        assert data_quality[\"duplicate_invoice_ids\"] == [\"INV-1002\"]\n        assert data_quality[\"duplicate_payment_ids\"] == [\"PAY-003\"]\n        assert data_quality[\"invalid_invoice_ids\"] == [\"INV-1007\"]\n        assert data_quality[\"currency_mismatch_payment_ids\"] == [\"PAY-005\"]\n        assert \"INV-1006\" in data_quality[\"missing_due_date_invoice_ids\"]\n        assert data_quality[\"future_dated_payment_ids\"] == [\"PAY-009\"]\n        assert data_quality[\"non_posted_payment_ids\"] == [\"PAY-010\"]\n        assert data_quality[\"unmatched_adjustment_ids\"] == [\"ADJ-004\"]\n>       assert data_quality[\"missing_po_invoice_ids\"] == expected[\"expected_missing_po_invoice_ids\"]\nE       AssertionError: assert [] == ['INV-1006']\nE         \nE         Right contains one more item: 'INV-1006'\nE         Use -v to get more diff\n\ntests\\test_solution.py:51: AssertionError\n=========================== short test summary info ===========================\nFAILED tests/test_solution.py::test_finance_operations_answer_contract_and_business_findings\n1 failed in 0.14s\n",
+      "stderr": "",
+      "timeout": false,
+      "duration_seconds": 0.877,
+      "output_truncated": false,
+      "sandbox_policy": {
+        "isolation": "process-level light sandbox",
+        "containerized": false,
+        "shell": false,
+        "env_policy": "allowlist",
+        "sensitive_paths_blocked": [
+          ".env",
+          "configs/api/local",
+          ".ssh",
+          ".aws",
+          ".config"
+        ],
+        "note": "This is not Docker, Firecracker, or gVisor strong isolation."
+      },
+      "failure_type": "sandbox_tests_failed"
+    }
+  },
+  "pytest_exit_code": 1,
+  "pytest_failure_summary": "E       AssertionError: assert [] == ['INV-1006']\nE         Right contains one more item: 'INV-1006'\nE         Use -v to get more diff\ntests\\test_solution.py:51: AssertionError\nFAILED tests/test_solution.py::test_finance_operations_answer_contract_and_business_findings",
+  "trace_path": "benchmarks\\results\\real_api_code_agent\\20260607-214925__model-deepseek-v4-flash__tasks-v0.05-finance-ops-real-api-pass1-20260608\\traces\\finance_operations_001.real_api_code_agent.json"
+}

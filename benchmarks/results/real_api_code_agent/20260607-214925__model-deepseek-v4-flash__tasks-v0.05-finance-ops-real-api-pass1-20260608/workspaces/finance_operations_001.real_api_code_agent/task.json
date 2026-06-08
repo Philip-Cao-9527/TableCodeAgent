@@ -1,0 +1,104 @@
+{
+  "id": "finance_operations_001",
+  "task_type": "finance_operations",
+  "question": "对 B2B 应收账款与现金回款运营数据执行 no-helper 财务运营 workflow：读取 invoices、payments、customers、disputes、adjustments、policy 多表，完成发票与回款匹配、账龄分桶、未核销金额、争议款、部分付款、超额付款、重复付款、币种或金额异常、贷项通知单、pending write-off、chargeback、future-dated receipt、客户信用额度和预期信用损失口径识别，并输出客户级回款风险、运营动作建议和可审计 answer.json。",
+  "tables": {
+    "invoices": "invoices.csv",
+    "payments": "payments.csv",
+    "customers": "customers.csv",
+    "disputes": "disputes.csv",
+    "adjustments": "adjustments.csv",
+    "policy": "policy.csv"
+  },
+  "finance_config": {
+    "reference_date_column": "reference_date",
+    "base_currency": "USD",
+    "amount_precision": 2,
+    "required_columns": {
+      "invoices": ["invoice_id", "customer_id", "invoice_date", "due_date", "invoice_amount", "currency", "status", "po_number", "delivery_status", "billing_hold_flag"],
+      "payments": ["payment_id", "customer_id", "invoice_id", "payment_date", "gl_date", "payment_amount", "currency", "status", "bank_deposit_id", "remittance_reference"],
+      "customers": ["customer_id", "customer_name", "segment", "status", "credit_terms_days", "credit_limit", "default_currency", "collector_owner"],
+      "disputes": ["dispute_id", "invoice_id", "customer_id", "opened_date", "dispute_amount", "currency", "reason", "status"],
+      "adjustments": ["adjustment_id", "invoice_id", "customer_id", "adjustment_type", "adjustment_date", "amount", "currency", "status", "reason"],
+      "policy": ["policy_id", "reference_date", "base_currency", "amount_precision", "loss_rate_not_due", "loss_rate_0_30", "loss_rate_31_60", "loss_rate_61_90", "loss_rate_90_plus", "loss_rate_missing_due_date", "write_off_approval_threshold", "dispute_risk_rule", "aging_bucket_rule"]
+    },
+    "aging_buckets": [
+      {"name": "not_due", "rule": "due_date after reference_date"},
+      {"name": "0-30", "min_days_overdue": 0, "max_days_overdue": 30, "inclusive": true},
+      {"name": "31-60", "min_days_overdue": 31, "max_days_overdue": 60, "inclusive": true},
+      {"name": "61-90", "min_days_overdue": 61, "max_days_overdue": 90, "inclusive": true},
+      {"name": "90+", "min_days_overdue": 91, "max_days_overdue": null, "inclusive": true},
+      {"name": "missing_due_date", "rule": "due_date is blank or unparseable"}
+    ]
+  },
+  "output_contract": {
+    "validation_mode": "pytest",
+    "answer_model": "finance_operations",
+    "allowed_libraries": ["pandas", "numpy", "json", "pathlib", "datetime", "decimal", "statistics"],
+    "required_top_level_keys": [
+      "summary",
+      "customer_risk",
+      "invoice_reconciliation",
+      "aging_buckets",
+      "exceptions",
+      "recommended_actions",
+      "data_quality",
+      "audit_notes",
+      "validation"
+    ],
+    "finance_contract": {
+      "reference_date": "Use policy.reference_date exactly; never use the current system date.",
+      "amount_precision": "All monetary outputs must be numeric JSON numbers rounded to two decimal places. Use Decimal or equivalent rounding, not binary float accumulation.",
+      "invoice_uniqueness": "invoice_id is the business key. Keep the first row for a duplicate invoice_id and report later rows in data_quality.duplicate_invoice_ids and exceptions.duplicate_invoice; do not double-count duplicate invoices.",
+      "negative_invoice_amount": "Negative invoice_amount rows are invalid credit memo-like anomalies for this fixture. Exclude them from receivables totals and reconciliation balances, but report them in data_quality.invalid_invoice_ids and exceptions.negative_invoice_amount.",
+      "payment_uniqueness": "payment_id is the business key. Keep the first row for a duplicate payment_id and report later rows in data_quality.duplicate_payment_ids and exceptions.duplicate_payment; do not apply duplicate payments.",
+      "payment_matching": "Match posted payments by invoice_id first. If invoice_id is blank, unknown, invalid, or currency differs from the matched invoice currency, do not apply it to the invoice and count it as unapplied cash.",
+      "cutoff_and_status": "Only posted payments with payment_date and gl_date on or before reference_date can be applied. Future-dated receipts and non-posted statuses such as voided/reversed are exceptions and must not reduce AR.",
+      "partial_payment": "If posted matched payments are greater than 0 and below invoice_amount, keep the remaining open_amount and tag partial_payment.",
+      "overpayment": "If posted matched payments exceed invoice_amount, cap applied_amount at invoice_amount, set open_amount to 0, record the excess as overpayment_amount and include the excess in unapplied cash.",
+      "adjustments": "Approved credit_memo and approved write_off adjustments reduce the invoice balance; approved chargeback adjustments increase the invoice balance. Pending write_off must be reported but must not reduce open AR. Unmatched adjustments are exceptions.",
+      "disputes": "Open disputed invoices remain in aging and open receivables. Report disputed_open_amount separately and exclude disputed_open_amount from risk_amount_excluding_disputed. Recommended actions must include resolve_dispute where open disputed amount remains.",
+      "currency": "Do not convert currencies. Report amount_by_currency dictionaries. A payment currency mismatch is an exception and becomes unapplied cash in the payment currency.",
+      "aging_boundaries": "0-30 includes 0 and 30 days overdue; 31-60 includes 31 and 60; 61-90 includes 61 and 90; 90+ starts at 91. Future due invoices are not_due. Missing due dates go to missing_due_date.",
+      "expected_credit_loss": "Use the provision-matrix loss rates in policy.csv. Apply each bucket rate to risk_amount_excluding_disputed, not to disputed open amount. Report expected_credit_loss by aging bucket, invoice, customer and summary currency.",
+      "credit_limit": "If customer open exposure in its invoice currencies exceeds customer.credit_limit, report over_credit_limit and include a review_credit_hold action.",
+      "terms_and_documentation": "Compare due_date with invoice_date plus customer.credit_terms_days when due_date is present. Missing PO numbers and term mismatches are data-quality exceptions and must not be hidden as generic validation failures.",
+      "customer_status": "Customers whose status is not active and carry open receivables must receive review_customer_status action and inactive_or_on_hold_customer exception.",
+      "sorting": "Sort invoice_reconciliation by invoice_id. Sort customer_risk by risk_band high, medium, low, then descending total open amount, then customer_id. Sort aging_buckets by currency then bucket order not_due, 0-30, 31-60, 61-90, 90+, missing_due_date."
+    },
+    "required_exception_types": [
+      "duplicate_invoice",
+      "duplicate_payment",
+      "partial_payment",
+      "overpayment",
+      "approved_credit_memo",
+      "pending_write_off",
+      "chargeback",
+      "unapplied_cash",
+      "currency_mismatch",
+      "negative_invoice_amount",
+      "missing_due_date",
+      "disputed_invoice",
+      "inactive_or_on_hold_customer",
+      "future_dated_payment",
+      "non_posted_payment",
+      "unmatched_adjustment",
+      "over_credit_limit",
+      "missing_po",
+      "term_mismatch"
+    ],
+    "required_action_tags": [
+      "collect_90_plus",
+      "collect_31_90",
+      "resolve_dispute",
+      "fix_missing_due_date",
+      "apply_unapplied_cash",
+      "review_customer_status",
+      "review_credit_hold",
+      "review_adjustment",
+      "request_documentation",
+      "investigate_chargeback"
+    ],
+    "schema_description": "answer.json 必须符合 runner 注入的 Pydantic JSON Schema。所有枚举必须小写或按 schema 精确值输出，例如 risk_band 只能是 low/medium/high，aging_bucket 只能是 not_due、0-30、31-60、61-90、90+、missing_due_date，exception_type 必须使用 required_exception_types 中的精确小写值。真实 benchmark 禁止读取 expected.json，禁止 import 项目内部 workflow 或调用任何项目内解题 helper。"
+  }
+}

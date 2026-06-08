@@ -1,0 +1,28 @@
+name: finance-operations
+display_name: 财务运营应收回款分析
+short_description: 审核和实现应收账款与现金回款 benchmark/workflow，不暴露 helper 或 expected answer。
+default_prompt: >
+  请按 TableCodeAgent 财务运营规范执行：先检查 invoices、payments、customers、
+  disputes、adjustments、policy 的字段、主键、重复、金额、币种、cutoff 和日期，
+  并把空字符串、null、pandas NaN/NaT、"nan"/"NaT"/"None"/"null" 等统一当作缺失值，
+  再完成发票回款匹配、账龄分桶、未核销现金、争议款、credit memo、pending write-off、
+  chargeback、credit limit、provision matrix、客户风险、运营动作和 validation。真实 LLM Agent
+  benchmark 必须采用 no-helper 口径，不得公开 workflow helper、expected.json 或精确答案。
+requires_real_api: false
+evidence_fields:
+  - benchmark_profile
+  - helper_hints_exposed
+  - api_called
+  - skipped
+  - schema_check.errors
+  - generated_code_path
+  - answer_path
+  - run_python.exit_code
+  - pytest_exit_code
+  - validation.passed
+  - failure_type
+boundaries:
+  - 不是生产 ERP 或真实财务审计系统
+  - 不提供税务、审计或催收法律意见
+  - 不公开 expected answer、项目 workflow helper 或 solve.py 解题入口
+  - 不把本地 deterministic workflow 测试写成真实 LLM Agent benchmark 通过

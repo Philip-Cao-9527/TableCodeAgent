@@ -1,0 +1,30 @@
+{
+  "expected_duplicate_application_count": 1,
+  "expected_duplicate_customer_count": 2,
+  "expected_invalid_age_count": 1,
+  "expected_field_type_issue_count": 1,
+  "expected_leakage_columns": ["post_loan_collection_calls", "post_loan_dpd_max"],
+  "expected_high_risk_min": 4,
+  "expected_required_warnings": [
+    "duplicate_application_id",
+    "duplicate_customer_id",
+    "不能静默 drop duplicates",
+    "invalid_age",
+    "target_leakage_post_loan_collection_calls",
+    "target_leakage_post_loan_dpd_max",
+    "field_type_issue",
+    "high_risk_applications"
+  ],
+  "expected_output_keys": [
+    "row_counts",
+    "field_summary",
+    "data_quality",
+    "feature_processing",
+    "scoring_result",
+    "business_rule_checks",
+    "explanations",
+    "warnings",
+    "how_to_do_differently",
+    "validation"
+  ]
+}

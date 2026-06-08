@@ -1,0 +1,2 @@
+policy_id,reference_date,base_currency,amount_precision,loss_rate_not_due,loss_rate_0_30,loss_rate_31_60,loss_rate_61_90,loss_rate_90_plus,loss_rate_missing_due_date,write_off_approval_threshold,dispute_risk_rule,aging_bucket_rule
+POL-2026-05-31,2026-05-31,USD,2,0.005,0.02,0.05,0.12,0.35,0.10,50.00,open disputes remain in aging but are separated from risk_amount_excluding_disputed,"not_due, 0-30 inclusive, 31-60 inclusive, 61-90 inclusive, 90+"

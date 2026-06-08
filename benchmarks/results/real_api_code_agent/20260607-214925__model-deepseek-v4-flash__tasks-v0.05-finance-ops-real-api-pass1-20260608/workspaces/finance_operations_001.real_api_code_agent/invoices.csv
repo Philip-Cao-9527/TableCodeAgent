@@ -1,0 +1,11 @@
+invoice_id,customer_id,invoice_date,due_date,invoice_amount,currency,status,po_number,delivery_status,billing_hold_flag
+INV-1001,C001,2026-03-01,2026-03-31,1000.00,USD,open,PO-1001,delivered,false
+INV-1002,C001,2026-04-15,2026-05-15,500.00,USD,open,PO-1002,delivered,false
+INV-1002,C001,2026-04-15,2026-05-15,500.00,USD,duplicate,PO-1002,delivered,false
+INV-1003,C002,2026-02-01,2026-03-15,2000.00,USD,open,PO-1003,delivered,false
+INV-1004,C002,2026-05-01,2026-06-15,750.00,USD,open,PO-1004,delivered,false
+INV-1005,C003,2026-01-10,2026-02-10,1200.00,EUR,open,PO-1005,delivered,false
+INV-1006,C004,2026-04-01,,900.00,USD,open,,delivered,false
+INV-1007,C005,2026-05-20,2026-06-20,-100.00,USD,open,PO-1007,delivered,false
+INV-1008,C004,2026-03-15,2026-04-14,300.00,USD,open,PO-1008,service_dispute,true
+INV-1009,C001,2026-01-01,2026-01-31,400.00,USD,open,PO-1009,delivered,false

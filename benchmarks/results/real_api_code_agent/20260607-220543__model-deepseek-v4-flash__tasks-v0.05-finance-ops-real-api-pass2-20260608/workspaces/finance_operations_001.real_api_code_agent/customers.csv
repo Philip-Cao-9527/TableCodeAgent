@@ -1,0 +1,6 @@
+customer_id,customer_name,segment,status,credit_terms_days,credit_limit,default_currency,collector_owner
+C001,Apex Components,enterprise,active,30,2000.00,USD,Eva
+C002,Bright Retail,smb,active,45,1000.00,USD,Liam
+C003,Canal Medical,enterprise,on_hold,31,1500.00,EUR,Nora
+C004,Delta Logistics,smb,active,60,2500.00,USD,Eva
+C005,Echo Foods,smb,inactive,30,500.00,USD,Liam
