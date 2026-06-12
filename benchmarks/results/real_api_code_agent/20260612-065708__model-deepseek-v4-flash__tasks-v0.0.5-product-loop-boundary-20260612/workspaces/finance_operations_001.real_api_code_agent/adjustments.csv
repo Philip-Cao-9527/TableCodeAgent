@@ -1,0 +1,5 @@
+adjustment_id,invoice_id,customer_id,adjustment_type,adjustment_date,amount,currency,status,reason
+ADJ-001,INV-1003,C002,credit_memo,2026-04-10,-50.00,USD,approved,pricing_concession
+ADJ-002,INV-1009,C001,write_off,2026-05-25,-25.00,USD,pending,small_balance_request
+ADJ-003,INV-1008,C004,chargeback,2026-05-12,50.00,USD,approved,bank_reversal
+ADJ-004,INV-9999,C002,credit_memo,2026-05-18,-40.00,USD,approved,unknown_invoice

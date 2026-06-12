@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from tablecodeagent.workflows.growth_campaign_audit import run_growth_campaign_audit
+from tests.test_workflows.growth_campaign_audit import run_growth_campaign_audit
 
 
 def test_growth_full_workflow_matches_expected_check() -> None:

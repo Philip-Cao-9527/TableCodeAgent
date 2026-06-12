@@ -23,6 +23,7 @@ class SkillDefinition:
     prompt_template: str = ""
     source: str = "project"  # "project" or "user"
     skill_dir: str = ""
+    agent_metadata: dict[str, object] = field(default_factory=dict)
 
 
 # ─── Discovery ──────────────────────────────────────────────
@@ -69,9 +70,10 @@ def _parse_skill_file(
     file_path: Path, source: str, skill_dir: str
 ) -> SkillDefinition | None:
     try:
-        raw = file_path.read_text()
+        raw = file_path.read_text(encoding="utf-8")
         result = parse_frontmatter(raw)
         meta = result.meta
+        skill_path = Path(skill_dir)
 
         name = meta.get("name") or file_path.parent.name or "unknown"
         user_invocable = meta.get("user-invocable", "true") != "false"
@@ -98,9 +100,76 @@ def _parse_skill_file(
             prompt_template=result.body,
             source=source,
             skill_dir=skill_dir,
+            agent_metadata=_load_agent_metadata(skill_path / "agents" / "agent.yaml"),
         )
     except Exception:
         return None
+
+
+def _load_agent_metadata(path: Path) -> dict[str, object]:
+    if not path.exists():
+        return {}
+    try:
+        return _parse_agent_yaml(path.read_text(encoding="utf-8"))
+    except Exception as error:
+        return {"metadata_error": f"{type(error).__name__}: {error}", "metadata_path": str(path)}
+
+
+def _parse_agent_yaml(text: str) -> dict[str, object]:
+    metadata: dict[str, object] = {}
+    current_key: str | None = None
+    folded_key: str | None = None
+    folded_lines: list[str] = []
+
+    def flush_folded() -> None:
+        nonlocal folded_key, folded_lines
+        if folded_key is not None:
+            metadata[folded_key] = " ".join(line.strip() for line in folded_lines if line.strip())
+        folded_key = None
+        folded_lines = []
+
+    for raw_line in text.splitlines():
+        if not raw_line.strip() or raw_line.lstrip().startswith("#"):
+            continue
+        if folded_key is not None and raw_line.startswith((" ", "\t")):
+            folded_lines.append(raw_line)
+            continue
+        flush_folded()
+
+        if raw_line.startswith((" ", "\t")):
+            stripped = raw_line.strip()
+            if stripped.startswith("- ") and current_key:
+                value = stripped[2:].strip()
+                current = metadata.setdefault(current_key, [])
+                if isinstance(current, list):
+                    current.append(_coerce_yaml_scalar(value))
+            continue
+
+        key, separator, value = raw_line.partition(":")
+        if not separator:
+            continue
+        current_key = key.strip()
+        value = value.strip()
+        if value == ">":
+            folded_key = current_key
+            folded_lines = []
+        elif value == "":
+            metadata[current_key] = []
+        else:
+            metadata[current_key] = _coerce_yaml_scalar(value)
+    flush_folded()
+    return metadata
+
+
+def _coerce_yaml_scalar(value: str) -> object:
+    lowered = value.lower()
+    if lowered == "true":
+        return True
+    if lowered == "false":
+        return False
+    if (value.startswith('"') and value.endswith('"')) or (value.startswith("'") and value.endswith("'")):
+        return value[1:-1]
+    return value
 
 
 # ─── Resolution ─────────────────────────────────────────────
@@ -152,6 +221,7 @@ def build_skill_descriptions() -> str:
             lines.append(f"- **/{s.name}**: {s.description}")
             if s.when_to_use:
                 lines.append(f"  When to use: {s.when_to_use}")
+            _append_agent_metadata(lines, s)
         lines.append("")
 
     if auto_only:
@@ -160,10 +230,37 @@ def build_skill_descriptions() -> str:
             lines.append(f"- **{s.name}**: {s.description}")
             if s.when_to_use:
                 lines.append(f"  When to use: {s.when_to_use}")
+            _append_agent_metadata(lines, s)
         lines.append("")
 
     lines.append("To invoke a skill programmatically, use the `skill` tool with the skill name and optional arguments.")
     return "\n".join(lines)
+
+
+def _append_agent_metadata(lines: list[str], skill: SkillDefinition) -> None:
+    metadata = skill.agent_metadata
+    if not metadata:
+        return
+    display_name = metadata.get("display_name")
+    short_description = metadata.get("short_description")
+    default_prompt = metadata.get("default_prompt")
+    requires_real_api = metadata.get("requires_real_api")
+    evidence_fields = metadata.get("evidence_fields")
+    boundaries = metadata.get("boundaries")
+    if display_name:
+        lines.append(f"  Agent display: {display_name}")
+    if short_description:
+        lines.append(f"  Agent summary: {short_description}")
+    if requires_real_api is not None:
+        lines.append(f"  Requires real API: {requires_real_api}")
+    if evidence_fields:
+        fields = ", ".join(str(item) for item in evidence_fields) if isinstance(evidence_fields, list) else str(evidence_fields)
+        lines.append(f"  Evidence fields: {fields}")
+    if boundaries:
+        joined = "; ".join(str(item) for item in boundaries) if isinstance(boundaries, list) else str(boundaries)
+        lines.append(f"  Boundaries: {joined}")
+    if default_prompt:
+        lines.append(f"  Agent policy: {default_prompt}")
 
 
 def reset_skill_cache() -> None:

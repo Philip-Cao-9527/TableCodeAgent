@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from typing import Any, Callable
 
+from tablecodeagent.workflow import run_product_workflow
 from tablecodeagent.table_tools.core import load_table, profile_table, query_multi_table, query_table
 from tablecodeagent.table_tools.quality import (
     calculate_smd,
@@ -281,6 +282,35 @@ TABLE_TOOL_DEFINITIONS: list[dict[str, Any]] = [
             "required": ["orders_table_path", "exposure_table_path"],
         },
     },
+    {
+        "name": "run_table_product_workflow",
+        "description": (
+            "Run the product-facing TableCodeAgent workflow for a table task. "
+            "First call without candidate code returns task parsing, table discovery, compressed context, "
+            "tool strategy, and a code-generation brief. Later calls with candidate_code_versions execute "
+            "solve.py candidates in the sandbox and return schema/pytest/validation feedback for repair."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "task_dir": {"type": "string", "description": "Path to a task directory containing task.json and table files."},
+                "workspace_dir": {
+                    "type": "string",
+                    "description": "Optional output workspace for the product workflow run.",
+                },
+                "candidate_code": {
+                    "type": "string",
+                    "description": "Optional single solve.py candidate to execute.",
+                },
+                "candidate_code_versions": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Optional ordered solve.py candidates. The workflow records repair feedback for failed candidates.",
+                },
+            },
+            "required": ["task_dir"],
+        },
+    },
 ]
 
 TABLE_TOOL_NAMES = {tool["name"] for tool in TABLE_TOOL_DEFINITIONS}
@@ -403,6 +433,15 @@ def _check_time_window_alignment(inp: dict[str, Any]) -> dict[str, Any]:
     )
 
 
+def _run_table_product_workflow(inp: dict[str, Any]) -> dict[str, Any]:
+    return run_product_workflow(
+        task_dir=inp["task_dir"],
+        workspace_dir=inp.get("workspace_dir"),
+        candidate_code=inp.get("candidate_code"),
+        candidate_code_versions=inp.get("candidate_code_versions"),
+    )
+
+
 _HANDLERS: dict[str, Callable[[dict[str, Any]], Any]] = {
     "load_table": _load_table,
     "profile_table": _profile_table,
@@ -417,6 +456,7 @@ _HANDLERS: dict[str, Callable[[dict[str, Any]], Any]] = {
     "check_group_balance": _check_group_balance,
     "check_subsidy_outliers": _check_subsidy_outliers,
     "check_time_window_alignment": _check_time_window_alignment,
+    "run_table_product_workflow": _run_table_product_workflow,
 }
 
 

@@ -1,6 +1,6 @@
 name: finance-operations
 display_name: 财务运营应收回款分析
-short_description: 审核和实现应收账款与现金回款 benchmark/workflow，不暴露 helper 或 expected answer。
+short_description: 审核和实现应收账款与现金回款产品 workflow、测试 oracle 与 no-helper benchmark 边界，不暴露 helper 或 expected answer。
 default_prompt: >
   请按 TableCodeAgent 财务运营规范执行：先检查 invoices、payments、customers、
   disputes、adjustments、policy 的字段、主键、重复、金额、币种、cutoff 和日期，
@@ -22,7 +22,7 @@ evidence_fields:
   - validation.passed
   - failure_type
 boundaries:
-  - 不是生产 ERP 或真实财务审计系统
-  - 不提供税务、审计或催收法律意见
+  - 已接入能力、工业目标和未验证能力必须分开表述
+  - 未验证真实 ERP 接线、法定审计意见、税务申报或催收决策
   - 不公开 expected answer、项目 workflow helper 或 solve.py 解题入口
   - 不把本地 deterministic workflow 测试写成真实 LLM Agent benchmark 通过

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import textwrap
 from pathlib import Path
@@ -24,7 +25,7 @@ def test_sandbox_runs_fixed_solve_py_and_pytest(tmp_path: Path) -> None:
         import json
         from pathlib import Path
 
-        from tablecodeagent.workflows.growth_campaign_audit import build_growth_campaign_audit_report
+        from tests.test_workflows.growth_campaign_audit import build_growth_campaign_audit_report
 
 
         def main() -> None:
@@ -41,7 +42,7 @@ def test_sandbox_runs_fixed_solve_py_and_pytest(tmp_path: Path) -> None:
         """
     ).strip() + "\n", encoding="utf-8")
 
-    sandbox_env = {"PYTHONPATH": str(Path("src").resolve())}
+    sandbox_env = {"PYTHONPATH": os.pathsep.join([str(Path(".").resolve()), str(Path("src").resolve())])}
     run_result = run_python_in_sandbox(
         "solve.py",
         workspace_dir=workspace,
@@ -101,7 +102,7 @@ def test_sandbox_runs_finance_operations_fixed_solve_py_and_pytest(tmp_path: Pat
         import json
         from pathlib import Path
 
-        from tablecodeagent.workflows.finance_operations import build_finance_operations_report
+        from tests.test_workflows.finance_operations import build_finance_operations_report
 
 
         def main() -> None:
@@ -118,7 +119,7 @@ def test_sandbox_runs_finance_operations_fixed_solve_py_and_pytest(tmp_path: Pat
         """
     ).strip() + "\n", encoding="utf-8")
 
-    sandbox_env = {"PYTHONPATH": str(Path("src").resolve())}
+    sandbox_env = {"PYTHONPATH": os.pathsep.join([str(Path(".").resolve()), str(Path("src").resolve())])}
     run_result = run_python_in_sandbox(
         "solve.py",
         workspace_dir=workspace,

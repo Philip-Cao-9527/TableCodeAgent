@@ -1,0 +1,21 @@
+name: growth-campaign-audit
+display_name: 营销增长活动审计
+short_description: 审核和实现营销增长产品 workflow、测试 oracle 与 no-helper benchmark 边界，关注多表 join、分组平衡、SMD、补贴异常和时间窗。
+default_prompt: >
+  使用该 skill 审核营销增长活动数据的样本构造、join 风险、treatment/control 分布、
+  SMD、补贴异常、时间窗口错配和 warnings；区分已接入的表格质量检查、工业场景目标
+  和尚未验证的因果估计或自动投放策略，不要把未验证的 API 调用写成已通过。
+requires_real_api: false
+evidence_fields:
+  - benchmark_profile
+  - helper_hints_exposed
+  - api_called
+  - schema_check.errors
+  - generated_code_path
+  - answer_path
+  - validation.passed
+  - failure_type
+boundaries:
+  - 已接入能力、工业目标和未验证能力必须分开表述
+  - 未验证完整 uplift modeling、PSM/IPW 训练、因果效应估计或自动投放策略
+  - 不公开 expected answer、项目 oracle helper 或 solve.py 解题入口

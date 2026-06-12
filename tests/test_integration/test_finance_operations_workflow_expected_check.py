@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from tablecodeagent.benchmark.answer_models import validate_answer_json_with_model
-from tablecodeagent.workflows.finance_operations import run_finance_operations
+from tests.test_workflows.finance_operations import run_finance_operations
 
 
 def test_finance_operations_workflow_matches_expected_fixture(tmp_path: Path) -> None:

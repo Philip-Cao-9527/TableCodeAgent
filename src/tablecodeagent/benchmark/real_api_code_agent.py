@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import asyncio
 import json
 import os
@@ -27,10 +28,18 @@ from tablecodeagent.validation.answer import validate_answer
 
 MODE = "real_api_code_agent"
 BENCHMARK_PROFILE = "no_helper"
+NO_HELPER_TOOL_DENYLIST = {"run_table_product_workflow"}
 FORBIDDEN_HELPER_MARKERS = (
     "tablecodeagent.workflows",
+    "tests.test_workflows",
+    "tablecodeagent.workflow",
+    "tablecodeagent.product_agent",
     "build_growth_campaign_audit_report",
     "build_credit_risk_scoring_report",
+    "build_finance_operations_report",
+    "run_growth_campaign_audit",
+    "run_credit_risk_scoring",
+    "run_finance_operations",
 )
 
 
@@ -149,6 +158,8 @@ def guarded_agent_tools(workspace: Path) -> Iterator[None]:
     workspace = workspace.resolve()
 
     async def guarded_execute_tool(name: str, inp: dict[str, Any], read_file_state: Any = None) -> str:
+        if name in NO_HELPER_TOOL_DENYLIST:
+            return f"Benchmark no-helper policy denied tool: {name}"
         if name in {"read_file", "write_file", "edit_file"}:
             denial = _path_denied(str(inp.get("file_path", "")), workspace)
             if denial:
@@ -307,6 +318,70 @@ def _generated_helper_usage_denial(solve_path: Path) -> str | None:
     for marker in FORBIDDEN_HELPER_MARKERS:
         if marker in text:
             return f"generated solve.py references forbidden helper marker: {marker}"
+    ast_denial = _generated_helper_ast_denial(text)
+    if ast_denial:
+        return ast_denial
+    return None
+
+
+def _generated_helper_ast_denial(text: str) -> str | None:
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return None
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                denial = _forbidden_import_denial(alias.name)
+                if denial:
+                    return denial
+        elif isinstance(node, ast.ImportFrom):
+            module = node.module or ""
+            denial = _forbidden_import_denial(module)
+            if denial:
+                return denial
+        elif isinstance(node, ast.Call):
+            call_name = _call_name(node.func)
+            if call_name in {"__import__", "importlib.import_module"} and node.args:
+                module_name = _literal_string_expr(node.args[0])
+                if module_name:
+                    denial = _forbidden_import_denial(module_name)
+                    if denial:
+                        return denial
+    return None
+
+
+def _call_name(node: ast.AST) -> str:
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        prefix = _call_name(node.value)
+        return f"{prefix}.{node.attr}" if prefix else node.attr
+    return ""
+
+
+def _literal_string_expr(node: ast.AST) -> str | None:
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value
+    if isinstance(node, ast.JoinedStr):
+        parts: list[str] = []
+        for value in node.values:
+            if not isinstance(value, ast.Constant) or not isinstance(value.value, str):
+                return None
+            parts.append(value.value)
+        return "".join(parts)
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+        left = _literal_string_expr(node.left)
+        right = _literal_string_expr(node.right)
+        if left is not None and right is not None:
+            return left + right
+    return None
+
+
+def _forbidden_import_denial(module_name: str) -> str | None:
+    for marker in FORBIDDEN_HELPER_MARKERS:
+        if module_name == marker or module_name.startswith(f"{marker}."):
+            return f"generated solve.py imports forbidden helper module: {marker}"
     return None
 
 
@@ -463,6 +538,8 @@ def _task_prompt(task_dir: Path) -> str:
         "你正在参加 TableCodeAgent 的真实 API 代码生成 benchmark。\n"
         f"benchmark_profile: {BENCHMARK_PROFILE}\n"
         "helper_hints_exposed: false\n"
+        "no_helper_forbidden_paths: tablecodeagent.workflows, tests.test_workflows, tablecodeagent.workflow, tablecodeagent.product_agent\n"
+        "no_helper_forbidden_tools: run_table_product_workflow\n"
         f"当前 benchmark workspace 绝对路径: {task_dir.resolve()}\n"
         "请根据当前 benchmark workspace 中的任务文件生成一个可执行的 solve.py，并通过工具把 solve.py 写入该 workspace。\n"
         "要求：\n"
@@ -580,6 +657,13 @@ async def run_real_api_code_agent(
             trace["tool_call_count"] = len(trace["tool_calls"])
 
         from mini_claude.agent import Agent
+        from mini_claude.tools import tool_definitions
+
+        no_helper_tools = [
+            tool for tool in tool_definitions
+            if tool.get("name") not in NO_HELPER_TOOL_DENYLIST
+        ]
+        trace["no_helper_tool_denylist"] = sorted(NO_HELPER_TOOL_DENYLIST)
 
         agent = Agent(
             permission_mode="bypassPermissions",
@@ -589,6 +673,7 @@ async def run_real_api_code_agent(
             api_key=api_key,
             is_sub_agent=True,
             trace_callback=trace_callback,
+            custom_tools=no_helper_tools,
         )
         trace["api_called"] = True
         with guarded_agent_tools(workspace), pushd(workspace):

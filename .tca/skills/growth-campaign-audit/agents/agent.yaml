@@ -1,4 +1,0 @@
-interface:
-  display_name: "营销增长活动审计"
-  short_description: "用于建模前审计 campaign exposure、rewards、users、orders 等营销增长表格数据。"
-  default_prompt: "使用该 skill 审核营销增长活动数据的样本构造、join 风险、treatment/control 分布、SMD、补贴异常、时间窗口错配和 warnings；不要把未验证的因果效果或 API 调用写成已通过。"

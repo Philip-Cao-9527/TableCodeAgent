@@ -1,22 +1,26 @@
 ---
 name: credit-risk-scoring
-description: TableCodeAgent 信贷风控样本处理与评分 workflow 指导。需要设计、实现、审核或运行贷前申请表、贷后泄漏字段、标签窗口、重复申请、客户唯一性、缺失/异常/字段类型、规则卡评分和 no-helper benchmark 时使用；不用于声明生产风控模型、SOTA、SFT、RL、RAG 或 Memory 增强已经实现。
+description: TableCodeAgent 信贷风控样本处理与评分 workflow 指导。需要设计、实现、审核或运行贷前申请表、贷后泄漏字段、标签窗口、重复申请、客户唯一性、缺失/异常/字段类型、规则卡评分和 no-helper benchmark 时使用；必须区分已接入能力、工业场景目标和未验证能力。
 ---
 
 # 信贷风控样本处理
 
 ## 适用范围
 
-本 skill 用作信贷风险评分 benchmark 场景和风控数据处理 workflow 的流程指导。它只描述检查顺序、业务边界和验证要求；确定性计算应放在 `src/tablecodeagent/workflows/` 或相关表格工具中。
+本 skill 用作信贷风险评分 benchmark 场景和风控数据处理 workflow 的流程指导。它只描述检查顺序、业务边界和验证要求；确定性 oracle 已迁移到 `tests/test_workflows/`，产品态主 Loop 应通过 `src/tablecodeagent/workflow/` 和表格工具接入 MiniClaude Agent Loop。
 
-本 skill 不声明支持生产风控模型、自动授信审批、真实监管合规审计、SOTA 建模、SFT、RL、RAG 或 Memory 增强。
+三层边界必须写清：
+
+- 当前已实现 / 已接入能力：公开 task contract、Pydantic schema、本地 fixture oracle、模拟 Agent 输出回归、sandbox + pytest/validator 验证，以及产品 Loop 的任务解析、表格画像、上下文压缩、候选代码执行和 repair feedback。
+- 面向工业业务场景的目标能力：把风控样本检查、贷前/贷后隔离、标签窗口、重复申请、字段类型和可解释规则评分组织成可追踪的 Coding Agent 工作流。
+- 尚未接入 / 尚未验证能力：真实授信审批、线上模型训练评估、监管报送、公平性审计、生产监控和跨系统自动决策。
 
 ## 不适用范围
 
 - 不用于直接给真实用户做授信或拒贷决策。
-- 不用于把固定规则卡包装成已训练模型。
+- 不用于把固定规则卡包装成已训练或已上线模型。
 - 不用于替代模型训练、验证集评估、上线监控、公平性审计或合规审批。
-- 不用于给真实 API benchmark 暴露 workflow helper 或 `build_*_report()`。
+- 不用于给真实 API benchmark 暴露 oracle helper、`build_*_report()` 或 `tests/test_workflows`。
 
 ## 执行步骤
 
@@ -70,7 +74,7 @@ description: TableCodeAgent 信贷风控样本处理与评分 workflow 指导。
 
 ## 证据与验证要求
 
-- 内部 workflow helper 只能用作 unit / integration / smoke / regression 测试。
+- `tests/test_workflows/` 中的 helper-assisted oracle 只能用作 unit / integration / smoke / regression 测试。
 - 真实 API benchmark 必须记录 `benchmark_profile=no_helper`、`helper_hints_exposed=false`、`api_called`、`skipped`、`failure_type`、`generated_code_path`、`answer_path`、`run_python.exit_code`、`pytest_exit_code` 和 `schema_check.errors`。
 - `SKIP`、env 缺失、API 失败、schema 不匹配、pytest 失败或模型未生成代码，必须按真实失败写入报告，不能伪装通过。
 
@@ -80,4 +84,4 @@ description: TableCodeAgent 信贷风控样本处理与评分 workflow 指导。
 - 不要把贷后字段、标签字段或人工催收字段用作贷前特征。
 - 不要把规则卡示例包装成生产模型。
 - 不要为了通过 pytest 放宽 validation 或删除业务断言。
-- 报告中必须写清本场景是 benchmark/workflow fixture，不是可上线风控系统。
+- 报告中必须区分 product workflow、helper-assisted oracle 和 no-helper capability evaluation。

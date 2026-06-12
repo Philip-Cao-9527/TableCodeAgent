@@ -7,7 +7,7 @@ from pathlib import Path
 
 from tablecodeagent.benchmark.answer_models import validate_answer_json_with_model
 from tablecodeagent.runtime.sandbox import run_tests_in_sandbox
-from tablecodeagent.workflows.finance_operations import run_finance_operations
+from tests.test_workflows.finance_operations import run_finance_operations
 
 
 TASK_DIR = Path("benchmarks/tasks/finance_operations_001")
@@ -110,6 +110,25 @@ def test_simulated_missing_field_and_type_error_is_caught_by_schema() -> None:
     assert result["passed"] is False
     assert any(error["path"] == "$.data_quality" for error in result["errors"])
     assert any(error["path"] == "$.summary.open_invoice_amount_by_currency.USD" for error in result["errors"])
+
+
+def test_simulated_nested_json_shape_error_is_caught_by_schema() -> None:
+    answer = copy.deepcopy(_correct_answer())
+    answer["data_quality"]["duplicate_invoice_ids"] = [{"invoice_id": "INV-1001", "count": 2}]
+
+    result = validate_answer_json_with_model(answer, answer_model="finance_operations")
+
+    assert result["passed"] is False
+    assert any(error["path"].startswith("$.data_quality.duplicate_invoice_ids") for error in result["errors"])
+
+
+def test_simulated_duplicate_count_semantics_error_is_caught_by_pytest(tmp_path: Path) -> None:
+    answer = copy.deepcopy(_correct_answer())
+    answer["summary"]["duplicate_invoice_count"] = 0
+    answer["data_quality"]["duplicate_invoice_ids"] = []
+
+    assert validate_answer_json_with_model(answer, answer_model="finance_operations")["passed"] is True
+    assert _pytest_exit_code(tmp_path, answer) != 0
 
 
 def test_simulated_nan_due_date_string_is_caught_by_schema() -> None:

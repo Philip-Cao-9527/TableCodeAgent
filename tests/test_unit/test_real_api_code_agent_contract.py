@@ -6,6 +6,8 @@ from pathlib import Path
 
 from tablecodeagent.benchmark.answer_models import validate_answer_json_with_model
 from tablecodeagent.benchmark.real_api_code_agent import (
+    NO_HELPER_TOOL_DENYLIST,
+    _generated_helper_usage_denial,
     _is_api_timeout_error,
     _public_output_contract,
     _schema_check_answer_json,
@@ -49,7 +51,16 @@ def test_no_helper_task_contracts_do_not_expose_project_helpers():
         Path("benchmarks/tasks/credit_risk_scoring_001/task.json"),
         Path("benchmarks/tasks/finance_operations_001/task.json"),
     ]
-    forbidden = ("implementation_hints", "allowed_project_helpers", "solve_py_suggestion", "build_", "tablecodeagent.workflows")
+    forbidden = (
+        "implementation_hints",
+        "allowed_project_helpers",
+        "solve_py_suggestion",
+        "build_",
+        "tablecodeagent.workflows",
+        "tests.test_workflows",
+        "tablecodeagent.workflow",
+        "tablecodeagent.product_agent",
+    )
 
     for task_path in task_paths:
         text = task_path.read_text(encoding="utf-8")
@@ -220,6 +231,36 @@ def test_pytest_validation_mode_does_not_mark_answer_existence_as_passed(tmp_pat
 
 def test_api_timeout_detection_includes_asyncio_timeout():
     assert _is_api_timeout_error(asyncio.TimeoutError())
+
+
+def test_no_helper_ast_denies_dynamic_workflow_imports(tmp_path):
+    solve_path = tmp_path / "solve.py"
+    solve_path.write_text(
+        "import importlib\n"
+        "mod = importlib.import_module('tablecodeagent.' + 'workflows.finance_operations')\n",
+        encoding="utf-8",
+    )
+
+    denial = _generated_helper_usage_denial(solve_path)
+
+    assert denial is not None
+    assert "forbidden helper module" in denial
+
+
+def test_no_helper_denies_test_oracle_and_product_imports(tmp_path):
+    for source in [
+        "from tests.test_workflows.finance_operations import run_finance_operations\n",
+        "__import__('tablecodeagent.workflow.loop')\n",
+        "__import__('tablecodeagent.product_agent.loop')\n",
+    ]:
+        solve_path = tmp_path / "solve.py"
+        solve_path.write_text(source, encoding="utf-8")
+        denial = _generated_helper_usage_denial(solve_path)
+        assert denial is not None
+
+
+def test_no_helper_tool_denylist_excludes_product_workflow_tool():
+    assert "run_table_product_workflow" in NO_HELPER_TOOL_DENYLIST
 
 
 def test_result_from_trace_exposes_run_python_summary():

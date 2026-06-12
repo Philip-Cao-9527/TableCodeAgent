@@ -135,7 +135,7 @@ def _resolve_includes(
             return f"<!-- not found: {raw} -->"
         try:
             visited.add(key)
-            included = resolved.read_text()
+            included = resolved.read_text(encoding="utf-8")
             return _resolve_includes(included, resolved.parent, visited, depth + 1)
         except Exception:
             return f"<!-- error reading: {raw} -->"
@@ -155,7 +155,7 @@ def _load_rules_dir(directory: Path) -> str:
         parts: list[str] = []
         for f in files:
             try:
-                content = f.read_text()
+                content = f.read_text(encoding="utf-8")
                 content = _resolve_includes(content, rules_dir)
                 parts.append(f"<!-- rule: {f.name} -->\n{content}")
             except Exception:
@@ -168,26 +168,28 @@ def _load_rules_dir(directory: Path) -> str:
 def load_claude_md() -> str:
     """Walk up from cwd collecting all CLAUDE.md files, resolving @includes."""
     parts: list[str] = []
+    rule_parts: list[str] = []
     d = Path.cwd().resolve()
     while True:
         f = d / "CLAUDE.md"
         if f.is_file():
             try:
-                content = f.read_text()
+                content = f.read_text(encoding="utf-8")
                 content = _resolve_includes(content, d)
                 parts.insert(0, content)
             except Exception:
                 pass
+        rules = _load_rules_dir(d)
+        if rules:
+            rule_parts.insert(0, rules)
         parent = d.parent
         if parent == d:
             break
         d = parent
-    # Load .claude/rules/*.md from cwd
-    rules = _load_rules_dir(Path.cwd())
     claude_md = ""
     if parts:
         claude_md = "\n\n# Project Instructions (CLAUDE.md)\n" + "\n\n---\n\n".join(parts)
-    return claude_md + rules
+    return claude_md + "".join(rule_parts)
 
 
 def get_git_context() -> str:

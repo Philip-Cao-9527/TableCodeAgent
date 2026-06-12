@@ -1,6 +1,6 @@
 name: credit-risk-scoring
 display_name: 信贷风控样本处理
-short_description: 审核和实现信贷风控 benchmark/workflow，不暴露 helper，不声明生产模型。
+short_description: 审核和实现信贷风控产品 workflow、测试 oracle 与 no-helper benchmark 边界，不暴露 helper。
 default_prompt: >
   请按 TableCodeAgent 信贷风控样本处理规范执行：先检查贷前/贷后字段隔离、
   时间窗与标签窗口、重复申请、客户唯一性、缺失/异常/字段类型，再输出风险分层、
@@ -17,6 +17,6 @@ evidence_fields:
   - pytest_exit_code
   - failure_type
 boundaries:
-  - 不是生产风控模型
-  - 不声明 SOTA、SFT、RL、RAG 或 Memory 增强
-  - 不替代真实授信审批、监管合规或上线监控
+  - 已接入能力、工业目标和未验证能力必须分开表述
+  - 未验证真实授信审批、线上模型训练评估、监管报送或生产监控
+  - 不公开 expected answer、项目 oracle helper 或 solve.py 解题入口

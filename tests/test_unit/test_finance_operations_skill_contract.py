@@ -6,8 +6,8 @@ from mini_claude.frontmatter import parse_frontmatter
 
 
 def test_finance_operations_project_skill_is_parseable_and_has_agent_metadata() -> None:
-    skill_path = Path(".tca/skills/finance-operations/SKILL.md")
-    agent_path = Path(".tca/skills/finance-operations/agents/agent.yaml")
+    skill_path = Path(".claude/skills/finance-operations/SKILL.md")
+    agent_path = Path(".claude/skills/finance-operations/agents/agent.yaml")
 
     parsed = parse_frontmatter(skill_path.read_text(encoding="utf-8"))
     agent_text = agent_path.read_text(encoding="utf-8")
@@ -21,8 +21,8 @@ def test_finance_operations_project_skill_is_parseable_and_has_agent_metadata() 
 
 
 def test_finance_operations_skill_does_not_leak_benchmark_answers_or_helpers() -> None:
-    skill_text = Path(".tca/skills/finance-operations/SKILL.md").read_text(encoding="utf-8")
-    agent_text = Path(".tca/skills/finance-operations/agents/agent.yaml").read_text(encoding="utf-8")
+    skill_text = Path(".claude/skills/finance-operations/SKILL.md").read_text(encoding="utf-8")
+    agent_text = Path(".claude/skills/finance-operations/agents/agent.yaml").read_text(encoding="utf-8")
     combined = skill_text + "\n" + agent_text
 
     forbidden = [
@@ -33,6 +33,7 @@ def test_finance_operations_skill_does_not_leak_benchmark_answers_or_helpers() -
         "build_finance",
         "run_finance_operations",
         "tablecodeagent.workflows.finance_operations",
+        "tests.test_workflows.finance_operations",
         "allowed_project_helpers",
         "solve_py_suggestion",
     ]

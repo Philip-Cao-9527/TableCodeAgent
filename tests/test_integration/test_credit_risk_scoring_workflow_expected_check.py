@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from tablecodeagent.benchmark.answer_models import validate_answer_json_with_model
-from tablecodeagent.workflows.credit_risk_scoring import run_credit_risk_scoring
+from tests.test_workflows.credit_risk_scoring import run_credit_risk_scoring
 
 
 def test_credit_risk_scoring_workflow_matches_expected_fixture(tmp_path):
