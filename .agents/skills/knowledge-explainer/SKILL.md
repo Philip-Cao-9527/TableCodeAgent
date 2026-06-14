@@ -1,9 +1,9 @@
 ---
-name: bagu-explain
-description: 当用户要求机器学习/深度学习/算法岗/Agent/CodeAgent/表格推理/数据分析 Agent 或 TableCodeAgent 项目相关的八股讲解、原理讲解、面试口述、从零教学、项目追问回答时触发，输出可用于面试口述与从零教学的双层内容；当任务仅是代码实现、简历润色、或一句话定义时不触发。若涉及外部论文依据、最新方法、官方文档、benchmark、数据集或工程实践，先调用 academic-web-search。
+name: knowledge-explainer
+description: 当用户要求机器学习/深度学习/算法岗/Agent/CodeAgent/表格推理/数据分析 Agent 或 TableCodeAgent 项目相关的八股讲解、原理讲解、面试口述、从零教学、项目追问回答时触发，输出可用于面试口述与从零教学的双层内容；当任务仅是代码实现、简历润色、或一句话定义时不触发。若涉及外部论文依据、最新方法、官方文档、benchmark、数据集或工程实践，先调用 $web-search。
 ---
 
-# bagu-explain
+# knowledge-explainer
 
 ## 最高约束（绝对优先）
 - 字数约束是本技能的最高优先级约束，高于文风、排版和示例数量。
@@ -38,7 +38,7 @@ description: 当用户要求机器学习/深度学习/算法岗/Agent/CodeAgent/
 2. 判断是否“TableCodeAgent 项目相关”：
 - 若用户问题来自 TableCodeAgent 项目，先读取最小项目上下文：`README.md`、`docs/reproduce/2026-06-03_tablecodeagent_architecture.md`；必要时再读取 `python/mini_claude/agent.py`、`python/mini_claude/tools.py`、`python/tablecodeagent/table_tools/core.py`。
 - 若用户问题是通用八股，不绑定项目背景，按通用教学结构输出。
-3. 若问题涉及外部论文依据、最新方法对比、官方文档、数据集、benchmark 或争议结论，先调用 `$academic-web-search` 再输出结论。
+3. 若问题涉及外部论文依据、最新方法对比、官方文档、数据集、benchmark 或争议结论，先调用 `$web-search` 再输出结论。
 4. 组织回答顺序：
 - 先写可直接口述版（专业、分点、可记忆）。
 - 再写详细教学版（从零概念开始，不预设基础）。
@@ -85,8 +85,8 @@ description: 当用户要求机器学习/深度学习/算法岗/Agent/CodeAgent/
 - 必须把“术语”翻译成“项目里发生了什么”。
 - 不得机械生成简历 bullet；没有代码、实验、trace 或 README 证据时，只能说“后续可写”，不能说“已经完成”。
 - 不要为了显得高级强行引入 RL、SFT、RAG、MCP、Memory；只有和问题强相关才解释。
-- 若回答需要外部依据，先调用 `$academic-web-search`，并在最终答案中说明依据来源。
+- 若回答需要外部依据，先调用 `$web-search`，并在最终答案中说明依据来源。
 
 ## 与本仓库其他 prompt / skill 的协同规则（若有必要）
-- 只保留与 `$academic-web-search` 的协同。
-- 若涉及外部论文依据、最新方法对比、官方文档、数据集、benchmark、业务实践或争议结论，先调用 `$academic-web-search` 再输出结论。
+- 只保留与 `$web-search` 的协同。
+- 若涉及外部论文依据、最新方法对比、官方文档、数据集、benchmark、业务实践或争议结论，先调用 `$web-search` 再输出结论。

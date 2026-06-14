@@ -1,0 +1,4 @@
+interface:
+  display_name: "TableCodeAgent 本地 Skill 创建"
+  short_description: "创建或更新 TableCodeAgent 项目本地 skill"
+  default_prompt: "使用 $tablecodeagent-skill-creator 为当前 TableCodeAgent 流程创建或更新 `.agents/skills/` 下的项目本地 skill。"

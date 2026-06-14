@@ -1,0 +1,4 @@
+interface:
+  display_name: "联网检索"
+  short_description: "检索论文官方文档开源实现和工程业务实践可靠依据材料"
+  default_prompt: "请用 $web-search 检索这个问题的论文、官方文档和工程实践依据。"

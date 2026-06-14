@@ -1,0 +1,4 @@
+interface:
+  display_name: "TableCodeAgent 计划模式 Prompt"
+  short_description: "生成要求先只读决策的 TableCodeAgent Plan Mode prompt"
+  default_prompt: "使用 $tablecodeagent-plan-mode-prompt 为当前 TableCodeAgent 任务生成一份要求 Codex 使用 Plan Mode 的中文 prompt。"
