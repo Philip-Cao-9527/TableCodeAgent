@@ -1,4 +1,4 @@
 interface:
-  display_name: "TableCodeAgent 评审 Prompt"
-  short_description: "生成 findings first 的 TableCodeAgent 代码评审 prompt"
+  display_name: "TableCodeAgent 代码评审 Prompt"
+  short_description: "生成TableCodeAgent 代码评审 prompt"
   default_prompt: "使用 $tablecodeagent-code-review-prompt 为当前 TableCodeAgent 审查任务生成一份中文 code review prompt。"

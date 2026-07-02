@@ -46,6 +46,8 @@ python -X utf8 .agents/skills/tablecodeagent-dev-prompt/scripts/validate_tableco
 - 路径核对：要求执行者用 `rg --files` 或等价命令刷新当前仓库真实路径，不沿用历史报告里的旧入口、旧脚本或旧目录。
 - 版本策略：用户未明确要求升版时，沿用当前仓库版本，不主动 bump；只有核心代码、可执行能力、工具协议、benchmark / trace / validation / runner 等实质变化才评估版本号与修复报告。
 - 文档与报告：纯文档、skill、指令文件、格式、注释类调整不触发修复报告或版本号变更；核心行为变化才按 `.codex/AGENTS.md` 规则处理。
+- 修复报告内容质量：生成开发 prompt 时，如果本轮可能触发 `docs/reproduce/fix-report-*.md`，必须要求后续执行者写入报告可读性规范。报告不能只堆路径、英文术语或字段名；涉及 `benchmark`、`trace`、`answer.json`、Pydantic schema、task `output_contract`、no-helper、`SKIP`、`failure_type` 等概念时，要补中文含义和对 TableCodeAgent 评测结论的影响说明。
+- 多次验证结构：如果后续执行者进行了多次真实 API 评测、代码 smoke、simulated Agent / mocked Agent 回归或重复验证，prompt 必须要求报告用平行的三级标题区分每一次测试，并在每次测试下用四级标题解释现象、原因和修复后变化；最后先用平行的三级标题建立汇总区，例如 `### 真实 API 多轮汇总` 或 `### 多轮测试汇总`，再在其下用 `#### 总表` 和 `#### 归因总结` 汇总多次测试，不能直接孤立写四级汇总标题，也不能只按时间顺序堆日志。
 - API 与密钥：禁止修改或提交 `configs/api/local/`、`.env`、真实 API key；需要真实 API 验证时只允许读取用户指定 env 文件，若用户未指定 env，则默认使用 `configs/api/local/deepseek.env`；env 缺失、网络失败、依赖缺失或模型行为不可控时记录 `SKIP` 或“未验证”，不能伪装成功。
 - 外部实践：涉及 Agent benchmark、structured output、JSON Schema / Pydantic、tool schema、风控 / 营销 / 定价等工业业务流程，或当前仓库规则与外部规范可能冲突时，prompt 中可以要求执行者调用 `$web-search`；用户明确要求不联网时不要写入联网要求。
 - TODO 分块：TODO 多时按 `A / B / C / D` 分块；单任务只保留一个任务块，不堆空标题。
@@ -121,6 +123,7 @@ python -X utf8 .agents/skills/tablecodeagent-dev-prompt/scripts/validate_tableco
 - README 面向项目总览，`docs/reproduce/` 面向开发证据和可复现记录，`docs/baseline/` 保留 baseline 教程型文档。
 - 不要把历史状态写成最新状态；涉及“当前支持什么”必须从代码、脚本和最近验证结果确认。
 - 纯文档调整默认不触发修复报告和版本号变更，最终 prompt 中要要求说明原因。
+- 如果本轮触发修复报告，最终 prompt 必须要求报告解释得通俗可读：技术术语、字段名、文件路径和测试结果要配中文解释；真实 API、smoke、simulated Agent 等多次验证要用清晰标题分组，并先用平行三级标题建立多轮汇总区，再在下面用总表和归因总结说明每次测试证明了什么、失败原因是什么、哪些仍未验证。
 
 ### skill / 指令文件维护
 

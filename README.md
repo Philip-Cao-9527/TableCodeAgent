@@ -365,7 +365,9 @@ bash scripts/run_openai_compatible_smoke.sh deepseek.env
 
 ### 最高优先级
 
-- [ ] 针对 0.0.4 八次测试原因分析暴露的问题、Windows 兼容性问题（尤其是长日志输出兼容性）、0.0.5 既有两次真实 API 测试失败，以及docs\reproduce\fix-report-v0.0.5-20260612.md中 `finance_operations_001` 真实 API 复测失败（`pytest_failed`，核心缺口是业务异常类型 `missing_po` 未被模型输出覆盖）进行一次集中 code review，然后修复。修复顺序必须先补本地回归：合同文本、Pydantic schema、pytest 业务断言、simulated Agent 错误输出、sandbox 执行和失败归因全部稳定后，才允许决定是否再做真实 API 复测。
+- [ ] 针对 0.0.4 八次测试原因分析暴露的问题、==Windows 兼容性问题（尤其是长日志输出兼容性）==、0.0.5 既有两次真实 API 测试失败，以及docs\reproduce\fix-report-v0.0.5-20260612.md中 `finance_operations_001` 真实 API 复测失败（`pytest_failed`，核心缺口是业务异常类型 `missing_po` 未被模型输出覆盖）进行一次集中 code review，然后修复。修复顺序必须先补本地回归：合同文本、Pydantic schema、pytest 业务断言、simulated Agent 错误输出、sandbox 执行和失败归因全部稳定后，才允许决定是否再做真实 API 复测。
+- [ ] 在 sandbox 中增加运行期 import hook。含义是：即使 `PYTHONPATH=src` 仍然保留，Python 真正执行 `solve.py` 时也额外安装一层 import 拦截规则；一旦运行时尝试导入 `tablecodeagent.workflow`、`tests.test_workflows`、旧 `tablecodeagent.workflows`、`tablecodeagent.product_agent` 或等价 helper 路径，就立刻失败并记录 `helper_usage_forbidden`。这样可以覆盖一部分 AST 静态检查漏掉的运行期动态导入。
+- 在 result/trace 中记录 `helper_usage_check_strategy` 和 `helper_usage_checked=true`，方便后续审计。含义是每次真实 API 结果都明确写清楚本次用了哪些 helper 防线，例如 `static_marker_scan`、`ast_import_scan`、`runtime_import_hook`；这样后续看到一次 no-helper 通过时，可以判断它是只经过静态检查，还是也经过运行期 import hook。
 - [ ] 为 `src/tablecodeagent/workflow/` 设计独立的 product workflow 真实 API 验证入口或任务组，例如 `product_workflow_agent`。该验证要明确允许模型调用 `run_table_product_workflow`，并单独记录是否调用 workflow、候选代码版本数、repair history、schema/pytest/validator 结果、trace、workspace 和失败归因；结果只能归为 product workflow / workflow-assisted 产品链路验证，不得并入 no-helper benchmark pass rate。
 
 ### 高优先级

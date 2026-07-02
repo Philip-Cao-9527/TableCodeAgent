@@ -38,7 +38,9 @@
 3. 如果本轮改动影响架构、目录说明、验证命令、Agent 工具协议、benchmark / trace / validation / runner 口径，必须同步检查 `README.md` 与 `docs/reproduce/tablecodeagent_architecture.md`。
 4. 只在 `README.md` 已经维护相关清单、且本轮改动导致说明失实时，才同步 README；否则不要为了显得完整改 README。
 5. 禁止修改或提交 `configs/api/local/`、`.env`、真实 API key、`__pycache__`、`.pyc` 或无关生成文件。
-6. 如果用户明确要求生成报告，必须按 `.codex/AGENTS.md` 的报告规则生成，并使用可跳转 Markdown 相对路径交叉引用。
+6. 如果用户明确要求生成报告，必须按 `.codex/AGENTS.md` 的报告规则生成，并使用可跳转 Markdown 相对路径交叉引用；能定位到行号时统一使用 `[文件名](相对路径#L行号)`，不要把 `:行号` 写进链接目标。
+7. 修复报告必须满足内容质量规范：不要只堆文件路径、英文术语或字段名；涉及 `benchmark`、`trace`、`workspace`、`answer.json`、Pydantic schema、task `output_contract`、no-helper、`SKIP`、`failure_type` 等概念时，要补中文含义和对 TableCodeAgent 评测结论的影响说明。
+8. 如果本轮进行了多次真实 API 评测、代码 smoke、simulated Agent / mocked Agent 回归或重复验证，报告必须用平行的三级标题区分每一次测试；某次测试下的现象、原因、修复后变化用四级标题组织；最后先用平行三级标题建立汇总区，例如 `### 真实 API 多轮汇总` 或 `### 多轮测试汇总`，再在其下用 `#### 总表` 和 `#### 归因总结` 汇总，不要直接孤立写四级汇总标题，也不要只按时间顺序堆日志。
 
 【本次要完成的 TODO，必须全部落地】
 
